@@ -1,0 +1,25 @@
+{
+    "name": "minds&machines/admin",
+    "description": "",
+    "authors": [
+        {
+            "name": "Leinad Ose",
+            "email": "xavi7th@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [
+                "App\\Modules\\Admin\\Providers\\AdminServiceProvider"
+            ],
+            "aliases": {
+                
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\Modules\\Admin\\": ""
+        }
+    }
+}

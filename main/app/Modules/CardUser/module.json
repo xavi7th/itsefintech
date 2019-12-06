@@ -1,0 +1,13 @@
+{
+    "name": "CardUser",
+    "alias": "carduser",
+    "description": "",
+    "keywords": [],
+    "order": 0,
+    "providers": [
+        "App\\Modules\\CardUser\\Providers\\CardUserServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}
