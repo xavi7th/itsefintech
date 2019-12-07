@@ -56,7 +56,7 @@ class LoginController extends Controller
 
 	public function refresh(Request $request)
 	{
-		return $this->respondWithToken(auth()->refresh());
+		return $this->respondWithToken(auth('card_user')->refresh());
 	}
 
 	/**
