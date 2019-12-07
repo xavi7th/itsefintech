@@ -61,20 +61,31 @@ class RegisterController extends Controller
 	public function register(RegistrationValidation $request)
 	{
 		// return $request;
-		event(new Registered($user = $this->create($request->all())));
+		DB::beginTransaction();
 
-		// $this->guard()->login($user);
+		event(new Registered($card_user = $this->create($request->all())));
 
-		return $this->registered($request, $user);
+		/** Create OTP */
+		$otp = $card_user->createOTP();
+
+		/** Send OTP code */
+
+		/** Log the user in */
+		$token = (string)auth('card_user')->login($card_user);
+
+		// dd(get_class($token));
+		DB::commit();
+
+		return $this->respondWithToken($token);
 	}
 
 	/**
 	 * Create a new user instance after a valid registration.
 	 *
 	 * @param  array  $data
-	 * @return \App\User
+	 * @return CardUser
 	 */
-	protected function create(array $data)
+	protected function create(array $data): CardUser
 	{
 
 		// $url = request()->file('user_passport')->store('public/id_cards');
@@ -83,8 +94,6 @@ class RegisterController extends Controller
 		/** Replace the public part of the url with storage to make it accessible on the frontend */
 		// $url = str_replace_first('public', '/storage', $url);
 
-		//Create an entry into the documents database
-		DB::beginTransaction();
 		$card_user = CardUser::create([
 			'first_name' => $data['first_name'],
 			'last_name' => $data['last_name'],
@@ -94,28 +103,24 @@ class RegisterController extends Controller
 			'bvn' => $data['bvn']
 		]);
 
-		$otp = $card_user->createOTP();
-
-		//Send token
+		Log::critical($card_user->email . ' registered an account on the site.');
 
 		return $card_user;
 	}
 
 	/**
-	 * The user has been registered.
+	 * Get the token array structure.
 	 *
-	 * @param  \Illuminate\Http\Request  $request
-	 * @param  mixed  $user
-	 * @return mixed
+	 * @param  string $token
+	 *
+	 * @return \Illuminate\Http\JsonResponse
 	 */
-	protected function registered(Request $request, $user)
+	protected function respondWithToken(string $token)
 	{
-		Log::critical($user->email . ' registered an account on the site.');
-
-		DB::commit();
-
-		//Log the user in
-
-		return response()->json(['status' => true], 201);
+		return response()->json([
+			'access_token' => $token,
+			'token_type' => 'bearer',
+			'expires_in' => auth()->factory()->getTTL() * 60
+		], 201);
 	}
 }
