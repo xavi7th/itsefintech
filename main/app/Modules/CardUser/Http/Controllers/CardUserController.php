@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Route;
+use App\Modules\CardUser\Http\Controllers\LoginController;
 use App\Modules\CardUser\Http\Controllers\RegisterController;
 
 class CardUserController extends Controller
@@ -19,6 +20,7 @@ class CardUserController extends Controller
 
 		Route::group(['prefix' => 'v1'], function () {
 
+			LoginController::routes();
 			RegisterController::routes();
 
 			Route::get('/', 'CardUserController@index');

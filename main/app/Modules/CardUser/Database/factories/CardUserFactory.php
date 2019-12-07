@@ -19,12 +19,13 @@ use App\Modules\CardUser\Models\CardUser;
 
 $factory->define(CardUser::class, function (Faker $faker) {
 	return [
-		'name' => $faker->name,
+		'first_name' => $faker->firstName,
+		'last_name' => $faker->lastName,
 		'email' => $faker->unique()->safeEmail,
 		'otp_verified_at' => now(),
 		'password' => 'pass',
 		'phone' => $faker->phoneNumber,
-		'user_passport' => '/storage/id_cards/' . $faker->file(public_path(''), public_path('storage/card_users/'), false),
+		'user_passport' => '/storage/id_cards/' . $faker->file(public_path('img/'), public_path('storage/card_users/'), false),
 		'remember_token' => Str::random(10),
 	];
 });

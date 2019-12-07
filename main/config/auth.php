@@ -73,6 +73,10 @@ return [
 			'driver' => 'eloquent',
 			'model' => App\User::class,
 		],
+		'card_users' => [
+			'driver' => 'eloquent',
+			'model' => App\CardUser::class,
+		],
 		'admins' => [
 			'driver' => 'eloquent',
 			'model' => Admin::class,

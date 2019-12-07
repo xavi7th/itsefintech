@@ -6,6 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class OTP extends Model
 {
-	protected $fillable = [];
+	protected $fillable = ['otp'];
 	protected $table = 'otps';
 }

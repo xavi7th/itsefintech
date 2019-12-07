@@ -3,17 +3,19 @@
 namespace App\Modules\CardUser\Models;
 
 use App\User;
+use App\Modules\CardUser\Models\OTP;
 use Illuminate\Database\Eloquent\Builder;
 
 class CardUser extends User
 {
 	protected $fillable = [
-		'name',
+		'first_name',
+		'last_name',
 		'email',
-		'otp_verified_at',
 		'password',
 		'phone',
 		'user_passport',
+		'bvn'
 	];
 
 	protected $casts = [
@@ -33,6 +35,10 @@ class CardUser extends User
 		return $this->verified_at !== null;
 	}
 
+	public function otp()
+	{
+		return $this->hasOne(OTP::class);
+	}
 	public function transactions()
 	{
 		// return $this->hasMany(Transaction::class, 'user_id');
