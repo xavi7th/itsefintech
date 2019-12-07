@@ -6,6 +6,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
+use App\Modules\CardUser\Models\CardUser;
 
 class OnlyCardUsers
 {
@@ -18,15 +19,9 @@ class OnlyCardUsers
 	 */
 	public function handle(Request $request, Closure $next)
 	{
-
 		if (!CardUser::canAccess()) {
-			Session::flush();
-			Auth::logout();
-
-			if (request()->ajax()) {
-				return response()->json(['status' => 'Unauthorised request'], 423);
-			}
-			return redirect()->route('login')->withErrors('Unauthorised Action');
+			auth()->logout();
+			return response()->json(['status' => 'Forbbiden'], 403);
 		}
 
 		return $next($request);

@@ -4,6 +4,8 @@ namespace App\Modules\CardUser\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Database\Eloquent\Factory;
+use App\Modules\CardUser\Http\Middleware\OnlyCardUsers;
+use App\Modules\CardUser\Http\Middleware\OnlyVerifiedCardUsers;
 
 class CardUserServiceProvider extends ServiceProvider
 {
@@ -21,8 +23,8 @@ class CardUserServiceProvider extends ServiceProvider
 		$this->loadMigrationsFrom(module_path('CardUser', 'Database/Migrations'));
 
 		/**** Register the modules middlewares *****/
-		app()->make('router')->aliasMiddleware('cardusers', OnlyCardUsers::class);
-		app()->make('router')->aliasMiddleware('verified_users', OnlyVerifiedUsers::class);
+		app()->make('router')->aliasMiddleware('card_users', OnlyCardUsers::class);
+		app()->make('router')->aliasMiddleware('verified_card_users', OnlyVerifiedCardUsers::class);
 	}
 
 	/**

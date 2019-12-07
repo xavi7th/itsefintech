@@ -46,28 +46,12 @@ class LoginController extends Controller
 
 		$credentials = request(['email', 'password']);
 
-
 		if (!$token = auth()->guard('card_user')->attempt($credentials)) {
 			return response()->json(['error' => 'Invalid details'], 401);
 		}
 
-
 		return $this->respondWithToken($token);
 
-		// $user =  $this->guard()->attempt(
-		// 	$request->only('email', 'password'),
-		// 	$request->filled('remember')
-		// );
-
-		// Log::critical($user->email . ' logged into his dashboard');
-
-
-		// if (Auth::appuser()->is_verified()) {
-		// 	return response()->json(['status' => true], 202);
-		// } else {
-		// 	Auth::logout();
-		// 	return response()->json(['message' => 'Unverified user'], 416);
-		// }
 	}
 
 	public function refresh(Request $request)

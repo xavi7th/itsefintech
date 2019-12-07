@@ -27,18 +27,20 @@ class CardUser extends User
 
 	static function canAccess()
 	{
-		return parent::isAppUser();
+		return request()->user() instanceof CardUser;
 	}
 
-	public function is_verified()
+	public function is_otp_verified()
 	{
-		return $this->verified_at !== null;
+		return $this->otp_verified_at !== null;
 	}
 
 	public function otp()
 	{
 		return $this->hasOne(OTP::class);
 	}
+
+
 	public function transactions()
 	{
 		// return $this->hasMany(Transaction::class, 'user_id');
