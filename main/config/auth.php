@@ -45,12 +45,16 @@ return [
 			'provider' => 'users',
 		],
 		'admin' => [
-			'driver' => 'session',
+			'driver' => 'jwt',
 			'provider' => 'admins',
+		],
+		'card_user' => [
+			'driver' => 'jwt',
+			'provider' => 'card_users',
 		],
 		'api' => [
 			'driver' => 'jwt',
-			'provider' => 'card_users',
+			'provider' => 'users',
 		],
 	],
 

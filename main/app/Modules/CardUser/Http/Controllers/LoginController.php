@@ -37,7 +37,7 @@ class LoginController extends Controller
 		Route::group(['prefix' => 'auth'], function () {
 			Route::post('login', 'LoginController@login');
 			Route::post('refresh', 'LoginController@refresh');
-			Route::post('logout', 'LoginController@logout')->middleware('auth:api');
+			Route::post('logout', 'LoginController@logout')->middleware('auth:card_user');
 		});
 	}
 
@@ -47,8 +47,8 @@ class LoginController extends Controller
 		$credentials = request(['email', 'password']);
 
 
-		if (!$token = auth()->attempt($credentials)) {
-			return response()->json(['error' => 'Unauthorized'], 401);
+		if (!$token = auth()->guard('card_user')->attempt($credentials)) {
+			return response()->json(['error' => 'Invalid details'], 401);
 		}
 
 
