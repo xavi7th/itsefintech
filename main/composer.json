@@ -15,6 +15,7 @@
         "laravel/tinker": "^1.0",
         "nwidart/laravel-modules": "^6.2",
         "orangehill/iseed": "^2.6",
+        "tymon/jwt-auth": "^1.0.0",
         "watson/rememberable": "^3.2"
     },
     "require-dev": {

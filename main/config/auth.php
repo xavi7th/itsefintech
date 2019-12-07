@@ -1,5 +1,9 @@
 <?php
 
+use App\User;
+use App\Modules\Admin\Models\Admin;
+use App\Modules\CardUser\Models\CardUser;
+
 return [
 
 	/*
@@ -14,7 +18,7 @@ return [
     */
 
 	'defaults' => [
-		'guard' => 'web',
+		'guard' => 'api',
 		'passwords' => 'users',
 	],
 
@@ -45,9 +49,8 @@ return [
 			'provider' => 'admins',
 		],
 		'api' => [
-			'driver' => 'token',
-			'provider' => 'users',
-			'hash' => false,
+			'driver' => 'jwt',
+			'provider' => 'card_users',
 		],
 	],
 
@@ -71,11 +74,11 @@ return [
 	'providers' => [
 		'users' => [
 			'driver' => 'eloquent',
-			'model' => App\User::class,
+			'model' => User::class,
 		],
 		'card_users' => [
 			'driver' => 'eloquent',
-			'model' => App\CardUser::class,
+			'model' => CardUser::class,
 		],
 		'admins' => [
 			'driver' => 'eloquent',

@@ -27,8 +27,9 @@ class CardUserController extends Controller
 		});
 
 		Route::group(['prefix' => 'v1', 'middleware' => 'auth:api'], function () {
-
-			Route::get('/user', 'CardUserController@user');
+			Route::group(['prefix' => 'auth'], function () {
+				Route::get('/user', 'CardUserController@user');
+			});
 		});
 	}
 
@@ -43,6 +44,7 @@ class CardUserController extends Controller
 
 	public function user(Request $request)
 	{
+		return response()->json(auth()->user());
 		return $request->user();
 	}
 }
