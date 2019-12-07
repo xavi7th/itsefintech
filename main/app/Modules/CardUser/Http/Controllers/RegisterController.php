@@ -13,7 +13,8 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Auth\Events\Registered;
 use App\Modules\CardUser\Models\CardUser;
 use Illuminate\Foundation\Auth\RegistersUsers;
-use App\Modules\CardUser\Http\Controllers\RegistrationValidation;
+use App\Modules\CardUser\Http\Requests\RegistrationValidation;
+
 
 class RegisterController extends Controller
 {
@@ -46,7 +47,9 @@ class RegisterController extends Controller
 	 */
 	static function routes()
 	{
-		Route::post('register', 'RegisterController@register');
+		Route::group(['prefix' => 'auth'], function () {
+			Route::post('register', 'RegisterController@register');
+		});
 	}
 
 	/**
@@ -86,7 +89,7 @@ class RegisterController extends Controller
 			'first_name' => $data['first_name'],
 			'last_name' => $data['last_name'],
 			'email' => $data['email'],
-			'password' => $data['password'],
+			'password' => bcrypt($data['password']),
 			'phone' => $data['phone'],
 			'bvn' => $data['bvn']
 		]);

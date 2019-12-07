@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Modules\CardUser\Http\Controllers;
+namespace App\Modules\CardUser\Http\Requests;
 
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Auth;

@@ -23,7 +23,7 @@ $factory->define(CardUser::class, function (Faker $faker) {
 		'last_name' => $faker->lastName,
 		'email' => $faker->unique()->safeEmail,
 		'otp_verified_at' => now(),
-		'password' => 'pass',
+		'password' => bcrypt('pass'),
 		'phone' => $faker->phoneNumber,
 		'user_passport' => '/storage/id_cards/' . $faker->file(public_path('img/'), public_path('storage/card_users/'), false),
 		'remember_token' => Str::random(10),
