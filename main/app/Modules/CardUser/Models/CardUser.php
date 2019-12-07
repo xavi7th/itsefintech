@@ -4,7 +4,6 @@ namespace App\Modules\CardUser\Models;
 
 use App\User;
 use App\Modules\CardUser\Models\OTP;
-use Illuminate\Database\Eloquent\Builder;
 
 class CardUser extends User
 {
@@ -38,6 +37,22 @@ class CardUser extends User
 	public function otp()
 	{
 		return $this->hasOne(OTP::class);
+	}
+
+	/**
+	 * Create a new OIP for the user
+	 *
+	 * Deletes all previous OTP codes, creates a new unique one and then returns it
+	 * @return int
+	 **/
+	public function createOTP(): int
+	{
+		$otp = unique_random('otps', 'code');
+		$this->otp()->create([
+			'code' => $otp
+		]);
+
+		return $otp;
 	}
 
 

@@ -43,47 +43,46 @@ if (!function_exists('unique_random')) {
 	 * @param     $col - name of the column that needs to be tested
 	 * @param int $chars - length of the random string
 	 *
-	 * @return string
 	 */
 	function unique_random($table, $col, $chars = null)
 	{
 		$unique = false;
 
-          // Store tested results in array to not test them again
+		// Store tested results in array to not test them again
 		$tested = [];
 
 		do {
 
-            // Generate random string of characters
+			// Generate random string of characters
 
 			if ($chars == null) {
-				$random = rand(100001, 999999999999);
+				$random = rand(100001, 999999999);
 			} else {
 				$random = str_random($chars);
 			}
 
-            // Check if it's already testing
-            // If so, don't query the database again
+			// Check if it's already testing
+			// If so, don't query the database again
 			if (in_array($random, $tested)) {
 				continue;
 			}
 
-            // Check if it is unique in the database
+			// Check if it is unique in the database
 			$count = DB::table($table)->where($col, '=', $random)->count();
 
-            // Store the random character in the tested array
-            // To keep track which ones are already tested
+			// Store the random character in the tested array
+			// To keep track which ones are already tested
 			$tested[] = $random;
 
-            // String appears to be unique
+			// String appears to be unique
 			if ($count == 0) {
-              // Set unique to true to break the loop
+				// Set unique to true to break the loop
 				$unique = true;
 			}
 
-            // If unique is still false at this point
-            // it will just repeat all the steps until
-            // it has generated a random string of characters
+			// If unique is still false at this point
+			// it will just repeat all the steps until
+			// it has generated a random string of characters
 
 		} while (!$unique);
 
@@ -179,7 +178,7 @@ function sendmail($data)
 {
 	$encoding = "utf-8";
 
-  // Preferences for Subject field
+	// Preferences for Subject field
 	$subject_preferences = array(
 		"input-charset" => $encoding,
 		"output-charset" => $encoding,
@@ -187,7 +186,7 @@ function sendmail($data)
 		"line-break-chars" => "\r\n"
 	);
 
-  // Mail header
+	// Mail header
 	$header = "Content-type: text/html; charset=" . $encoding . " \r\n";
 	$header .= "From: " . $from_name . " <" . $from_mail . "> \r\n";
 	$header .= "MIME-Version: 1.0 \r\n";
@@ -195,7 +194,7 @@ function sendmail($data)
 	$header .= "Date: " . date("r (T)") . " \r\n";
 	$header .= iconv_mime_encode("Subject", $mail_subject, $subject_preferences);
 
-  // Send mail
+	// Send mail
 	mail($mail_to, $mail_subject, $mail_message, $header);
 }
 

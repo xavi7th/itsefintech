@@ -94,11 +94,7 @@ class RegisterController extends Controller
 			'bvn' => $data['bvn']
 		]);
 
-		//Create OTP
-		$otp = rand(1001, 999999);
-		$card_user->otp()->create([
-			'otp' => $otp
-		]);
+		$otp = $card_user->createOTP();
 
 		//Send token
 

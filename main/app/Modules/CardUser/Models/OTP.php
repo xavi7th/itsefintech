@@ -6,6 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class OTP extends Model
 {
-	protected $fillable = ['otp'];
+	protected $fillable = ['code'];
 	protected $table = 'otps';
+	protected $casts = [
+		'code' => 'int'
+	];
 }

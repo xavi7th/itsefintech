@@ -27,8 +27,20 @@ class CardUserController extends Controller
 		});
 
 		Route::group(['prefix' => 'v1'], function () {
-			Route::group(['prefix' => 'auth', 'middleware' => ['auth:card_user','card_users', 'verified_card_users']], function () {
-				Route::get('/user', 'CardUserController@user');
+
+
+
+			Route::group(['prefix' => 'auth', 'middleware' => ['auth:card_user', 'card_users']], function () {
+
+				Route::group(['middleware' => [ 'unverified_card_users']], function () {
+					Route::get('/user/request-otp', 'CardUserController@requestOTP');
+
+					Route::put('/user/verify-otp', 'CardUserController@verifyOTP');
+				});
+
+				Route::group(['middleware' => ['verified_card_users']], function () {
+					Route::get('/user', 'CardUserController@user');
+				});
 			});
 		});
 	}
@@ -46,5 +58,28 @@ class CardUserController extends Controller
 	{
 		return response()->json(auth()->user());
 		// return $request->user();
+	}
+
+	public function requestOTP(Request $request)
+	{
+		/** Delete Previous OTP **/
+		$request->user()->otp()->delete();
+
+		$otp = $request->user()->createOTP();
+
+		// Send otp
+		return response()->json(['message' => 'OTP sent'], 201);
+	}
+
+	public function verifyOTP(Request $request)
+	{
+		if ($request->user()->otp->code !== intval($request->otp)) {
+			return response()->json(['message' => 'Invalid OTP code'], 422);
+		}
+		/** Verify the user **/
+		$request->user()->otp_verified_at = now();
+		$request->user()->save();
+
+		return response()->json(['message' => 'Account verified'], 205);
 	}
 }

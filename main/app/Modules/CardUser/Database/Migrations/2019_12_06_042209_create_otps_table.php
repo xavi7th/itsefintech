@@ -17,7 +17,7 @@ class CreateOTPsTable extends Migration
 			$table->bigIncrements('id');
 			$table->bigInteger('card_user_id')->unsigned();
 			$table->foreign('card_user_id')->references('id')->on('card_users')->onDelete('cascade');
-			$table->integer('otp')->unique();
+			$table->integer('code')->unique();
 
 			$table->timestamps();
 		});

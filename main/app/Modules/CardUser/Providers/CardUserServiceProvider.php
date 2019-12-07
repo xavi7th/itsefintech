@@ -6,6 +6,7 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Database\Eloquent\Factory;
 use App\Modules\CardUser\Http\Middleware\OnlyCardUsers;
 use App\Modules\CardUser\Http\Middleware\OnlyVerifiedCardUsers;
+use App\Modules\CardUser\Http\Middleware\OnlyUnverifiedCardUsers;
 
 class CardUserServiceProvider extends ServiceProvider
 {
@@ -25,6 +26,7 @@ class CardUserServiceProvider extends ServiceProvider
 		/**** Register the modules middlewares *****/
 		app()->make('router')->aliasMiddleware('card_users', OnlyCardUsers::class);
 		app()->make('router')->aliasMiddleware('verified_card_users', OnlyVerifiedCardUsers::class);
+		app()->make('router')->aliasMiddleware('unverified_card_users', OnlyUnverifiedCardUsers::class);
 	}
 
 	/**
