@@ -26,9 +26,9 @@ class Admin extends User
 		return $this->verified_at !== null;
 	}
 
-	public function permitted_api_routes()
+	public function api_routes()
 	{
-		return $this->belongsToMany(ApiRoute::class, 'api_route_permissions', 'user_id')->withTimestamps();
+		return $this->morphToMany(ApiRoute::class, 'user', 'api_routes_permissions', 'user_id');
 	}
 
 	// /**

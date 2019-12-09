@@ -2,7 +2,7 @@
 
 namespace App\Modules\Admin\Models;
 
-use App\User;
+use App\Modules\Admin\Models\Admin;
 use Illuminate\Database\Eloquent\Model;
 
 class ApiRoute extends Model
@@ -11,8 +11,8 @@ class ApiRoute extends Model
 		'path', 'name', 'meta',
 	];
 
-	public function permitted_users()
+	public function admins()
 	{
-		return $this->belongsToMany(User::class, 'api_route_permissions')->withTimestamps();
+		return $this->morphedByMany(Admin::class, 'user');
 	}
 }

@@ -13,14 +13,11 @@ class CreateApiRoutePermissionsTable extends Migration
 	 */
 	public function up()
 	{
-		Schema::create('api_route_permissions', function (Blueprint $table) {
+		Schema::create('api_routes_permissions', function (Blueprint $table) {
 			$table->bigIncrements('id');
 			$table->bigInteger('user_id')->unsigned();
-			$table->foreign('user_id')->references('id')->on('users');
 			$table->bigInteger('api_route_id')->unsigned();
-			$table->foreign('api_route_id')->references('id')->on('api_routes');
-
-			$table->timestamps();
+			$table->string('user_type');
 		});
 	}
 
@@ -31,6 +28,6 @@ class CreateApiRoutePermissionsTable extends Migration
 	 */
 	public function down()
 	{
-		Schema::dropIfExists('api_route_permissions');
+		Schema::dropIfExists('routables');
 	}
 }
