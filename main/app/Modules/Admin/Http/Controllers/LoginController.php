@@ -61,7 +61,6 @@ class LoginController extends Controller
 	 */
 	public function showLoginForm(Request $request)
 	{
-		Log::channel('database')->info('Method Not Allowed Exception', ['$e_obj' => $request->getRequestUri()]);
 		return view('admin::auth');
 	}
 
@@ -113,7 +112,7 @@ class LoginController extends Controller
 	 */
 	protected function authenticated(Request $request, $user)
 	{
-		if (User::isAdmin()) {
+		if (Admin::canAccess()) {
 			if (Auth::admin()->is_verified()) {
 				return response()->json(['status' => true], 202);
 			} else {

@@ -1,4 +1,4 @@
-import '@basicsite-assets/js/bootstrap'
+import '@admin-assets/js/bootstrap'
 import Vue from 'vue'
 import VeeValidate from 'vee-validate'
 import App from './AdminAppComponent'

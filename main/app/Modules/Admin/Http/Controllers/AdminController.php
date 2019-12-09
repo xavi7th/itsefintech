@@ -36,7 +36,7 @@ class AdminController extends Controller
 			Route::group(['prefix' => 'api'], function () { });
 
 			Route::get('/', function () {
-				return ['auth' => true];
+				return view('admin::index');
 			})->name('admin.dashboard');
 		});
 	}

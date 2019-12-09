@@ -1,5 +1,5 @@
 {
-    "Admin": false,
+    "Admin": true,
     "BasicSite": true,
     "AppUser": false,
     "CardUser": true

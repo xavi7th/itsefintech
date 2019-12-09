@@ -3,6 +3,7 @@
 namespace App\Modules\Admin\Models;
 
 use App\User;
+use Illuminate\Support\Facades\Auth;
 use App\Modules\Admin\Models\ApiRoute;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -17,22 +18,12 @@ class Admin extends User
 
 	static function canAccess()
 	{
-		return parent::isAdmin();
+		return Auth::guard('admin')->check();
 	}
 
 	public function is_verified()
 	{
 		return $this->verified_at !== null;
-	}
-
-	/**
-	 * Check if the currently authenticated user is an admin
-	 *
-	 * @return void
-	 */
-	protected static function isAdmin()
-	{
-		return Auth::admin() ? true : false;
 	}
 
 	public function permitted_api_routes()

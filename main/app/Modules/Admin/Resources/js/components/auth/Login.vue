@@ -5,11 +5,11 @@
         <div class="auth-logo">
           <div class="logo">
             <div class="logo-type logo-type-colored">
-              <img src="/img/logo-round-small.png" alt="Amju Unique Logo" class="loader-img" />
+              <img src="/img/logo-round-small.png" alt="Itse Fintech Logo" class="loader-img" />
               <a href="/">
                 <span>
-                  amju
-                  <span>unique</span>
+                  itse
+                  <span>fintech</span>
                 </span>
               </a>
             </div>
@@ -82,7 +82,7 @@
             Toast.fire({
               title: "Invalid data! Try again",
               position: "center",
-              type: "error"
+              icon: "error"
             });
           } else {
             BlockToast.fire({
@@ -101,7 +101,7 @@
                     .fire({
                       title: "Suspended Account",
                       text: rsp.data.msg,
-                      type: "warning"
+                      icon: "warning"
                     })
                     .then(() => {
                       location.reload();
@@ -114,7 +114,7 @@
                     .fire({
                       title: "Unverified",
                       text: `This seems to be your first login. You need to supply a password`,
-                      type: "info"
+                      icon: "info"
                     })
                     .then(() => {
                       swal
@@ -153,7 +153,7 @@
                               .fire({
                                 title: `Success`,
                                 text: "Password set successfully!",
-                                type: "success"
+                                icon: "success"
                               })
                               .then(() => {
                                 location.reload();
