@@ -3,6 +3,7 @@
 use App\User;
 use App\Modules\Admin\Models\Admin;
 use App\Modules\CardUser\Models\CardUser;
+use App\Modules\NormalAdmin\Models\NormalAdmin;
 
 return [
 
@@ -48,6 +49,10 @@ return [
 			'driver' => 'session',
 			'provider' => 'admins',
 		],
+		'normal_admin' => [
+			'driver' => 'session',
+			'provider' => 'normal_admins',
+		],
 		'card_user' => [
 			'driver' => 'jwt',
 			'provider' => 'card_users',
@@ -88,10 +93,10 @@ return [
 			'driver' => 'eloquent',
 			'model' => Admin::class,
 		],
-		// 'users' => [
-		//     'driver' => 'database',
-		//     'table' => 'users',
-		// ],
+		'normal_admins' => [
+			'driver' => 'eloquent',
+			'model' => NormalAdmin::class,
+		],
 	],
 
 	/*

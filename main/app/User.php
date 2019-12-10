@@ -51,6 +51,8 @@ class User extends Authenticatable implements JWTSubject
 	{
 		if (Auth::admin()) {
 			return 'admin.dashboard';
+		} else if (Auth::normalAdmin()) {
+			return 'normaladmin.dashboard';
 		} else {
 			return 'home';
 		}
