@@ -9,7 +9,15 @@ Vue.use( Router )
 
 const APP_NAME = 'Itse FinTech Admin'
 
+const view = function ( name ) {
+    return function ( resolve ) {
+        require( [ '@admin-components/' + name ], resolve )
+    }
+}
+
+
 const processRoutes = async ( route ) => {
+
     try {
         const sar = axios.post( '/admin-panel/api/test-route-permission', {
             route
@@ -43,16 +51,22 @@ const getRoutes = async () => {
         if ( route.children ) {
             let childRoutes = [];
             for ( const subRoute of route.children ) {
-                const result = await processRoutes( subRoute.name );
-                if ( result === true ) childRoutes.push( subRoute )
+                if ( subRoute.meta.skip ) {} else {
+                    const result = await processRoutes( subRoute.name );
+                    if ( result === true ) childRoutes.push( subRoute )
+                }
             }
             if ( childRoutes.length ) {
                 route.children = childRoutes;
                 permittedRoutes.push( route )
             }
         } else {
-            const result = await processRoutes( route.name );
-            if ( result === true ) permittedRoutes.push( route )
+            if ( route.meta.skip ) {} else {
+
+
+                const result = await processRoutes( route.name );
+                if ( result === true ) permittedRoutes.push( route )
+            }
         }
     }
     return permittedRoutes;

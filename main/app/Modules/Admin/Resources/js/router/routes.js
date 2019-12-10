@@ -20,56 +20,7 @@ function normalAdminView( name ) {
 
 const APP_NAME = 'Itse FinTech Admin'
 
-export const allRoutes = [ {
-        path: '/manage-ui',
-        component: adminView( 'EmptyComponent' ),
-        meta: {
-            iconClass: 'home',
-            menuName: 'Manage UI'
-        },
-        children: [ {
-                path: '/manage-ui/testimonials',
-                component: adminView( 'ui/ManageTestimonials' ),
-                name: 'admin.ui.testimonials',
-                meta: {
-                    title: APP_NAME + ' | Manage Testimonials',
-                    iconClass: 'home',
-                    menuName: 'Manage Testimonials'
-                },
-            },
-            {
-                path: '/manage-ui/faqs',
-                component: adminView( 'dashboard/ManageFAQs' ),
-                name: 'admin.ui.faqs',
-                meta: {
-                    title: APP_NAME + ' | Manage FAQs',
-                    iconClass: 'home',
-                    menuName: 'Manage FAQs'
-                },
-            },
-            {
-                path: '/manage-ui/slides',
-                component: adminView( 'dashboard/ManageSlides' ),
-                name: 'admin.ui.slides',
-                meta: {
-                    title: APP_NAME + ' | Manage Slideshow',
-                    iconClass: 'home',
-                    menuName: 'Manage Slideshow'
-                },
-            },
-            {
-                path: '/manage-ui/highlights', //the images under the about us video
-                component: adminView( 'dashboard/ManageHighlights' ),
-                name: 'admin.ui.highlights',
-                meta: {
-                    title: APP_NAME + ' | Manage Highlights',
-                    iconClass: 'home',
-                    menuName: 'Manage Highlights'
-                },
-            },
-        ],
-
-    },
+export const allRoutes = [
 
     {
         path: '/logs',
@@ -92,14 +43,14 @@ export const allRoutes = [ {
         } ]
     },
     {
-        path: '/admins',
+        path: '/users',
         component: adminView( 'EmptyComponent' ),
         meta: {
             iconClass: 'home',
             menuName: 'Manage Admins'
         },
         children: [ {
-                path: '/admins',
+                path: '/users/admins',
                 component: adminView( 'admins/ManageAdmins' ),
                 name: 'admin.admins.view',
                 meta: {
@@ -109,17 +60,15 @@ export const allRoutes = [ {
                 },
             },
             {
-                path: '/admins/:id/route-permissions',
-                component: adminView( 'dashboard/ManageAdmins' ),
-                name: 'admin.admins.permissions',
-                props: true,
+                path: 'normal-admins',
+                component: adminView( 'admins/ManageNormalAdmins' ),
+                name: 'admin.normal-admins.view',
                 meta: {
-                    title: APP_NAME + ' | View Admin Permissions',
-                    iconClass: 'home',
-                    menuName: 'View Admin Permission',
-                    skip: true
+                    title: APP_NAME + ' | View Normal Admins',
+                    iconClass: 'user',
+                    menuName: 'View Normal Admins'
                 },
-            }
+            },
         ]
     },
 

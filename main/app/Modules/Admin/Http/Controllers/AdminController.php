@@ -4,11 +4,12 @@ namespace App\Modules\Admin\Http\Controllers;
 
 use Illuminate\Support\Arr;
 use Illuminate\Http\Response;
-use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
 use App\Modules\Admin\Models\Admin;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Route;
 use App\Modules\Admin\Models\ApiRoute;
+use App\Modules\NormalAdmin\Models\NormalAdmin;
 use App\Modules\Admin\Transformers\AdminUserTransformer;
 
 class AdminController extends Controller
@@ -70,7 +71,6 @@ class AdminController extends Controller
 					});
 
 					return ['permitted_routes' => $permitted_routes, 'all_routes' => $all_routes];
-					return (new AdminUserTransformer)->collectionTransformer(Admin::all(), 'transformForAdminViewAdmins');
 				});
 
 				Route::put('admin/{admin}/permissions', function (Admin $admin) {
@@ -98,10 +98,74 @@ class AdminController extends Controller
 					$admin->forceDelete();
 					return response()->json(['rsp' => true], 204);
 				});
+
+
+				Route::get('normal-admins', function () {
+					return (new AdminUserTransformer)->collectionTransformer(NormalAdmin::withTrashed()->get(), 'transformForAdminViewNormalAdmins');
+				});
+
+				Route::post('normal-admin/create', function () {
+					// return request()->all();
+					try {
+						DB::beginTransaction();
+						$admin = NormalAdmin::create(Arr::collapse([
+							request()->all(),
+							[
+								'password' => bcrypt('itsefintech@admin'),
+							]
+						]));
+
+						DB::commit();
+						return response()->json(['rsp' => $admin], 201);
+					} catch (\Throwable $e) {
+						if (app()->environment() == 'local') {
+							return response()->json(['error' => $e->getMessage()], 500);
+						}
+						return response()->json(['rsp' => 'error occurred'], 500);
+					}
+				});
+
+				Route::get('normal-admin/{admin}/permissions', function (NormalAdmin $admin) {
+					$permitted_routes = $admin->api_routes()->get(['api_routes.id'])->map(function ($item, $key) {
+						return $item->id;
+					});
+
+					$all_routes = ApiRoute::get(['id', 'description'])->map(function ($item, $key) {
+						return ['id' => $item->id, 'description' => $item->description];
+					});
+
+					return ['permitted_routes' => $permitted_routes, 'all_routes' => $all_routes];
+				});
+
+				Route::put('normal-admin/{admin}/permissions', function (NormalAdmin $admin) {
+					$admin->api_routes()->sync(request('permitted_routes'));
+					return response()->json(['rsp' => true], 204);
+				});
+
+				Route::put('normal-admin/{admin}/suspend', function (NormalAdmin $admin) {
+					if ($admin->id === auth()->id()) {
+						return response()->json(['rsp' => false], 403);
+					}
+					$admin->delete();
+					return response()->json(['rsp' => true], 204);
+				});
+
+				Route::put('normal-admin/{id}/restore', function ($id) {
+					NormalAdmin::withTrashed()->find($id)->restore();
+					return response()->json(['rsp' => true], 204);
+				});
+
+				Route::delete('normal-admin/{admin}/delete', function (NormalAdmin $admin) {
+					if ($admin->id === auth()->id()) {
+						return response()->json(['rsp' => false], 403);
+					}
+					$admin->forceDelete();
+					return response()->json(['rsp' => true], 204);
+				});
 			});
 
 			Route::get('/{subcat?}', function () {
-				// auth()->user()->api_routes()->sync(12);
+				// auth()->user()->api_routes()->sync(3);
 				return view('admin::index');
 			})->name('admin.dashboard')->where('subcat', '^((?!(api)).)*');
 		});

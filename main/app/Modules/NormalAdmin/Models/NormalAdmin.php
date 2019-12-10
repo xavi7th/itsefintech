@@ -39,7 +39,7 @@ class NormalAdmin extends User
 	protected static function boot()
 	{
 		parent::boot();
-		static::deleting(function (Admin $user) {
+		static::deleting(function (NormalAdmin $user) {
 			if ($user->isForceDeleting()) {
 				$user->api_routes()->detach();
 			}
