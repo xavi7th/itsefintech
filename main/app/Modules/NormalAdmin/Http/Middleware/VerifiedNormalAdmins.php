@@ -4,6 +4,7 @@ namespace App\Modules\Admin\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use App\Modules\NormalAdmin\Models\NormalAdmin;
 
 class VerifiedNormalAdmins
 {

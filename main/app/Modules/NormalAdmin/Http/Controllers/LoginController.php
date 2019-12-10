@@ -48,7 +48,7 @@ class LoginController extends Controller
 	static function routes()
 	{
 		Route::get('login', 'LoginController@showLoginForm')->name('admin.login');
-		Route::post('login', 'LoginController@login')->middleware('throttle:5,1')->middleware('verified');
+		Route::post('login', 'LoginController@login')->middleware('throttle:5,1')->middleware('verified_normal_admins');
 		Route::post('first-time', 'LoginController@resetPassword')->middleware('throttle:5,1');
 		Route::post('logout', 'LoginController@logout')->name('admin.logout');
 	}

@@ -3,7 +3,7 @@
     "alias": "normaladmin",
     "description": "",
     "keywords": [],
-    "order": 0,
+    "order": 3,
     "providers": [
         "App\\Modules\\NormalAdmin\\Providers\\NormalAdminServiceProvider"
     ],
