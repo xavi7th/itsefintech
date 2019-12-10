@@ -1,0 +1,25 @@
+{
+    "name": "minds&machines/normaladmin",
+    "description": "",
+    "authors": [
+        {
+            "name": "Leinad Ose",
+            "email": "xavi7th@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [
+                "App\\Modules\\NormalAdmin\\Providers\\NormalAdminServiceProvider"
+            ],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\Modules\\NormalAdmin\\": ""
+        }
+    }
+}

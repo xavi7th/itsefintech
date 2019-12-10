@@ -2,5 +2,6 @@
     "Admin": true,
     "BasicSite": true,
     "AppUser": false,
-    "CardUser": true
+    "CardUser": true,
+    "NormalAdmin": true
 }

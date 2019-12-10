@@ -1,0 +1,13 @@
+{
+    "name": "NormalAdmin",
+    "alias": "normaladmin",
+    "description": "",
+    "keywords": [],
+    "order": 0,
+    "providers": [
+        "App\\Modules\\NormalAdmin\\Providers\\NormalAdminServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}
