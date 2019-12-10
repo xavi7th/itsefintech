@@ -1,8 +1,9 @@
 import Vue from 'vue'
 import Router from 'vue-router'
+
 import {
     allRoutes,
-    authRoutes
+    normalAdminAuthRoutes
 } from "@admin-assets/js/router/routes";
 
 Vue.use( Router )
@@ -11,7 +12,7 @@ const APP_NAME = 'Itse FinTech Admin'
 
 const processRoutes = async ( route ) => {
     try {
-        const sar = axios.post( '/admin-panel/api/test-route-permission', {
+        const sar = axios.post( '/backend/api/test-route-permission', {
             route
         } )
         let pp = await sar;
@@ -23,8 +24,8 @@ const processRoutes = async ( route ) => {
 const getRoutes = async () => {
     let permittedRoutes = [ {
             path: '/',
-            component: view( 'dashboard/AdminDashboard' ),
-            name: 'admin.root',
+            component: view( 'dashboard/NormalAdminDashboard' ),
+            name: 'normalAdmin.root',
             meta: {
                 title: APP_NAME + ' | Dashboard',
                 iconClass: 'home',
@@ -33,9 +34,9 @@ const getRoutes = async () => {
         },
         {
             path: '*',
-            name: 'admin.catch-all',
+            name: 'normalAdmin.catch-all',
             redirect: {
-                name: 'admin.root'
+                name: 'normalAdmin.root'
             }
         }
     ];
@@ -60,7 +61,7 @@ const getRoutes = async () => {
 
 export const routeGenerator = async () => new Router( {
     mode: 'history',
-    base: '/admin-panel/',
+    base: '/backend/',
     scrollBehavior( to, from, savedPosition ) {
         if ( savedPosition ) {
             return savedPosition
@@ -76,6 +77,6 @@ export const routeGenerator = async () => new Router( {
 
 export const authRouter = new Router( {
     mode: 'history',
-    base: '/admin-panel/',
-    routes: authRoutes,
+    base: '/backend/',
+    routes: normalAdminAuthRoutes,
 } )

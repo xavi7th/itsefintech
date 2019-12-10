@@ -1,4 +1,4 @@
-@extends('normaladmin::layouts.master')
+@extends('normaladmin::layouts.auth-master')
 @section('contents')
 @stop
 @section('customCSS')
