@@ -28,12 +28,12 @@
                 <td>{{ user.id }}</td>
                 <td>{{ user.full_name }}</td>
                 <td>{{ user.phone }}</td>
-                <td>{{ user.is_verified ? 'Account Verified' : 'Unverified Account' }}</td>
+                <td>{{ user.is_suspended ? 'Suspended Account' : user.is_verified ? 'Account Verified' : 'Unverified Account' }}</td>
                 <td>
                   <div
                     class="badge badge-success badge-shadow pointer"
                     data-toggle="modal"
-                    data-target="#modal-right"
+                    data-target="#modal-details"
                     @click="showModal(user)"
                   >View Full Details</div>
                   <div
@@ -47,7 +47,7 @@
             </tbody>
           </table>
 
-          <div class="modal modal-left fade" id="modal-right" tabindex="-1">
+          <div class="modal modal-left fade" id="modal-details" tabindex="-1">
             <div class="modal-dialog">
               <div class="modal-content">
                 <div class="modal-header">
@@ -62,26 +62,24 @@
                       <div class="card-body py-0">
                         <div class="card-row">
                           <div class="table-responsive">
-                            <!-- <div class="flex j-c-between bd bg-light py-30 px-30">
-                                <div class="flex-sh-0 ln-18">
-                                  <div class="fs-16 fw-500 text-success">122 Sales</div>
-                                  <span class="fs-12 text-light">
-                                    <i class="far fa-clock"></i> 24 hours
-                                  </span>
-                                </div>
-                                <div class="flex-sh-0 ln-18">
-                                  <div class="fs-16 fw-500 text-danger">3 Problem</div>
-                                  <span class="fs-12 text-light">
-                                    <i class="far fa-clock"></i> 24 hours
-                                  </span>
-                                </div>
-                                <div class="flex-sh-0 ln-18">
-                                  <div class="fs-16 fw-500 text-warning">14 Waiting</div>
-                                  <span class="fs-12 text-light">
-                                    <i class="far fa-clock"></i> 24 hours
-                                  </span>
-                                </div>
-                            </div>-->
+                            <div class="flex j-c-between bd bg-light py-30 px-30">
+                              <div class="flex-sh-0 ln-18">
+                                <div class="fs-16 fw-500 text-success">Agent</div>
+                                <span class="fs-12 text-light">User Role</span>
+                              </div>
+                              <!-- <div class="flex-sh-0 ln-18">
+                                <div class="fs-16 fw-500 text-danger">3 Problem</div>
+                                <span class="fs-12 text-light">
+                                  <i class="far fa-clock"></i> 24 hours
+                                </span>
+                              </div>
+                              <div class="flex-sh-0 ln-18">
+                                <div class="fs-16 fw-500 text-warning">14 Waiting</div>
+                                <span class="fs-12 text-light">
+                                  <i class="far fa-clock"></i> 24 hours
+                                </span>
+                              </div>-->
+                            </div>
                             <table class="table table-striped">
                               <thead>
                                 <tr>
@@ -113,7 +111,18 @@
                     class="btn btn-bold btn-pure btn-secondary"
                     data-dismiss="modal"
                   >Close</button>
-                  <!-- <button type="button" class="btn btn-bold btn-pure btn-primary">Save changes</button> -->
+                  <button
+                    type="button"
+                    class="btn btn-bold btn-pure btn-warning"
+                    @click="restoreAdmin"
+                    v-if="userDetails.is_suspended"
+                  >Restore Account</button>
+                  <button
+                    type="button"
+                    class="btn btn-bold btn-pure btn-danger"
+                    @click="suspendAdmin"
+                    v-else
+                  >Suspend Account</button>
                 </div>
               </div>
             </div>
@@ -281,7 +290,10 @@
   import {
     adminViewAdmins,
     adminAdminPermissions,
-    adminCreateAdmin
+    adminCreateAdmin,
+    adminDeleteAdmin,
+    adminRestoreAdmin,
+    adminSuspendAdmin
   } from "@admin-assets/js/config";
   import PreLoader from "@admin-components/misc/PageLoader";
   export default {
@@ -376,6 +388,87 @@
             });
           });
       },
+      deleteAdmin() {
+        this.sectionLoading = true;
+        BlockToast.fire({
+          text: "Deleting admin account ..."
+        });
+        axios.delete(adminDeleteAdmin(this.userDetails.id)).then(({ status }) => {
+          if (status === 204) {
+            Toast.fire({
+              title: "Success",
+              text: "User account deleted",
+              position: "center"
+            });
+          } else {
+            Toast.fire({
+              title: "Failed",
+              text: "Something wrong happend",
+              position: "center"
+            });
+          }
+
+          this.$nextTick(() => {
+            $(() => {
+              this.sectionLoading = false;
+            });
+          });
+        });
+      },
+      suspendAdmin() {
+        this.sectionLoading = true;
+        BlockToast.fire({
+          text: "suspending admin account ..."
+        });
+        axios.put(adminSuspendAdmin(this.userDetails.id)).then(({ status }) => {
+          if (status === 204) {
+            Toast.fire({
+              title: "Success",
+              text: "User account suspended",
+              position: "center"
+            });
+          } else {
+            Toast.fire({
+              title: "Failed",
+              text: "Something wrong happend",
+              position: "center"
+            });
+          }
+
+          this.$nextTick(() => {
+            $(() => {
+              this.sectionLoading = false;
+            });
+          });
+        });
+      },
+      restoreAdmin() {
+        this.sectionLoading = true;
+        BlockToast.fire({
+          text: "restore admin account ..."
+        });
+        axios.put(adminRestoreAdmin(this.userDetails.id)).then(({ status }) => {
+          if (status === 204) {
+            Toast.fire({
+              title: "Success",
+              text: "User account restored",
+              position: "center"
+            });
+          } else {
+            Toast.fire({
+              title: "Failed",
+              text: "Something wrong happend",
+              position: "center"
+            });
+          }
+
+          this.$nextTick(() => {
+            $(() => {
+              this.sectionLoading = false;
+            });
+          });
+        });
+      },
       createAdmin() {
         this.$validator.validateAll().then(result => {
           if (!result) {
@@ -422,7 +515,8 @@
 </script>
 
 <style lang="scss" scoped>
-  .modal-right {
+  .modal-right,
+  .modal-left {
     .modal-dialog {
       min-width: 35%;
 

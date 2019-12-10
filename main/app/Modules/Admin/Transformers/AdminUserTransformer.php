@@ -87,6 +87,7 @@ class AdminUserTransformer
 			'address' => (string)$user->address,
 			'dob' => (string)$user->dob,
 			'is_verified' => (boolean)$user->is_verified(),
+			'is_suspended' => (boolean)$user->deleted_at
 		];
 	}
 }

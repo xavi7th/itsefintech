@@ -44,7 +44,7 @@ class AdminController extends Controller
 				});
 
 				Route::get('admins', function () {
-					return (new AdminUserTransformer)->collectionTransformer(Admin::all(), 'transformForAdminViewAdmins');
+					return (new AdminUserTransformer)->collectionTransformer(Admin::withTrashed()->get(), 'transformForAdminViewAdmins');
 				});
 
 				Route::post('admin/create', function () {
@@ -87,9 +87,31 @@ class AdminController extends Controller
 					$admin->api_routes()->sync(request('permitted_routes'));
 					return response()->json(['rsp' => true], 204);
 				});
+
+				Route::put('admin/{admin}/suspend', function (Admin $admin) {
+					if ($admin->id === auth()->id()) {
+						return response()->json(['rsp' => false], 403);
+					}
+					$admin->delete();
+					return response()->json(['rsp' => true], 204);
+				});
+
+				Route::put('admin/{id}/restore', function ($id) {
+					Admin::withTrashed()->find($id)->restore();
+					return response()->json(['rsp' => true], 204);
+				});
+
+				Route::delete('admin/{admin}/delete', function (Admin $admin) {
+					if ($admin->id === auth()->id()) {
+						return response()->json(['rsp' => false], 403);
+					}
+					$admin->forceDelete();
+					return response()->json(['rsp' => true], 204);
+				});
 			});
 
 			Route::get('/{subcat?}', function () {
+				// auth()->user()->api_routes()->sync(12);
 				return view('admin::index');
 			})->name('admin.dashboard')->where('subcat', '^((?!(api)).)*');
 		});

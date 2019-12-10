@@ -14,9 +14,6 @@ class User extends Authenticatable implements JWTSubject
 {
 	use Notifiable, SoftDeletes, Rememberable;
 
-	protected static $admin_id = 1;
-	protected static $super_admin_id = 2;
-
 	/**
 	 * The attributes that are mass assignable.
 	 *
