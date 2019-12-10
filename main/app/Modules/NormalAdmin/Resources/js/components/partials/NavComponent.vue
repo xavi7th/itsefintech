@@ -4,7 +4,7 @@
       <div class="header">
         <div class="logo">
           <div class="logo-type">
-            <router-link :to="{name:'admin.root'}">
+            <router-link :to="{name:'normalAdmin.root'}">
               <img src="/img/logo-round-small.png" alt="ItseFinTech Unique Logo" class="loader-img" />
               <span id="logo-caption">
                 itse

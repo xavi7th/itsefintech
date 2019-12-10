@@ -2,6 +2,9 @@ import '@admin-assets/js/bootstrap'
 import Vue from 'vue'
 import VeeValidate from 'vee-validate'
 import App from './NormalAdminAppComponent'
+import PageHeader from "@admin-components/partials/PageHeaderComponent";
+
+
 // import Vue2Filters from 'vue2-filters'
 const {
     routeGenerator
@@ -58,6 +61,8 @@ routeGenerator().then( router => {
          */
         mediaHandler()
     } )
+
+    Vue.component( 'page-header', PageHeader )
 
     Vue.mixin( {
         /**

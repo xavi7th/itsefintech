@@ -11,7 +11,7 @@
 
 <script>
   export default {
-    name: "AdminDashboard",
+    name: "NormalAdminDashboard",
     mounted() {
       this.$emit("page-loaded");
     }

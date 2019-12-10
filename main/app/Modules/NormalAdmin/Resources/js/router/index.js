@@ -10,6 +10,16 @@ Vue.use( Router )
 
 const APP_NAME = 'Itse FinTech Admin'
 
+/**
+ * Asynchronously load view (Webpack Lazy loading compatible)
+ * @param  {string}   name     the filename (basename) of the view to load.
+ */
+function view( name ) {
+    return function ( resolve ) {
+        require( [ '@normalAdmin-components/' + name ], resolve )
+    }
+}
+
 const processRoutes = async ( route ) => {
     try {
         const sar = axios.post( '/backend/api/test-route-permission', {

@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Route;
+use App\Modules\Admin\Models\ApiRoute;
 use App\Modules\NormalAdmin\Models\NormalAdmin;
 use App\Modules\NormalAdmin\Http\Controllers\LoginController;
 
@@ -35,7 +36,8 @@ class NormalAdminController extends Controller
 				});
 
 				Route::get('/{subcat?}', function () {
-					// auth()->user()->api_routes()->sync(12);
+					// auth()->logout();
+					// auth()->user()->api_routes()->sync([12, 2, 3, 4, 6]);
 					return view('normaladmin::index');
 				})->name('normaladmin.dashboard')->where('subcat', '^((?!(api)).)*');
 			});
