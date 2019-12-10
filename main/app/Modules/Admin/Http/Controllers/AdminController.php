@@ -37,10 +37,7 @@ class AdminController extends Controller
 				Route::post('test-route-permission', function () {
 					$api_route = ApiRoute::where('name', request('route'))->first();
 					if ($api_route) {
-						if (Auth::admin()->role_id === 2) {
-							return ['rsp' => true];
-						}
-						return ['rsp'  => $api_route->permitted_users()->where('user_id', auth()->id())->exists()];
+						return ['rsp'  => $api_route->admins()->where('user_id', auth()->id())->exists()];
 					} else {
 						return response()->json(['rsp' => false], 410);
 					}
@@ -57,8 +54,7 @@ class AdminController extends Controller
 						$admin = Admin::create(Arr::collapse([
 							request()->all(),
 							[
-								'password' => bcrypt('amju@admin'),
-								'role_id' => Admin::getAdminId()
+								'password' => bcrypt('itsefintech@admin'),
 							]
 						]));
 						//Give him access to dashboard
@@ -75,7 +71,7 @@ class AdminController extends Controller
 				});
 
 				Route::get('admin/{admin}/permissions', function (Admin $admin) {
-					$permitted_routes = $admin->permitted_api_routes()->get(['api_routes.id'])->map(function ($item, $key) {
+					$permitted_routes = $admin->api_routes()->get(['api_routes.id'])->map(function ($item, $key) {
 						return $item->id;
 					});
 
@@ -88,16 +84,14 @@ class AdminController extends Controller
 				});
 
 				Route::put('admin/{admin}/permissions', function (Admin $admin) {
-					$admin->permitted_api_routes()->sync(request('permitted_routes'));
+					$admin->api_routes()->sync(request('permitted_routes'));
 					return response()->json(['rsp' => true], 204);
 				});
 			});
 
-			Route::get('/', function () {
-				// auth('admin')->user()->api_routes()->sync([1, 2, 3, 4, 5, 6, 7, 8]);
-				// dd(auth('admin')->user()->api_routes);
+			Route::get('/{subcat?}', function () {
 				return view('admin::index');
-			})->name('admin.dashboard');
+			})->name('admin.dashboard')->where('subcat', '^((?!(api)).)*');
 		});
 	}
 }

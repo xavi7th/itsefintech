@@ -382,7 +382,7 @@
             Toast.fire({
               title: "Invalid data! Try again",
               position: "center",
-              type: "error"
+              icon: "error"
             });
           } else {
             BlockToast.fire({
@@ -400,7 +400,7 @@
                   Toast.fire({
                     title: "Created",
                     text: `They will be required to set a password om their first login`,
-                    type: "success",
+                    icon: "success",
                     position: "center"
                   });
                 }
@@ -410,7 +410,7 @@
                   swal.fire({
                     title: "Error",
                     text: `Something went wrong on server. Creation not successful.`,
-                    type: "error"
+                    icon: "error"
                   });
                 }
               });

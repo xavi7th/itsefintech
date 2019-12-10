@@ -13,10 +13,10 @@ function view( name ) {
 
 Vue.use( Router )
 
-const APP_NAME = 'Amju Unique Admin'
+const APP_NAME = 'Itse FinTech Admin'
 
 const allRoutes = [ {
-        path: 'admin.ui',
+        path: '/manage-ui',
         component: view( 'EmptyComponent' ),
         meta: {
             iconClass: 'home',
@@ -65,73 +65,9 @@ const allRoutes = [ {
         ],
 
     },
-    {
-        path: 'admin.media',
-        component: view( 'EmptyComponent' ),
-        meta: {
-            iconClass: 'home',
-            menuName: 'Manage Media'
-        },
-        children: [ {
-            path: '/manage-media/video',
-            component: view( 'dashboard/ManageVideos' ),
-            name: 'admin.media.video',
-            meta: {
-                title: APP_NAME + ' | Manage Videos',
-                iconClass: 'home',
-                menuName: 'Manage Videos'
-            },
-        }, {
-            path: '/manage-media/news',
-            component: view( 'dashboard/ManageNews' ),
-            name: 'admin.media.news',
-            meta: {
-                title: APP_NAME + ' | Manage News',
-                iconClass: 'home',
-                menuName: 'Manage News'
-            },
-        }, {
-            path: '/manage-media/gallery',
-            component: view( 'dashboard/ManageGallery' ),
-            name: 'admin.media.gallery',
-            meta: {
-                title: APP_NAME + ' | Manage Gallery',
-                iconClass: 'home',
-                menuName: 'Manage Gallery'
-            },
-        }, ]
-    },
-    {
-        path: 'admin.account',
-        component: view( 'EmptyComponent' ),
-        meta: {
-            iconClass: 'home',
-            menuName: 'Manage Accounts'
-        },
-        children: [ {
-            path: '/account/requests',
-            component: view( 'dashboard/AccountRequests' ),
-            name: 'admin.account.requests',
-            meta: {
-                title: APP_NAME + ' | New Account Requests',
-                iconClass: 'home',
-                menuName: 'New Account Requests'
-            },
-        }, ]
-    },
 
     {
-        path: '/vacancies',
-        component: view( 'dashboard/ManageVacancies' ),
-        name: 'admin.vacancies',
-        meta: {
-            title: APP_NAME + ' | Vacancies',
-            iconClass: 'home',
-            menuName: 'Vacancies'
-        },
-    },
-    {
-        path: 'admin.logs',
+        path: '/logs',
         component: {
             render: h => h( 'router-view' )
         },
@@ -151,7 +87,7 @@ const allRoutes = [ {
         } ]
     },
     {
-        path: 'admin.admins',
+        path: '/admins',
         component: view( 'EmptyComponent' ),
         meta: {
             iconClass: 'home',

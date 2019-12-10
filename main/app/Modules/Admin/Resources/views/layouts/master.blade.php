@@ -86,7 +86,7 @@
         <div class="preloader">
             <div class="preloader-body">
                 <p>
-                    <img src="/img/logo-round-small.png" alt="Amju Unique Logo" class="loader-img" />
+                    <img src="/img/logo-round-small.png" alt="Itse FinTech Logo" class="loader-img" />
                     <span>Please wait. Preparing your dashboard ...</span>
                 </p>
                 <p></p>

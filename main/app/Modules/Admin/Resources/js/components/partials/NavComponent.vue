@@ -5,10 +5,10 @@
         <div class="logo">
           <div class="logo-type">
             <router-link :to="{name:'admin.root'}">
-              <img src="/img/logo-round-small.png" alt="Amju Unique Logo" class="loader-img" />
+              <img src="/img/logo-round-small.png" alt="ItseFinTech Unique Logo" class="loader-img" />
               <span id="logo-caption">
-                amju
-                <span>unique</span>
+                itse
+                <span>fintech</span>
               </span>
             </router-link>
           </div>
@@ -49,7 +49,7 @@
   export default {
     name: "AdminNav",
     mounted() {
-      this.$loadScript("/js/dashboard-main.js");
+      this.$loadScript("/js/admin-main.js");
       setTimeout(() => {
         $(".menu .nav-link").click(e => {
           $(".header-btn.closed").removeClass("closed");

@@ -13,6 +13,6 @@ class ApiRoute extends Model
 
 	public function admins()
 	{
-		return $this->morphedByMany(Admin::class, 'user');
+		return $this->morphedByMany(Admin::class, 'user', 'api_routes_permissions', 'api_route_id');
 	}
 }

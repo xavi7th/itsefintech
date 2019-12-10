@@ -1,5 +1,5 @@
 export const CONSTANTS = {
-	APP_NAME: 'Amju Unique MFB',
+    APP_NAME: 'Itse FinTech',
 }
 
 const apiBaseUrl = '/admin-panel/api/'
