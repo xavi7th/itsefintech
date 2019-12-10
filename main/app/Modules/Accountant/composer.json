@@ -1,0 +1,25 @@
+{
+    "name": "minds&machines/accountant",
+    "description": "",
+    "authors": [
+        {
+            "name": "Leinad Ose",
+            "email": "xavi7th@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [
+                "App\\Modules\\Accountant\\Providers\\AccountantServiceProvider"
+            ],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\Modules\\Accountant\\": ""
+        }
+    }
+}

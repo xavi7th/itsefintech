@@ -1,15 +1,14 @@
 <?php
 
-namespace App\Modules\NormalAdmin\Http\Controllers;
+namespace App\Modules\Accountant\Http\Controllers;
 
-use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
-use App\Modules\NormalAdmin\Models\NormalAdmin;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use App\Modules\Accountant\Models\Accountant;
 
 /**
  *
@@ -32,7 +31,7 @@ class LoginController extends Controller
 	 */
 	protected function redirectTo()
 	{
-		return route(NormalAdmin::dashboardRoute());
+		return route(Accountant::dashboardRoute());
 	}
 
 	/**
@@ -42,15 +41,15 @@ class LoginController extends Controller
 	 */
 	public function __construct()
 	{
-		$this->middleware('guest:normal_admin')->except('logout');
+		$this->middleware('guest:accountant')->except('logout');
 	}
 
 	static function routes()
 	{
-		Route::get('login', 'LoginController@showLoginForm')->name('normal_admin.login');
-		Route::post('login', 'LoginController@login')->middleware('throttle:5,1')->middleware('verified_normal_admins');
+		Route::get('login', 'LoginController@showLoginForm')->name('accountant.login');
+		Route::post('login', 'LoginController@login')->middleware('throttle:5,1')->middleware('verified_accountants');
 		Route::post('first-time', 'LoginController@resetPassword')->middleware('throttle:5,1');
-		Route::post('logout', 'LoginController@logout')->name('normal_admin.logout');
+		Route::post('logout', 'LoginController@logout')->name('accountant.logout');
 	}
 
 	/**
@@ -60,7 +59,7 @@ class LoginController extends Controller
 	 */
 	public function showLoginForm(Request $request)
 	{
-		return view('normaladmin::auth');
+		return view('accountant::auth');
 	}
 
 	/**
@@ -70,18 +69,18 @@ class LoginController extends Controller
 	 */
 	public function resetPassword()
 	{
-		$normal_admin = NormalAdmin::where('email', request('email'))->firstOrFail();
-		if ($normal_admin && !$normal_admin->is_verified()) {
+		$accountant = Accountant::where('email', request('email'))->firstOrFail();
+		if ($accountant && !$accountant->is_verified()) {
 			DB::beginTransaction();
 
-			$normal_admin->password = bcrypt(request('pw'));
-			$normal_admin->verified_at = now();
-			$normal_admin->api_routes()->attach(1);
-			$normal_admin->save();
+			$accountant->password = bcrypt(request('pw'));
+			$accountant->verified_at = now();
+			$accountant->api_routes()->attach(1);
+			$accountant->save();
 
 			DB::commit();
 
-			$this->guard()->login($normal_admin);
+			$this->guard()->login($accountant);
 
 			return response()->json(['status' => true], 204);
 		}
@@ -111,8 +110,8 @@ class LoginController extends Controller
 	 */
 	protected function authenticated(Request $request, $user)
 	{
-		if (NormalAdmin::canAccess()) {
-			if (Auth::normalAdmin()->is_verified()) {
+		if (Accountant::canAccess()) {
+			if (Auth::accountant()->is_verified()) {
 				return response()->json(['status' => true], 202);
 			} else {
 				$this->guard()->logout();
@@ -124,7 +123,7 @@ class LoginController extends Controller
 			session()->invalidate();
 			return response()->json(['message' => 'Access Denied'], 401);
 		}
-		return redirect()->route(NormalAdmin::dashboardRoute());
+		return redirect()->route(Accountant::dashboardRoute());
 	}
 
 	/**
@@ -144,7 +143,7 @@ class LoginController extends Controller
 	 */
 	protected function guard()
 	{
-		return Auth::guard('normal_admin');
+		return Auth::guard('accountant');
 	}
 
 	/**
@@ -159,6 +158,6 @@ class LoginController extends Controller
 
 		$request->session()->invalidate();
 
-		return redirect()->route('normaladmin.login');
+		return redirect()->route('accountant.login');
 	}
 }

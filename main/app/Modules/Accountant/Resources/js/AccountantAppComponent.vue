@@ -5,8 +5,8 @@
     </transition>
   </div>
   <div class="wrapper" v-else>
-    <admin-nav></admin-nav>
-    <admin-header v-on:logout-user="logoutUser()" v-if="!is404" :isHome="isHome"></admin-header>
+    <accountant-nav></accountant-nav>
+    <accountant-header v-on:logout-user="logoutUser()" v-if="!is404"></accountant-header>
 
     <transition name="fade" :duration="{ enter: 1300, leave: 200 }">
       <pre-loader v-if="isLoading"></pre-loader>
@@ -15,26 +15,26 @@
       <router-view @page-loaded="pageLoaded" @is-loading="toggleLoadState" />
     </transition>
 
-    <admin-footer v-if="!is404"></admin-footer>
+    <accountant-footer v-if="!is404"></accountant-footer>
   </div>
 </template>
 
 <script>
   import PreLoader from "@admin-components/misc/PageLoader";
-  import AdminNav from "@normalAdmin-components/partials/NavComponent";
-  import AdminHeader from "@normalAdmin-components/partials/HeaderComponent";
-  import AdminFooter from "@normalAdmin-components/partials/FooterComponent";
+  import AccountantNav from "@accountant-components/partials/NavComponent";
+  import AccountantHeader from "@accountant-components/partials/HeaderComponent";
+  import AccountantFooter from "@accountant-components/partials/FooterComponent";
 
   export default {
-    name: "AdminApp",
+    name: "AccountantApp",
     data: () => ({
       freshLoad: true,
       isLoading: true
     }),
     components: {
-      AdminHeader,
-      AdminFooter,
-      AdminNav,
+      AccountantHeader,
+      AccountantFooter,
+      AccountantNav,
       PreLoader
     },
     computed: {
@@ -47,13 +47,6 @@
             ? true
             : false
           : false;
-      },
-      isHome() {
-        return this.$route.name
-          ? this.$route.name.match("site.root")
-            ? true
-            : false
-          : false;
       }
     },
     methods: {
@@ -61,7 +54,7 @@
         BlockToast.fire({
           text: msg
         });
-        axios.post("/admin-panel/logout").then(rsp => {
+        axios.post("/accountant/logout").then(rsp => {
           location.reload();
         });
       },
@@ -69,22 +62,8 @@
         this.isLoading = true;
       },
       pageLoaded() {
-        // if (!this.isAuth) {
-        //   this.$loadScript("/js/dashboard-main.js").then(() => {
-        //     if (this.freshLoad) {
-        //       this.freshLoad = false;
-        //       $(".rd-dropdown-item").click(function() {
-        //         $(".rd-nav-item").addClass(
-        //           "rd-navbar--has-dropdown rd-navbar-submenu"
-        //         );
-        //       });
-        //     }
-        //     // $(".preloader").fadeOut(300);
-        //   });
-        // } else {
         $(".preloader").fadeOut(300);
         this.isLoading = false;
-        // }
       }
     }
   };

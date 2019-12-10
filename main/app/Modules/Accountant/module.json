@@ -1,0 +1,13 @@
+{
+    "name": "Accountant",
+    "alias": "accountant",
+    "description": "",
+    "keywords": [],
+    "order": 4,
+    "providers": [
+        "App\\Modules\\Accountant\\Providers\\AccountantServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

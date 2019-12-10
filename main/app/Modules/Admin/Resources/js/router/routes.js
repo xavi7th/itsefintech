@@ -8,13 +8,15 @@ function adminView( name ) {
     }
 }
 
-/**
- * Asynchronously load view (Webpack Lazy loading compatible)
- * @param  {string}   name     the filename (basename) of the view to load.
- */
 function normalAdminView( name ) {
     return function ( resolve ) {
         require( [ '@normalAdmin-components/' + name ], resolve )
+    }
+}
+
+const accountantView = function ( name ) {
+    return function ( resolve ) {
+        require( [ '@accountant-components/' + name ], resolve )
     }
 }
 
@@ -100,6 +102,19 @@ export const authRoutes = [ {
 export const normalAdminAuthRoutes = [ {
         path: '/login',
         component: normalAdminView( 'auth/Login' ),
+        meta: {}
+    },
+    {
+        path: '*',
+        redirect: {
+            path: '/'
+        }
+    }
+]
+
+export const accoutantAuthRoutes = [ {
+        path: '/login',
+        component: accountantView( 'auth/Login' ),
         meta: {}
     },
     {

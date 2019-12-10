@@ -3,5 +3,6 @@
     "BasicSite": true,
     "AppUser": false,
     "CardUser": true,
-    "NormalAdmin": true
+    "NormalAdmin": true,
+    "Accountant": true
 }

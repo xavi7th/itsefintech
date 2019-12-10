@@ -1,28 +1,25 @@
 <?php
 
-namespace App\Modules\NormalAdmin\Models;
-
+namespace App\Modules\Accountant\Models;
 
 use App\User;
 use Illuminate\Support\Facades\Auth;
 use App\Modules\Admin\Models\ApiRoute;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class NormalAdmin extends User
+class Accountant extends User
 {
-
 	use SoftDeletes;
 
 	protected $fillable = [
 		'role_id', 'full_name', 'email', 'password', 'phone', 'bvn', 'user_passport', 'gender', 'address', 'dob',
 	];
-	protected $table = "normal_admins";
 	protected $dates = ['dob'];
-	const DASHBOARD_ROUTE_PREFIX = 'backend';
+	const DASHBOARD_ROUTE_PREFIX = 'accountant';
 
 	static function canAccess()
 	{
-		return Auth::guard('normal_admin')->check();
+		return Auth::guard('accountant')->check();
 	}
 
 	public function is_verified()
@@ -38,7 +35,7 @@ class NormalAdmin extends User
 	protected static function boot()
 	{
 		parent::boot();
-		static::deleting(function (NormalAdmin $user) {
+		static::deleting(function (Accountant $user) {
 			if ($user->isForceDeleting()) {
 				$user->api_routes()->detach();
 			}
