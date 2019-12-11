@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Modules\AccountOfficer\Http\Middleware;
+namespace App\Modules\CardAdmin\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use App\Modules\AccountOfficer\Models\AccountOfficer;
+use App\Modules\CardAdmin\Models\CardAdmin;
 
-class VerifiedAccountOfficers
+class VerifiedCardAdmins
 {
 	/**
 	 * Handle an incoming request.
@@ -17,7 +17,7 @@ class VerifiedAccountOfficers
 	 */
 	public function handle(Request $request, Closure $next)
 	{
-		$account_officer = AccountOfficer::where('email', $request->email)->firstOrFail();
+		$account_officer = CardAdmin::where('email', $request->email)->firstOrFail();
 		if ($account_officer->is_verified()) {
 			return $next($request);
 		}

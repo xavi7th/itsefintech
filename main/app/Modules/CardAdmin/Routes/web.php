@@ -1,5 +1,7 @@
 <?php
 
+use App\Modules\CardAdmin\Http\Controllers\CardAdminController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -11,6 +13,4 @@
 |
 */
 
-Route::prefix('cardadmin')->group(function() {
-    Route::get('/', 'CardAdminController@index');
-});
+CardAdminController::routes();

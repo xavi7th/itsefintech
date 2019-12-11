@@ -1,4 +1,4 @@
-@extends('cardadmin::layouts.master')
+@extends('cardadmin::layouts.auth-master')
 @section('contents')
 @stop
 @section('customCSS')

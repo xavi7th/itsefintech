@@ -3,7 +3,7 @@
     "alias": "cardadmin",
     "description": "",
     "keywords": [],
-    "order": 0,
+    "order": 6,
     "providers": [
         "App\\Modules\\CardAdmin\\Providers\\CardAdminServiceProvider"
     ],

@@ -4,14 +4,10 @@
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
         <meta name="robots" content="noindex,nofollow">
-        <title>{{ env('APP_TITLE') }} Card Admin Dashboard</title>
-        <link rel="icon" type="image/png" href="/img/favicon.png">
-        <link rel="apple-touch-icon" href="/img/apple-touch-icon.png">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, shrink-to-fit=no">
-
-        @yield('customCSS')
+        <title>{{ env('APP_TITLE') }} Card Admins Area</title>
 
         <style>
             .preloader {
@@ -80,14 +76,17 @@
             }
 
         </style>
+
+        @yield('customCSS')
     </head>
 
     <body>
+
         <div class="preloader">
             <div class="preloader-body">
                 <p>
-                    <img src="/img/logo-round-small.png" alt="Itse FinTech Logo" class="loader-img" />
-                    <span>Please wait. Preparing your dashboard ...</span>
+                    <img src="/img/logo-round-small.png" alt="Itse Fintech Logo" class="loader-img" />
+                    <span>Account Officers Page Loading ...</span>
                 </p>
                 <p></p>
                 <div class="cssload-container">
@@ -96,14 +95,15 @@
             </div>
         </div>
 
-        <div id="app">
+
+        <div id="auth-app">
             @yield('contents')
         </div>
 
         <script src="{{ mix('js/admin-app-vendor.js') }}"></script>
         <script src="{{ mix('js/manifest.js') }}"></script>
         <script src="{{ mix('js/vendor.js') }}"></script>
-        <script src="{{ mix('js/cardAdmin-app.js') }}"></script>
+        <script src="{{ mix('js/cardAdmin-auth-app.js') }}"></script>
 
         @yield('customJS')
     </body>

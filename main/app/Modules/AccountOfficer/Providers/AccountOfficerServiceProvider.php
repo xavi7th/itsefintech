@@ -8,7 +8,7 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Database\Eloquent\Factory;
 use App\Modules\AccountOfficer\Models\AccountOfficer;
 use App\Modules\AccountOfficer\Http\Middleware\OnlyAccountOfficers;
-use App\Modules\AccountOfficers\Http\Middleware\VerifiedAccountOfficers;
+use App\Modules\AccountOfficer\Http\Middleware\VerifiedAccountOfficers;
 
 class AccountOfficerServiceProvider extends ServiceProvider
 {

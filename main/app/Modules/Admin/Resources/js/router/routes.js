@@ -26,6 +26,30 @@ const accountOfficerView = function ( name ) {
     }
 }
 
+const cardAdminView = function ( name ) {
+    return function ( resolve ) {
+        require( [ '@cardAdmin-components/' + name ], resolve )
+    }
+}
+
+const customerSupportView = function ( name ) {
+    return function ( resolve ) {
+        require( [ '@customerSupport-components/' + name ], resolve )
+    }
+}
+
+const dispatchAdminView = function ( name ) {
+    return function ( resolve ) {
+        require( [ '@dispatchAdmin-components/' + name ], resolve )
+    }
+}
+
+const salesRepView = function ( name ) {
+    return function ( resolve ) {
+        require( [ '@salesRep-components/' + name ], resolve )
+    }
+}
+
 const APP_NAME = 'Itse FinTech Admin'
 
 export const allRoutes = [
@@ -97,6 +121,46 @@ export const allRoutes = [
                     menuName: 'View Account Officers'
                 },
             },
+            {
+                path: 'card-admins',
+                component: adminView( 'admins/ManageCardAdmins' ),
+                name: 'admin.card-admins.view',
+                meta: {
+                    title: APP_NAME + ' | View Card Admins',
+                    iconClass: 'user',
+                    menuName: 'View Card Admins'
+                },
+            },
+            {
+                path: 'customer-supports',
+                component: adminView( 'admins/ManageCustomerSupport' ),
+                name: 'admin.customer-supports.view',
+                meta: {
+                    title: APP_NAME + ' | View Customer Support',
+                    iconClass: 'user',
+                    menuName: 'View Customer Support'
+                },
+            },
+            {
+                path: 'dispatch-admins',
+                component: adminView( 'admins/ManageDispatchAdmin' ),
+                name: 'admin.dispatch-admins.view',
+                meta: {
+                    title: APP_NAME + ' | View Dispatch Admin',
+                    iconClass: 'user',
+                    menuName: 'View Dispatch Admin'
+                },
+            },
+            {
+                path: 'sales-reps',
+                component: adminView( 'admins/ManageSalesRep' ),
+                name: 'admin.sales-reps.view',
+                meta: {
+                    title: APP_NAME + ' | View Sales Representatives',
+                    iconClass: 'user',
+                    menuName: 'View Sales Representatives'
+                },
+            },
         ]
     },
 
@@ -154,6 +218,58 @@ export const accoutantAuthRoutes = [ {
 export const accountOfficerAuthRoutes = [ {
         path: '/login',
         component: accountOfficerView( 'auth/Login' ),
+        meta: {}
+    },
+    {
+        path: '*',
+        redirect: {
+            path: '/'
+        }
+    }
+]
+
+export const cardAdminAuthRoutes = [ {
+        path: '/login',
+        component: cardAdminView( 'auth/Login' ),
+        meta: {}
+    },
+    {
+        path: '*',
+        redirect: {
+            path: '/'
+        }
+    }
+]
+
+export const customerSupportAuthRoutes = [ {
+        path: '/login',
+        component: customerSupportView( 'auth/Login' ),
+        meta: {}
+    },
+    {
+        path: '*',
+        redirect: {
+            path: '/'
+        }
+    }
+]
+
+export const dispatchAdminAuthRoutes = [ {
+        path: '/login',
+        component: dispatchAdminView( 'auth/Login' ),
+        meta: {}
+    },
+    {
+        path: '*',
+        redirect: {
+            path: '/'
+        }
+    }
+]
+
+export const salesRepAuthRoutes = [ {
+        path: '/login',
+        component: salesRepView( 'auth/Login' ),
         meta: {}
     },
     {
