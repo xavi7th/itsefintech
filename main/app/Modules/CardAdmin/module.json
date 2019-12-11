@@ -1,0 +1,13 @@
+{
+    "name": "CardAdmin",
+    "alias": "cardadmin",
+    "description": "",
+    "keywords": [],
+    "order": 0,
+    "providers": [
+        "App\\Modules\\CardAdmin\\Providers\\CardAdminServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

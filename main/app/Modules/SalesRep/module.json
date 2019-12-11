@@ -1,0 +1,13 @@
+{
+    "name": "SalesRep",
+    "alias": "salesrep",
+    "description": "",
+    "keywords": [],
+    "order": 0,
+    "providers": [
+        "App\\Modules\\SalesRep\\Providers\\SalesRepServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

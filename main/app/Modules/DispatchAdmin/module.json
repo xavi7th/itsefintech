@@ -1,0 +1,13 @@
+{
+    "name": "DispatchAdmin",
+    "alias": "dispatchadmin",
+    "description": "",
+    "keywords": [],
+    "order": 0,
+    "providers": [
+        "App\\Modules\\DispatchAdmin\\Providers\\DispatchAdminServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

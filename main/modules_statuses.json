@@ -5,5 +5,11 @@
     "CardUser": true,
     "NormalAdmin": true,
     "Accountant": true,
-    "AccountOfficer": true
+    "AccountOfficer": true,
+    "CardController": true,
+    "SalesRep": true,
+    "DispatchAgent": true,
+    "CustomerSupport": true,
+    "DispatchAdmin": true,
+    "CardAdmin": true
 }

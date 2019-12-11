@@ -1,0 +1,25 @@
+{
+    "name": "minds&machines/customersupport",
+    "description": "",
+    "authors": [
+        {
+            "name": "Leinad Ose",
+            "email": "xavi7th@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [
+                "App\\Modules\\CustomerSupport\\Providers\\CustomerSupportServiceProvider"
+            ],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\Modules\\CustomerSupport\\": ""
+        }
+    }
+}
