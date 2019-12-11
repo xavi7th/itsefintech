@@ -1,0 +1,25 @@
+{
+    "name": "minds&machines/accountofficer",
+    "description": "",
+    "authors": [
+        {
+            "name": "Leinad Ose",
+            "email": "xavi7th@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [
+                "App\\Modules\\AccountOfficer\\Providers\\AccountOfficerServiceProvider"
+            ],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\Modules\\AccountOfficer\\": ""
+        }
+    }
+}

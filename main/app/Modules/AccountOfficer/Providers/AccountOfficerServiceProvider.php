@@ -1,16 +1,16 @@
 <?php
 
-namespace App\Modules\NormalAdmin\Providers;
+namespace App\Modules\AccountOfficer\Providers;
 
 use Illuminate\Auth\SessionGuard;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Database\Eloquent\Factory;
-use App\Modules\NormalAdmin\Models\NormalAdmin;
-use App\Modules\NormalAdmin\Http\Middleware\OnlyNormalAdmins;
-use App\Modules\NormalAdmin\Http\Middleware\VerifiedNormalAdmins;
+use App\Modules\AccountOfficer\Models\AccountOfficer;
+use App\Modules\AccountOfficer\Http\Middleware\OnlyAccountOfficers;
+use App\Modules\AccountOfficers\Http\Middleware\VerifiedAccountOfficers;
 
-class NormalAdminServiceProvider extends ServiceProvider
+class AccountOfficerServiceProvider extends ServiceProvider
 {
 	/**
 	 * Boot the application events.
@@ -23,12 +23,12 @@ class NormalAdminServiceProvider extends ServiceProvider
 		// $this->registerConfig();
 		$this->registerViews();
 		$this->registerFactories();
-		$this->loadMigrationsFrom(module_path('NormalAdmin', 'Database/Migrations'));
+		$this->loadMigrationsFrom(module_path('AccountOfficer', 'Database/Migrations'));
 
 
 		/**** Register the modules middlewares *****/
-		app()->make('router')->aliasMiddleware('normal_admins', OnlyNormalAdmins::class);
-		app()->make('router')->aliasMiddleware('verified_normal_admins', VerifiedNormalAdmins::class);
+		app()->make('router')->aliasMiddleware('account_officers', OnlyAccountOfficers::class);
+		app()->make('router')->aliasMiddleware('verified_account_officers', VerifiedAccountOfficers::class);
 	}
 
 	/**
@@ -40,8 +40,8 @@ class NormalAdminServiceProvider extends ServiceProvider
 	{
 		$this->app->register(RouteServiceProvider::class);
 
-		SessionGuard::macro('normalAdmin', function () {
-			return NormalAdmin::find(Auth::guard('normal_admin')->id());
+		SessionGuard::macro('accountOfficer', function () {
+			return AccountOfficer::find(Auth::guard('account_officer')->id());
 		});
 	}
 
@@ -53,11 +53,11 @@ class NormalAdminServiceProvider extends ServiceProvider
 	protected function registerConfig()
 	{
 		$this->publishes([
-			module_path('NormalAdmin', 'Config/config.php') => config_path('normaladmin.php'),
+			module_path('AccountOfficer', 'Config/config.php') => config_path('accountofficer.php'),
 		], 'config');
 		$this->mergeConfigFrom(
-			module_path('NormalAdmin', 'Config/config.php'),
-			'normaladmin'
+			module_path('AccountOfficer', 'Config/config.php'),
+			'accountofficer'
 		);
 	}
 
@@ -68,17 +68,17 @@ class NormalAdminServiceProvider extends ServiceProvider
 	 */
 	public function registerViews()
 	{
-		$viewPath = resource_path('views/modules/normaladmin');
+		$viewPath = resource_path('views/modules/accountofficer');
 
-		$sourcePath = module_path('NormalAdmin', 'Resources/views');
+		$sourcePath = module_path('AccountOfficer', 'Resources/views');
 
 		$this->publishes([
 			$sourcePath => $viewPath
 		], 'views');
 
 		$this->loadViewsFrom(array_merge(array_map(function ($path) {
-			return $path . '/modules/normaladmin';
-		}, \Config::get('view.paths')), [$sourcePath]), 'normaladmin');
+			return $path . '/modules/accountofficer';
+		}, \Config::get('view.paths')), [$sourcePath]), 'accountofficer');
 	}
 
 	/**
@@ -88,12 +88,12 @@ class NormalAdminServiceProvider extends ServiceProvider
 	 */
 	public function registerTranslations()
 	{
-		$langPath = resource_path('lang/modules/normaladmin');
+		$langPath = resource_path('lang/modules/accountofficer');
 
 		if (is_dir($langPath)) {
-			$this->loadTranslationsFrom($langPath, 'normaladmin');
+			$this->loadTranslationsFrom($langPath, 'accountofficer');
 		} else {
-			$this->loadTranslationsFrom(module_path('NormalAdmin', 'Resources/lang'), 'normaladmin');
+			$this->loadTranslationsFrom(module_path('AccountOfficer', 'Resources/lang'), 'accountofficer');
 		}
 	}
 
@@ -105,7 +105,7 @@ class NormalAdminServiceProvider extends ServiceProvider
 	public function registerFactories()
 	{
 		if (!app()->environment('production') && $this->app->runningInConsole()) {
-			app(Factory::class)->load(module_path('NormalAdmin', 'Database/factories'));
+			app(Factory::class)->load(module_path('AccountOfficer', 'Database/factories'));
 		}
 	}
 

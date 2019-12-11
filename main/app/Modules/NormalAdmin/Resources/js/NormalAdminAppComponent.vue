@@ -23,7 +23,7 @@
   import PreLoader from "@admin-components/misc/PageLoader";
   import AdminNav from "@normalAdmin-components/partials/NavComponent";
   import AdminHeader from "@normalAdmin-components/partials/HeaderComponent";
-  import AdminFooter from "@normalAdmin-components/partials/FooterComponent";
+  import AdminFooter from "@admin-components/partials/FooterComponent";
 
   export default {
     name: "AdminApp",

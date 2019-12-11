@@ -54,16 +54,20 @@ const getRoutes = async () => {
         if ( route.children ) {
             let childRoutes = [];
             for ( const subRoute of route.children ) {
-                const result = await processRoutes( subRoute.name );
-                if ( result === true ) childRoutes.push( subRoute )
+                if ( subRoute.meta.skip ) {} else {
+                    const result = await processRoutes( subRoute.name );
+                    if ( result === true ) childRoutes.push( subRoute )
+                }
             }
             if ( childRoutes.length ) {
                 route.children = childRoutes;
                 permittedRoutes.push( route )
             }
         } else {
-            const result = await processRoutes( route.name );
-            if ( result === true ) permittedRoutes.push( route )
+            if ( subRoute.meta.skip ) {} else {
+                const result = await processRoutes( route.name );
+                if ( result === true ) permittedRoutes.push( route )
+            }
         }
     }
     return permittedRoutes;

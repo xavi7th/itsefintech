@@ -5,6 +5,7 @@ use App\Modules\Admin\Models\Admin;
 use App\Modules\CardUser\Models\CardUser;
 use App\Modules\NormalAdmin\Models\NormalAdmin;
 use App\Modules\Accountant\Models\Accountant;
+use App\Modules\AccountOfficer\Models\AccountOfficer;
 
 return [
 
@@ -58,6 +59,10 @@ return [
 			'driver' => 'session',
 			'provider' => 'accountants',
 		],
+		'account_officer' => [
+			'driver' => 'session',
+			'provider' => 'account_officers',
+		],
 		'card_user' => [
 			'driver' => 'jwt',
 			'provider' => 'card_users',
@@ -105,6 +110,10 @@ return [
 		'accountants' => [
 			'driver' => 'eloquent',
 			'model' => Accountant::class,
+		],
+		'account_officers' => [
+			'driver' => 'eloquent',
+			'model' => AccountOfficer::class,
 		],
 	],
 

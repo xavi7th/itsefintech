@@ -1,25 +1,28 @@
 import Vue from 'vue'
 import Router from 'vue-router'
+
 import {
     allRoutes,
-    authRoutes
+    accountOfficerAuthRoutes
 } from "@admin-assets/js/router/routes";
 
 Vue.use( Router )
 
 const APP_NAME = 'Itse FinTech Admin'
 
-const view = function ( name ) {
+/**
+ * Asynchronously load view (Webpack Lazy loading compatible)
+ * @param  {string}   name     the filename (basename) of the view to load.
+ */
+function view( name ) {
     return function ( resolve ) {
-        require( [ '@admin-components/' + name ], resolve )
+        require( [ '@accountOfficer-components/' + name ], resolve )
     }
 }
 
-
 const processRoutes = async ( route ) => {
-
     try {
-        const sar = axios.post( '/admin-panel/api/test-route-permission', {
+        const sar = axios.post( '/account-officers/api/test-route-permission', {
             route
         } )
         let pp = await sar;
@@ -31,8 +34,8 @@ const processRoutes = async ( route ) => {
 const getRoutes = async () => {
     let permittedRoutes = [ {
             path: '/',
-            component: view( 'dashboard/AdminDashboard' ),
-            name: 'admin.root',
+            component: view( 'dashboard/AccountOfficerDashboard' ),
+            name: 'accountOfficer.root',
             meta: {
                 title: APP_NAME + ' | Dashboard',
                 iconClass: 'home',
@@ -41,9 +44,9 @@ const getRoutes = async () => {
         },
         {
             path: '*',
-            name: 'admin.catch-all',
+            name: 'accountOfficer.catch-all',
             redirect: {
-                name: 'admin.root'
+                name: 'accountOfficer.root'
             }
         }
     ];
@@ -72,7 +75,7 @@ const getRoutes = async () => {
 
 export const routeGenerator = async () => new Router( {
     mode: 'history',
-    base: '/admin-panel/',
+    base: '/account-officers/',
     scrollBehavior( to, from, savedPosition ) {
         if ( savedPosition ) {
             return savedPosition
@@ -88,6 +91,6 @@ export const routeGenerator = async () => new Router( {
 
 export const authRouter = new Router( {
     mode: 'history',
-    base: '/admin-panel/',
-    routes: authRoutes,
+    base: '/account-officers/',
+    routes: accountOfficerAuthRoutes,
 } )

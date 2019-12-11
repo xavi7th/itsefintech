@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Modules\Accountant\Http\Middleware;
+namespace App\Modules\AccountOfficers\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use App\Modules\Accountant\Models\Accountant;
+use App\Modules\AccountOfficer\Models\AccountOfficer;
 
-class VerifiedAccountants
+class VerifiedAccountOfficers
 {
 	/**
 	 * Handle an incoming request.
@@ -17,9 +17,8 @@ class VerifiedAccountants
 	 */
 	public function handle(Request $request, Closure $next)
 	{
-		$accountant = Accountant::where('email', $request->email)->firstOrFail();
-		// dd($accountant->is_verified());
-		if ($accountant->is_verified()) {
+		$account_officer = AccountOfficer::where('email', $request->email)->firstOrFail();
+		if ($account_officer->is_verified()) {
 			return $next($request);
 		}
 		return response()->json(['status' => 'Login limited'], 416);

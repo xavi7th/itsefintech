@@ -20,6 +20,12 @@ const accountantView = function ( name ) {
     }
 }
 
+const accountOfficerView = function ( name ) {
+    return function ( resolve ) {
+        require( [ '@accountOfficer-components/' + name ], resolve )
+    }
+}
+
 const APP_NAME = 'Itse FinTech Admin'
 
 export const allRoutes = [
@@ -81,6 +87,16 @@ export const allRoutes = [
                     menuName: 'View Accountants'
                 },
             },
+            {
+                path: 'account-officers',
+                component: adminView( 'admins/ManageAccountOfficers' ),
+                name: 'admin.account-officers.view',
+                meta: {
+                    title: APP_NAME + ' | View Account Officers',
+                    iconClass: 'user',
+                    menuName: 'View Account Officers'
+                },
+            },
         ]
     },
 
@@ -125,6 +141,19 @@ export const normalAdminAuthRoutes = [ {
 export const accoutantAuthRoutes = [ {
         path: '/login',
         component: accountantView( 'auth/Login' ),
+        meta: {}
+    },
+    {
+        path: '*',
+        redirect: {
+            path: '/'
+        }
+    }
+]
+
+export const accountOfficerAuthRoutes = [ {
+        path: '/login',
+        component: accountOfficerView( 'auth/Login' ),
         meta: {}
     },
     {

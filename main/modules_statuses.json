@@ -4,5 +4,6 @@
     "AppUser": false,
     "CardUser": true,
     "NormalAdmin": true,
-    "Accountant": true
+    "Accountant": true,
+    "AccountOfficer": true
 }

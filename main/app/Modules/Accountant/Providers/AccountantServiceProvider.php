@@ -7,8 +7,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Database\Eloquent\Factory;
 use App\Modules\Accountant\Models\Accountant;
-use App\Modules\Admin\Http\Middleware\OnlyAccountants;
-use App\Modules\Admin\Http\Middleware\VerifiedAccountants;
+use App\Modules\Accountant\Http\Middleware\OnlyAccountants;
+use App\Modules\Accountant\Http\Middleware\VerifiedAccountants;
 
 class AccountantServiceProvider extends ServiceProvider
 {

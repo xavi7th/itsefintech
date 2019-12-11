@@ -1,0 +1,13 @@
+{
+    "name": "AccountOfficer",
+    "alias": "accountofficer",
+    "description": "",
+    "keywords": [],
+    "order": 5,
+    "providers": [
+        "App\\Modules\\AccountOfficer\\Providers\\AccountOfficerServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

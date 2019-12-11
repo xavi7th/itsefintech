@@ -5,8 +5,8 @@
     </transition>
   </div>
   <div class="wrapper" v-else>
-    <accountant-nav></accountant-nav>
-    <accountant-header v-on:logout-user="logoutUser()" v-if="!is404"></accountant-header>
+    <account-officer-nav></account-officer-nav>
+    <account-officer-header v-on:logout-user="logoutUser()" v-if="!is404"></account-officer-header>
 
     <transition name="fade" :duration="{ enter: 1300, leave: 200 }">
       <pre-loader v-if="isLoading"></pre-loader>
@@ -15,26 +15,26 @@
       <router-view @page-loaded="pageLoaded" @is-loading="toggleLoadState" />
     </transition>
 
-    <accountant-footer v-if="!is404"></accountant-footer>
+    <account-officer-footer v-if="!is404"></account-officer-footer>
   </div>
 </template>
 
 <script>
   import PreLoader from "@admin-components/misc/PageLoader";
-  import AccountantNav from "@accountant-components/partials/NavComponent";
-  import AccountantHeader from "@accountant-components/partials/HeaderComponent";
-  import AccountantFooter from "@admin-components/partials/FooterComponent";
+  import AccountOfficerNav from "@accountOfficer-components/partials/NavComponent";
+  import AccountOfficerHeader from "@accountOfficer-components/partials/HeaderComponent";
+  import AccountOfficerFooter from "@admin-components/partials/FooterComponent";
 
   export default {
-    name: "AccountantApp",
+    name: "AccountOfficerApp",
     data: () => ({
       freshLoad: true,
       isLoading: true
     }),
     components: {
-      AccountantHeader,
-      AccountantFooter,
-      AccountantNav,
+      AccountOfficerHeader,
+      AccountOfficerFooter,
+      AccountOfficerNav,
       PreLoader
     },
     computed: {
@@ -54,7 +54,7 @@
         BlockToast.fire({
           text: msg
         });
-        axios.post("/accountant/logout").then(rsp => {
+        axios.post("/account-officers/logout").then(rsp => {
           location.reload();
         });
       },

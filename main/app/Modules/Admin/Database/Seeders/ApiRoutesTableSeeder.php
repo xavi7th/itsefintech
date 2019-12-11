@@ -64,7 +64,7 @@ class ApiRoutesTableSeeder extends Seeder
 			array(
 				'path' => '/normal-admins',
 				'name' => 'admin.normal-admins.view',
-				'meta' => '{title: APP_NAME + \' | View Admins\',
+				'meta' => '{title: APP_NAME + \' | View Normal Admins\',
 					iconClass: \'home\',
 					menuName: \'View Normal Admins\'
 				}',
@@ -72,13 +72,23 @@ class ApiRoutesTableSeeder extends Seeder
 			),
 			14 =>
 			array(
-				'path' => '/normal-admins',
+				'path' => '/accountants',
 				'name' => 'admin.accountants.view',
-				'meta' => '{title: APP_NAME + \' | View Admins\',
+				'meta' => '{title: APP_NAME + \' | View Accountants\',
 					iconClass: \'home\',
 					menuName: \'View Accountants\'
 				}',
 				'description' => 'View Accountants',
+			),
+			15 =>
+			array(
+				'path' => '/account-officers',
+				'name' => 'admin.account-officers.view',
+				'meta' => '{title: APP_NAME + \' | View Account Officers\',
+					iconClass: \'user\',
+					menuName: \'View Account Officers\'
+				}',
+				'description' => 'View Account Officers',
 			),
 		));
 	}
