@@ -26,8 +26,8 @@ class CardAdminServiceProvider extends ServiceProvider
 		$this->loadMigrationsFrom(module_path('CardAdmin', 'Database/Migrations'));
 
 		/**** Register the modules middlewares *****/
-		app()->make('router')->aliasMiddleware('account_officers', OnlyCardAdmins::class);
-		app()->make('router')->aliasMiddleware('verified_account_officers', VerifiedCardAdmins::class);
+		app()->make('router')->aliasMiddleware('card_admins', OnlyCardAdmins::class);
+		app()->make('router')->aliasMiddleware('verified_card_admins', VerifiedCardAdmins::class);
 	}
 
 	/**

@@ -4,7 +4,7 @@ namespace App\Modules\CardUser\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Routing\Controller;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Route;
 use App\Modules\CardUser\Http\Controllers\LoginController;
 use App\Modules\CardUser\Http\Controllers\RegisterController;
@@ -32,7 +32,7 @@ class CardUserController extends Controller
 
 			Route::group(['prefix' => 'auth', 'middleware' => ['auth:card_user', 'card_users']], function () {
 
-				Route::group(['middleware' => [ 'unverified_card_users']], function () {
+				Route::group(['middleware' => ['unverified_card_users']], function () {
 					Route::get('/user/request-otp', 'CardUserController@requestOTP');
 
 					Route::put('/user/verify-otp', 'CardUserController@verifyOTP');

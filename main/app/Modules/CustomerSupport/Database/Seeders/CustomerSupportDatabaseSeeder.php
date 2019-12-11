@@ -3,19 +3,32 @@
 namespace App\Modules\CustomerSupport\Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use Illuminate\Database\Eloquent\Model;
+use App\Modules\CustomerSupport\Models\CustomerSupport;
+
 
 class CustomerSupportDatabaseSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     *
-     * @return void
-     */
-    public function run()
-    {
-        Model::unguard();
+	/**
+	 * Run the database seeds.
+	 *
+	 * @return void
+	 */
+	public function run()
+	{
+		$this->call(CustomerSupportTableSeeder::class);
+	}
+}
 
-        // $this->call("OthersTableSeeder");
-    }
+
+class CustomerSupportTableSeeder extends Seeder
+{
+	/**
+	 * Run the database seeds.
+	 *
+	 * @return void
+	 */
+	public function run()
+	{
+		factory(CustomerSupport::class, 1)->create();
+	}
 }

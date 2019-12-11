@@ -3,7 +3,7 @@
     "alias": "customersupport",
     "description": "",
     "keywords": [],
-    "order": 0,
+    "order": 7,
     "providers": [
         "App\\Modules\\CustomerSupport\\Providers\\CustomerSupportServiceProvider"
     ],

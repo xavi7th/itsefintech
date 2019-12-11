@@ -1,5 +1,7 @@
 <?php
 
+use App\Modules\CustomerSupport\Http\Controllers\CustomerSupportController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -11,6 +13,4 @@
 |
 */
 
-Route::prefix('customersupport')->group(function() {
-    Route::get('/', 'CustomerSupportController@index');
-});
+CustomerSupportController::routes();

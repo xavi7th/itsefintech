@@ -1,4 +1,4 @@
-@extends('customersupport::layouts.master')
+@extends('customersupport::layouts.auth-master')
 @section('contents')
 @stop
 @section('customCSS')

@@ -4,7 +4,7 @@ namespace App\Modules\NormalAdmin\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Routing\Controller;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Route;
 use App\Modules\Admin\Models\ApiRoute;
 use App\Modules\NormalAdmin\Models\NormalAdmin;
