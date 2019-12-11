@@ -13,6 +13,7 @@ use App\Modules\Admin\Models\ApiRoute;
 use App\Modules\Accountant\Models\Accountant;
 use App\Modules\NormalAdmin\Models\NormalAdmin;
 use App\Modules\Admin\Transformers\AdminUserTransformer;
+use App\Modules\AccountOfficer\Models\AccountOfficer;
 
 class AdminController extends Controller
 {
@@ -165,8 +166,6 @@ class AdminController extends Controller
 					return response()->json(['rsp' => true], 204);
 				});
 
-
-
 				Route::get('accountants', function () {
 					return (new AdminUserTransformer)->collectionTransformer(Accountant::withTrashed()->get(), 'transformForAdminViewAccountants');
 				});
@@ -221,6 +220,64 @@ class AdminController extends Controller
 
 				Route::delete('accountant/{accountant}/delete', function (Accountant $accountant) {
 					$accountant->forceDelete();
+					return response()->json(['rsp' => true], 204);
+				});
+
+
+				Route::get('account-officers', function () {
+					return (new AdminUserTransformer)->collectionTransformer(AccountOfficer::withTrashed()->get(), 'transformForAdminViewAccountOfficers');
+				});
+
+				Route::post('account-officer/create', function () {
+					// return request()->all();
+					try {
+						DB::beginTransaction();
+						$account_officer = AccountOfficer::create(Arr::collapse([
+							request()->all(),
+							[
+								'password' => bcrypt('itsefintech@account_officer'),
+							]
+						]));
+
+						DB::commit();
+						return response()->json(['rsp' => $account_officer], 201);
+					} catch (Throwable $e) {
+						if (app()->environment() == 'local') {
+							return response()->json(['error' => $e->getMessage()], 500);
+						}
+						return response()->json(['rsp' => 'error occurred'], 500);
+					}
+				});
+
+				Route::get('account-officer/{account_officer}/permissions', function (AccountOfficer $account_officer) {
+					$permitted_routes = $account_officer->api_routes()->get(['api_routes.id'])->map(function ($item, $key) {
+						return $item->id;
+					});
+
+					$all_routes = ApiRoute::get(['id', 'description'])->map(function ($item, $key) {
+						return ['id' => $item->id, 'description' => $item->description];
+					});
+
+					return ['permitted_routes' => $permitted_routes, 'all_routes' => $all_routes];
+				});
+
+				Route::put('account-officer/{account_officer}/permissions', function (AccountOfficer $account_officer) {
+					$account_officer->api_routes()->sync(request('permitted_routes'));
+					return response()->json(['rsp' => true], 204);
+				});
+
+				Route::put('account-officer/{account_officer}/suspend', function (AccountOfficer $account_officer) {
+					$account_officer->delete();
+					return response()->json(['rsp' => true], 204);
+				});
+
+				Route::put('account-officer/{id}/restore', function ($id) {
+					AccountOfficer::withTrashed()->find($id)->restore();
+					return response()->json(['rsp' => true], 204);
+				});
+
+				Route::delete('account-officer/{account_officer}/delete', function (AccountOfficer $account_officer) {
+					$account_officer->forceDelete();
 					return response()->json(['rsp' => true], 204);
 				});
 			});
