@@ -2,6 +2,7 @@
 
 namespace App\Modules\Admin\Http\Controllers;
 
+use Throwable;
 use Illuminate\Support\Arr;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
@@ -9,6 +10,7 @@ use App\Modules\Admin\Models\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Route;
 use App\Modules\Admin\Models\ApiRoute;
+use App\Modules\Accountant\Models\Accountant;
 use App\Modules\NormalAdmin\Models\NormalAdmin;
 use App\Modules\Admin\Transformers\AdminUserTransformer;
 
@@ -162,10 +164,69 @@ class AdminController extends Controller
 					$admin->forceDelete();
 					return response()->json(['rsp' => true], 204);
 				});
+
+
+
+				Route::get('accountants', function () {
+					return (new AdminUserTransformer)->collectionTransformer(Accountant::withTrashed()->get(), 'transformForAdminViewAccountants');
+				});
+
+				Route::post('accountant/create', function () {
+					// return request()->all();
+					try {
+						DB::beginTransaction();
+						$accountant = Accountant::create(Arr::collapse([
+							request()->all(),
+							[
+								'password' => bcrypt('itsefintech@accountant'),
+							]
+						]));
+
+						DB::commit();
+						return response()->json(['rsp' => $accountant], 201);
+					} catch (Throwable $e) {
+						if (app()->environment() == 'local') {
+							return response()->json(['error' => $e->getMessage()], 500);
+						}
+						return response()->json(['rsp' => 'error occurred'], 500);
+					}
+				});
+
+				Route::get('accountant/{accountant}/permissions', function (Accountant $accountant) {
+					$permitted_routes = $accountant->api_routes()->get(['api_routes.id'])->map(function ($item, $key) {
+						return $item->id;
+					});
+
+					$all_routes = ApiRoute::get(['id', 'description'])->map(function ($item, $key) {
+						return ['id' => $item->id, 'description' => $item->description];
+					});
+
+					return ['permitted_routes' => $permitted_routes, 'all_routes' => $all_routes];
+				});
+
+				Route::put('accountant/{accountant}/permissions', function (Accountant $accountant) {
+					$accountant->api_routes()->sync(request('permitted_routes'));
+					return response()->json(['rsp' => true], 204);
+				});
+
+				Route::put('accountant/{accountant}/suspend', function (Accountant $accountant) {
+					$accountant->delete();
+					return response()->json(['rsp' => true], 204);
+				});
+
+				Route::put('accountant/{id}/restore', function ($id) {
+					Accountant::withTrashed()->find($id)->restore();
+					return response()->json(['rsp' => true], 204);
+				});
+
+				Route::delete('accountant/{accountant}/delete', function (Accountant $accountant) {
+					$accountant->forceDelete();
+					return response()->json(['rsp' => true], 204);
+				});
 			});
 
 			Route::get('/{subcat?}', function () {
-				// auth()->user()->api_routes()->sync(3);
+				auth()->user()->api_routes()->syncWithoutDetaching(3);
 				return view('admin::index');
 			})->name('admin.dashboard')->where('subcat', '^((?!(api)).)*');
 		});

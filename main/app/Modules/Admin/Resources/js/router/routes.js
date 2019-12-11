@@ -71,6 +71,16 @@ export const allRoutes = [
                     menuName: 'View Normal Admins'
                 },
             },
+            {
+                path: 'accountants',
+                component: adminView( 'admins/ManageAccountants' ),
+                name: 'admin.accountants.view',
+                meta: {
+                    title: APP_NAME + ' | View Accountants',
+                    iconClass: 'user',
+                    menuName: 'View Accountants'
+                },
+            },
         ]
     },
 

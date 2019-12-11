@@ -5,6 +5,7 @@ namespace App\Modules\Admin\Transformers;
 use App\User;
 use App\Modules\Admin\Models\Admin;
 use App\Modules\NormalAdmin\Models\NormalAdmin;
+use App\Modules\Accountant\Models\Accountant;
 
 class AdminUserTransformer
 {
@@ -91,6 +92,24 @@ class AdminUserTransformer
 		];
 	}
 	public function transformForAdminViewNormalAdmins(NormalAdmin $user)
+	{
+		return [
+			'id' => (int)$user->id,
+			'full_name' => (string)$user->full_name,
+			'email' => (string)$user->email,
+			'phone' => (string)$user->phone,
+			'bvn' => (string)$user->bvn,
+			'user_passport' => (string)$user->user_passport,
+			'gender' => (string)$user->gender,
+			'acc_type' => (string)$user->acc_type,
+			'acc_num' => (string)$user->acc_num,
+			'address' => (string)$user->address,
+			'dob' => (string)$user->dob,
+			'is_verified' => (boolean)$user->is_verified(),
+			'is_suspended' => (boolean)$user->deleted_at
+		];
+	}
+	public function transformForAdminViewAccountants(Accountant $user)
 	{
 		return [
 			'id' => (int)$user->id,
