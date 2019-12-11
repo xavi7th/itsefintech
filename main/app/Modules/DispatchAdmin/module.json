@@ -3,7 +3,7 @@
     "alias": "dispatchadmin",
     "description": "",
     "keywords": [],
-    "order": 0,
+    "order": 8,
     "providers": [
         "App\\Modules\\DispatchAdmin\\Providers\\DispatchAdminServiceProvider"
     ],

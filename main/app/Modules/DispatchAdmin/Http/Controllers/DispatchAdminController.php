@@ -5,76 +5,40 @@ namespace App\Modules\DispatchAdmin\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Route;
+use App\Modules\Admin\Models\ApiRoute;
+use App\Modules\DispatchAdmin\Models\DispatchAdmin;
+use App\Modules\DispatchAdmin\Http\Controllers\LoginController;
 
 
 class DispatchAdminController extends Controller
 {
 	/**
-	 * Display a listing of the resource.
+	 * The admin routes
 	 * @return Response
 	 */
-	public function index()
+	public static function routes()
 	{
-		return view('dispatchadmin::index');
-	}
+		Route::group(['middleware' => 'web', 'prefix' => DispatchAdmin::DASHBOARD_ROUTE_PREFIX], function () {
+			LoginController::routes();
 
-	/**
-	 * Show the form for creating a new resource.
-	 * @return Response
-	 */
-	public function create()
-	{
-		return view('dispatchadmin::create');
-	}
+			Route::group(['middleware' => ['auth:dispatch_admin', 'dispatch_admins']], function () {
 
-	/**
-	 * Store a newly created resource in storage.
-	 * @param Request $request
-	 * @return Response
-	 */
-	public function store(Request $request)
-	{
-		//
-	}
+				Route::group(['prefix' => 'api'], function () {
+					Route::post('test-route-permission', function () {
+						$api_route = ApiRoute::where('name', request('route'))->first();
+						if ($api_route) {
+							return ['rsp'  => $api_route->dispatch_admins()->where('user_id', auth('dispatch_admin')->id())->exists()];
+						} else {
+							return response()->json(['rsp' => false], 410);
+						}
+					});
+				});
 
-	/**
-	 * Show the specified resource.
-	 * @param int $id
-	 * @return Response
-	 */
-	public function show($id)
-	{
-		return view('dispatchadmin::show');
-	}
-
-	/**
-	 * Show the form for editing the specified resource.
-	 * @param int $id
-	 * @return Response
-	 */
-	public function edit($id)
-	{
-		return view('dispatchadmin::edit');
-	}
-
-	/**
-	 * Update the specified resource in storage.
-	 * @param Request $request
-	 * @param int $id
-	 * @return Response
-	 */
-	public function update(Request $request, $id)
-	{
-		//
-	}
-
-	/**
-	 * Remove the specified resource from storage.
-	 * @param int $id
-	 * @return Response
-	 */
-	public function destroy($id)
-	{
-		//
+				Route::get('/{subcat?}', function () {
+					return view('dispatchadmin::index');
+				})->name('dispatchadmin.dashboard')->where('subcat', '^((?!(api)).)*');
+			});
+		});
 	}
 }

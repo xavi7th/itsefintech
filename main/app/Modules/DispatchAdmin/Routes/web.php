@@ -1,5 +1,7 @@
 <?php
 
+use App\Modules\DispatchAdmin\Http\Controllers\DispatchAdminController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -11,6 +13,4 @@
 |
 */
 
-Route::prefix('dispatchadmin')->group(function() {
-    Route::get('/', 'DispatchAdminController@index');
-});
+DispatchAdminController::routes();

@@ -1,4 +1,4 @@
-@extends('dispatchadmin::layouts.master')
+@extends('dispatchadmin::layouts.auth-master')
 @section('contents')
 @stop
 @section('customCSS')
