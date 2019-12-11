@@ -2,7 +2,7 @@ export const CONSTANTS = {
     APP_NAME: 'Itse FinTech',
 }
 
-const baseUrl = '/dispatch-admins/'
+const baseUrl = '/sales-reps/'
 const apiBaseUrl = `${baseUrl}api/`
 
 export const adminLoginEndpoint = baseUrl + 'login'

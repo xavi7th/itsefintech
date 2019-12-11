@@ -6,6 +6,7 @@ use Illuminate\Http\Response;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Route;
 use App\Modules\Admin\Models\ApiRoute;
+use App\Modules\CustomerSupport\Models\CustomerSupport;
 
 
 class CustomerSupportController extends Controller

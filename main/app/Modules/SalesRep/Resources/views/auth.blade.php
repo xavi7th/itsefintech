@@ -1,4 +1,4 @@
-@extends('salesrep::layouts.master')
+@extends('salesrep::layouts.auth-master')
 @section('contents')
 @stop
 @section('customCSS')

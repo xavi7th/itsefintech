@@ -90,6 +90,46 @@ class ApiRoutesTableSeeder extends Seeder
 				}',
 				'description' => 'View Account Officers',
 			),
+			16 =>
+			array(
+				'path' => '/customer-supports',
+				'name' => 'admin.card-admins.view',
+				'meta' => '{title: APP_NAME + \' | View Card Admins\',
+					iconClass: \'user\',
+					menuName: \'View Card Admins\'
+				}',
+				'description' => 'View Card Admins',
+			),
+			17 =>
+			array(
+				'path' => '/customer-supports',
+				'name' => 'admin.customer-supports.view',
+				'meta' => '{title: APP_NAME + \' | View Customer Support\',
+					iconClass: \'user\',
+					menuName: \'View Customer Support\'
+				}',
+				'description' => 'View Customer Support',
+			),
+			18 =>
+			array(
+				'path' => '/dispatch-admins',
+				'name' => 'admin.dispatch-admins.view',
+				'meta' => '{title: APP_NAME + \' | View Dispatch Admins\',
+					iconClass: \'user\',
+					menuName: \'View Dispatch Admins\'
+				}',
+				'description' => 'View Dispatch Admins',
+			),
+			19 =>
+			array(
+				'path' => '/sales-reps',
+				'name' => 'admin.sales-reps.view',
+				'meta' => '{title: APP_NAME + \' | View Sales Reps\',
+					iconClass: \'user\',
+					menuName: \'View Sales Reps\'
+				}',
+				'description' => 'View Sales Reps',
+			),
 		));
 	}
 }

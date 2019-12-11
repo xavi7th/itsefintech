@@ -3,7 +3,7 @@
     "alias": "salesrep",
     "description": "",
     "keywords": [],
-    "order": 0,
+    "order": 9,
     "providers": [
         "App\\Modules\\SalesRep\\Providers\\SalesRepServiceProvider"
     ],

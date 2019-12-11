@@ -1,5 +1,7 @@
 <?php
 
+use App\Modules\SalesRep\Http\Controllers\SalesRepController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -11,6 +13,4 @@
 |
 */
 
-Route::prefix('salesrep')->group(function() {
-    Route::get('/', 'SalesRepController@index');
-});
+SalesRepController::routes();

@@ -82,7 +82,7 @@ export const allRoutes = [
             menuName: 'Manage Admins'
         },
         children: [ {
-                path: '/users/admins',
+                path: 'admins',
                 component: adminView( 'admins/ManageAdmins' ),
                 name: 'admin.admins.view',
                 meta: {
