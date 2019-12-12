@@ -41,7 +41,7 @@
                     data-toggle="modal"
                     data-target="#modal-perm"
                     @click="showPermModal(user)"
-                    v-if="$user == 'admin'"
+                    v-if="$user.type == 'admin'"
                   >Permissions</div>
                 </td>
               </tr>

@@ -84,7 +84,7 @@ export const allRoutes = [
             menuName: 'Manage Cards'
         },
         children: [ {
-            path: 'list',
+            path: '/cards/list',
             component: adminView( 'cards/View' ),
             name: 'admin.cards.list',
             meta: {

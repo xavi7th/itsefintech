@@ -38,7 +38,7 @@ class AdminController extends Controller
 				}
 				return null;
 			}
-			return  activeGuard();
+			return  collect(['type' => activeGuard()])->merge(auth(activeGuard())->user());
 		})->middleware('web');
 
 		Route::group(['middleware' => 'web', 'prefix' => Admin::DASHBOARD_ROUTE_PREFIX,  'namespace' => 'App\\Modules\Admin\Http\Controllers'], function () {

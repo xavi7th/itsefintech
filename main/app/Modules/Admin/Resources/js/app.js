@@ -81,11 +81,11 @@ routeGenerator().then( router => {
     } )
 
     axios.get( '/user-instance' ).then( ( {
-        data: user_type
+        data: user
     } ) => {
 
         Object.defineProperty( Vue.prototype, '$user', {
-            value: user_type,
+            value: user,
             writable: false
         } )
 
