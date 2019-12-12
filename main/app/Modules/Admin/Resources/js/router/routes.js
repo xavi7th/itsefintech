@@ -75,14 +75,34 @@ export const allRoutes = [
         } ]
     },
     {
+        path: '/cards',
+        component: {
+            render: h => h( 'router-view' )
+        },
+        meta: {
+            iconClass: 'home',
+            menuName: 'Manage Cards'
+        },
+        children: [ {
+            path: 'list',
+            component: adminView( 'cards/View' ),
+            name: 'admin.cards.list',
+            meta: {
+                title: APP_NAME + ' | All Cards',
+                iconClass: 'home',
+                menuName: 'All Cards'
+            },
+        } ]
+    },
+    {
         path: '/users',
         component: adminView( 'EmptyComponent' ),
         meta: {
             iconClass: 'home',
-            menuName: 'Manage Admins'
+            menuName: 'Manage User Types'
         },
         children: [ {
-                path: 'admins',
+                path: '/users/admins',
                 component: adminView( 'admins/ManageAdmins' ),
                 name: 'admin.admins.view',
                 meta: {
@@ -92,7 +112,7 @@ export const allRoutes = [
                 },
             },
             {
-                path: 'normal-admins',
+                path: '/users/normal-admins',
                 component: adminView( 'admins/ManageNormalAdmins' ),
                 name: 'admin.normal-admins.view',
                 meta: {
@@ -102,7 +122,7 @@ export const allRoutes = [
                 },
             },
             {
-                path: 'accountants',
+                path: '/users/accountants',
                 component: adminView( 'admins/ManageAccountants' ),
                 name: 'admin.accountants.view',
                 meta: {
@@ -112,7 +132,7 @@ export const allRoutes = [
                 },
             },
             {
-                path: 'account-officers',
+                path: '/users/account-officers',
                 component: adminView( 'admins/ManageAccountOfficers' ),
                 name: 'admin.account-officers.view',
                 meta: {
@@ -122,7 +142,7 @@ export const allRoutes = [
                 },
             },
             {
-                path: 'card-admins',
+                path: '/users/card-admins',
                 component: adminView( 'admins/ManageCardAdmins' ),
                 name: 'admin.card-admins.view',
                 meta: {
@@ -132,7 +152,7 @@ export const allRoutes = [
                 },
             },
             {
-                path: 'customer-supports',
+                path: '/users/customer-supports',
                 component: adminView( 'admins/ManageCustomerSupport' ),
                 name: 'admin.customer-supports.view',
                 meta: {
@@ -142,7 +162,7 @@ export const allRoutes = [
                 },
             },
             {
-                path: 'dispatch-admins',
+                path: '/users/dispatch-admins',
                 component: adminView( 'admins/ManageDispatchAdmin' ),
                 name: 'admin.dispatch-admins.view',
                 meta: {
@@ -152,7 +172,7 @@ export const allRoutes = [
                 },
             },
             {
-                path: 'sales-reps',
+                path: '/users/sales-reps',
                 component: adminView( 'admins/ManageSalesRep' ),
                 name: 'admin.sales-reps.view',
                 meta: {

@@ -41,6 +41,7 @@
                     data-toggle="modal"
                     data-target="#modal-perm"
                     @click="showPermModal(user)"
+                    v-if="$user == 'admin'"
                   >Permissions</div>
                 </td>
               </tr>
@@ -328,6 +329,7 @@
     },
     mounted() {
       this.$emit("page-loaded");
+      console.log(this.$user);
     },
     methods: {
       showModal(userDetails) {

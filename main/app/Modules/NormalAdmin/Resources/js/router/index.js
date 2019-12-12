@@ -64,7 +64,7 @@ const getRoutes = async () => {
                 permittedRoutes.push( route )
             }
         } else {
-            if ( subRoute.meta.skip ) {} else {
+            if ( route.meta.skip ) {} else {
                 const result = await processRoutes( route.name );
                 if ( result === true ) permittedRoutes.push( route )
             }

@@ -9,6 +9,7 @@ const {
 } = require( './router' )
 
 import LoadScript from 'vue-plugin-load-script'
+import Axios from 'axios';
 
 
 
@@ -79,13 +80,26 @@ routeGenerator().then( router => {
         }
     } )
 
-    /* eslint-disable no-new */
-    new Vue( {
-        el: '#app',
-        template: '<App/>',
-        components: {
-            App
-        },
-        router,
+    axios.get( '/user-instance' ).then( ( {
+        data: user_type
+    } ) => {
+
+        Object.defineProperty( Vue.prototype, '$user', {
+            value: user_type,
+            writable: false
+        } )
+
+        /* eslint-disable no-new */
+        new Vue( {
+            el: '#app',
+            template: '<App/>',
+            components: {
+                App
+            },
+            router,
+        } )
     } )
+
+
+
 } )
