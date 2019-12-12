@@ -1,17 +1,10 @@
 <template>
   <main>
-    <page-header pageTitle="Manage Admins"></page-header>
+    <page-header pageTitle="Manage Card Users"></page-header>
     <div class="content">
       <!-- table basic -->
       <div class="card">
-        <div class="card-title">
-          <button
-            type="button"
-            class="btn btn-bold btn-pure btn-twitter btn-shadow"
-            data-toggle="modal"
-            data-target="#modal-admin"
-          >Create Admin</button>
-        </div>
+        <div class="card-title"></div>
         <div class="card-body">
           <table class="table table-bordered table-hover" id="datatable1">
             <thead>
@@ -37,12 +30,11 @@
                     @click="showModal(user)"
                   >View Full Details</div>
                   <div
-                    class="badge badge-purple pointer"
+                    class="badge badge-purple pointer btn-bold"
                     data-toggle="modal"
-                    data-target="#modal-perm"
-                    @click="showPermModal(user)"
-                    v-if="$user.type == 'admin'"
-                  >Permissions</div>
+                    data-target="#modal-cards"
+                    @click="showCardsModal(user)"
+                  >View Cards</div>
                 </td>
               </tr>
             </tbody>
@@ -65,7 +57,7 @@
                           <div class="table-responsive">
                             <div class="flex j-c-between bd bg-light py-30 px-30">
                               <div class="flex-sh-0 ln-18">
-                                <div class="fs-16 fw-500 text-success">Agent</div>
+                                <div class="fs-16 fw-500 text-success">Card User</div>
                                 <span class="fs-12 text-light">User Role</span>
                               </div>
                               <!-- <div class="flex-sh-0 ln-18">
@@ -115,13 +107,13 @@
                   <button
                     type="button"
                     class="btn btn-bold btn-pure btn-warning"
-                    @click="restoreAdmin"
+                    @click="restoreCardUser"
                     v-if="userDetails.is_suspended"
                   >Restore Account</button>
                   <button
                     type="button"
                     class="btn btn-bold btn-pure btn-danger"
-                    @click="suspendAdmin"
+                    @click="suspendCardUser"
                     v-else
                   >Suspend Account</button>
                 </div>
@@ -129,11 +121,11 @@
             </div>
           </div>
 
-          <div class="modal modal-right fade" id="modal-perm" tabindex="-1">
+          <div class="modal modal-right fade" id="modal-cards" tabindex="-1">
             <div class="modal-dialog">
               <div class="modal-content">
                 <div class="modal-header">
-                  <h4 class="modal-title">{{ userDetails.full_name }}' details</h4>
+                  <h4 class="modal-title">{{ userDetails.full_name }}' Debit Cards</h4>
                   <button type="button" class="close" data-dismiss="modal">
                     <span aria-hidden="true">&times;</span>
                   </button>
@@ -141,135 +133,152 @@
                 <div class="modal-body">
                   <pre-loader v-if="sectionLoading" class="section-loader"></pre-loader>
                   <div class="col-md-12">
-                    <div class="card">
-                      <div class="card-title flex j-c-between">
-                        <h4>TASKS</h4>
-                        <div class="dropdown">
-                          <a href class="btn-dot-link" data-toggle="dropdown">
-                            <span></span>
-                            <span></span>
-                            <span></span>
-                          </a>
-                          <div class="dropdown-menu dropdown-menu-right fs-12">
-                            <a href class="dropdown-item fs-12">
-                              <i class="fa fa-plus w-20"></i> Add New
-                            </a>
-                            <a href class="dropdown-item fs-12">
-                              <i class="fas fa-redo-alt w-20"></i> Refresh
-                            </a>
-                          </div>
-                        </div>
-                      </div>
-
+                    <div class="card debit-cards">
                       <div class="card-body py-0">
                         <div class="card-row">
                           <div
                             class="widget-item pt-20 pb-25"
-                            v-for="value in all_routes"
+                            v-for="value in userDetails.cards"
                             :key="value.id"
                           >
-                            <label class="control control-checkbox mb-0">
-                              <span class="text-transparent">.</span>
-                              <input
-                                type="checkbox"
-                                :checked="permitted_routes.includes(value.id)"
-                                v-model="permitted_routes"
-                                :value="value.id"
-                              />
-                              <span class="control-icon"></span>
-                            </label>
                             <div class="flex j-c-between w-100p">
-                              <span class="widget-title mt-2">{{ value.description }}</span>
+                              <span class="widget-title mt-2">{{ value.card_number }}</span>
                               <span
                                 class="widget-text-small"
-                              >{{ permitted_routes.includes(value.id) ? 'permitted' : 'not permitted' }}</span>
+                              >{{ hasExpired(value.exp_date) ? 'expired' : 'valid' }}</span>
+                              <button
+                                type="button"
+                                class="btn btn-bold btn-info btn-xs fz-10"
+                              >Details</button>
                             </div>
                           </div>
-                          <button
-                            type="button"
-                            class="btn btn-bold btn-pure btn-info ml-120 my-30"
-                            @click="updateAdminPermissions"
-                          >Save changes</button>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="card">
+                      <div class="card-title flex j-c-between">
+                        <h3>Add New card</h3>
+                      </div>
+
+                      <div class="card-body py-0">
+                        <div class="card-row">
+                          <form class="m-25" @submit.prevent="createDebitCard">
+                            <div
+                              class="form-group mb-5"
+                              :class="{'has-error': errors.has('email')}"
+                            >
+                              <label for="form-mail">
+                                <strong>E-Mail</strong>
+                              </label>
+                              <input
+                                type="text"
+                                class="form-control form-control-pill"
+                                id="form-mail"
+                                v-model="details.email"
+                                name="email"
+                                readonly
+                              />
+                              <input type="hidden" v-model="details.user_id" />
+                            </div>
+
+                            <div
+                              class="form-group mb-5"
+                              :class="{'has-error': errors.has('card_number')}"
+                            >
+                              <label for="form-full-name">
+                                <strong>Card Number</strong>
+                              </label>
+                              <input
+                                type="text"
+                                class="form-control form-control-pill"
+                                id="form-full-name"
+                                v-model="details.card_number"
+                                v-validate="'required|credit_card'"
+                                data-vv-as="credit card number"
+                                name="card_number"
+                              />
+                              <span>{{ errors.first('card_number') }}</span>
+                            </div>
+                            <div class="row">
+                              <div class="col-4">
+                                <div
+                                  class="form-group mb-5"
+                                  :class="{'has-error': errors.has('exp_year')}"
+                                >
+                                  <label for="form-year">
+                                    <strong>Year</strong>
+                                  </label>
+                                  <select
+                                    class="form-control"
+                                    id="form-year"
+                                    name="exp_year"
+                                    v-validate="'required'"
+                                    data-vv-as="expiry year"
+                                    v-model="details.year"
+                                  >
+                                    <option value>Pick a Year</option>
+                                    <option v-for="n in range(2021, 2099)" :key="n">{{ n }}</option>
+                                  </select>
+                                </div>
+                              </div>
+                              <div class="col-4">
+                                <div
+                                  class="form-group mb-5"
+                                  :class="{'has-error': errors.has('exp_month')}"
+                                >
+                                  <label for="form-year">
+                                    <strong>Month</strong>
+                                  </label>
+                                  <select
+                                    class="form-control"
+                                    id="form-year"
+                                    name="exp_month"
+                                    v-validate="'required'"
+                                    data-vv-as="expiry month"
+                                    v-model="details.month"
+                                  >
+                                    <option value>Pick a Month</option>
+                                    <option v-for="n in range(1, 12)" :key="n">{{ n }}</option>
+                                  </select>
+                                </div>
+                              </div>
+                              <div class="col-4">
+                                <div
+                                  class="form-group mb-5"
+                                  :class="{'has-error': errors.has('csc')}"
+                                >
+                                  <label for="form-full-name">
+                                    <strong>CSC/CVV</strong>
+                                  </label>
+                                  <input
+                                    type="text"
+                                    class="form-control form-control-pill"
+                                    id="form-full-name"
+                                    v-model="details.csc"
+                                    v-validate="'required|numeric'"
+                                    data-vv-as="card security code"
+                                    name="csc"
+                                  />
+                                </div>
+                              </div>
+
+                              <span class="text-danger">{{ errors.first('csc') }}</span>
+                              <span class="text-danger">{{ errors.first('exp_year') }}</span>
+                              <span class="text-danger">{{ errors.first('exp_month') }}</span>
+                            </div>
+
+                            <div class="form-group mt-20">
+                              <button
+                                type="submit"
+                                class="btn btn-rss btn-round btn-block btn-bold"
+                              >Create</button>
+                            </div>
+                          </form>
                         </div>
                       </div>
                     </div>
                   </div>
-                </div>
-                <div class="modal-footer">
-                  <button
-                    type="button"
-                    class="btn btn-bold btn-pure btn-secondary"
-                    data-dismiss="modal"
-                  >Close</button>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="modal modal-right fade" id="modal-admin" tabindex="-1">
-            <div class="modal-dialog">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h4 class="modal-title">Enter Admin Details</h4>
-                  <button type="button" class="close" data-dismiss="modal">
-                    <span aria-hidden="true">&times;</span>
-                  </button>
-                </div>
-                <div class="modal-body">
-                  <pre-loader v-if="sectionLoading" class="section-loader"></pre-loader>
-                  <form class="m-25">
-                    <div class="form-group mb-5" :class="{'has-error': errors.has('full_name')}">
-                      <label for="form-full-name">
-                        <strong>Full Name</strong>
-                      </label>
-                      <input
-                        type="text"
-                        class="form-control form-control-pill"
-                        id="form-full-name"
-                        v-model="details.full_name"
-                        v-validate="'required'"
-                        name="full_name"
-                      />
-                      <span>{{ errors.first('full_name') }}</span>
-                    </div>
-                    <div class="form-group mb-5" :class="{'has-error': errors.has('email')}">
-                      <label for="form-mail">
-                        <strong>E-Mail</strong>
-                      </label>
-                      <input
-                        type="text"
-                        class="form-control form-control-pill"
-                        id="form-mail"
-                        v-model="details.email"
-                        v-validate="'required|email'"
-                        name="email"
-                      />
-                      <span>{{ errors.first('email') }}</span>
-                    </div>
-                    <div class="form-group mb-5" :class="{'has-error': errors.has('phone')}">
-                      <label for="form-phone">
-                        <strong>Phone</strong>
-                      </label>
-                      <input
-                        type="text"
-                        class="form-control form-control-pill"
-                        id="form-phone"
-                        v-model="details.phone"
-                        v-validate="'required'"
-                        name="phone"
-                      />
-                      <span>{{ errors.first('phone') }}</span>
-                    </div>
-
-                    <div class="form-group mt-20">
-                      <button
-                        type="button"
-                        class="btn btn-rss btn-round btn-block"
-                        data-dismiss="modal"
-                        @click="createAdmin"
-                      >Create</button>
-                    </div>
-                  </form>
                 </div>
                 <div class="modal-footer">
                   <button
@@ -289,16 +298,16 @@
 
 <script>
   import {
-    adminViewAdmins,
-    adminAdminPermissions,
-    adminCreateAdmin,
-    adminDeleteAdmin,
-    adminRestoreAdmin,
-    adminSuspendAdmin
+    adminViewCardUsers,
+    adminCardUserPermissions,
+    adminCreateDebitCard,
+    adminDeleteCardUser,
+    adminRestoreCardUser,
+    adminSuspendCardUser
   } from "@admin-assets/js/config";
   import PreLoader from "@admin-components/misc/PageLoader";
   export default {
-    name: "ManageAdmins",
+    name: "ManageCardUsers",
     data: () => ({
       users: [],
       userDetails: {},
@@ -311,7 +320,7 @@
       PreLoader
     },
     created() {
-      axios.get(adminViewAdmins).then(({ data: { users } }) => {
+      axios.get(adminViewCardUsers).then(({ data: { users } }) => {
         this.users = users;
 
         this.$nextTick(() => {
@@ -334,20 +343,11 @@
       showModal(userDetails) {
         this.userDetails = userDetails;
       },
-      showPermModal(userDetails) {
+      showCardsModal(userDetails) {
+        console.log(userDetails);
         this.userDetails = userDetails;
-        axios
-          .get(adminAdminPermissions(userDetails.id))
-          .then(({ data: { all_routes, permitted_routes } }) => {
-            this.all_routes = all_routes;
-            this.permitted_routes = permitted_routes;
-
-            this.$nextTick(() => {
-              $(() => {
-                this.sectionLoading = false;
-              });
-            });
-          });
+        this.details.email = userDetails.email;
+        this.details.user_id = userDetails.id;
       },
       slugToString(slug) {
         let words = slug.split("_");
@@ -358,20 +358,18 @@
         }
         return words.join(" ");
       },
-      updateAdminPermissions() {
+      deleteCardUser() {
         this.sectionLoading = true;
         BlockToast.fire({
-          text: "updating admin permissions ..."
+          text: "Deleting account officer's account ..."
         });
         axios
-          .put(adminAdminPermissions(this.userDetails.id), {
-            permitted_routes: this.permitted_routes
-          })
+          .delete(adminDeleteCardUser(this.userDetails.id))
           .then(({ status }) => {
             if (status === 204) {
               Toast.fire({
                 title: "Success",
-                text: "User permissions updated",
+                text: "User account deleted",
                 position: "center"
               });
             } else {
@@ -389,88 +387,65 @@
             });
           });
       },
-      deleteAdmin() {
+      suspendCardUser() {
         this.sectionLoading = true;
         BlockToast.fire({
-          text: "Deleting admin account ..."
+          text: "suspending account officer's account ..."
         });
-        axios.delete(adminDeleteAdmin(this.userDetails.id)).then(({ status }) => {
-          if (status === 204) {
-            Toast.fire({
-              title: "Success",
-              text: "User account deleted",
-              position: "center"
-            });
-          } else {
-            Toast.fire({
-              title: "Failed",
-              text: "Something wrong happend",
-              position: "center"
-            });
-          }
+        axios
+          .put(adminSuspendCardUser(this.userDetails.id))
+          .then(({ status }) => {
+            if (status === 204) {
+              Toast.fire({
+                title: "Success",
+                text: "User account suspended",
+                position: "center"
+              });
+            } else {
+              Toast.fire({
+                title: "Failed",
+                text: "Something wrong happend",
+                position: "center"
+              });
+            }
 
-          this.$nextTick(() => {
-            $(() => {
-              this.sectionLoading = false;
+            this.$nextTick(() => {
+              $(() => {
+                this.sectionLoading = false;
+              });
             });
           });
-        });
       },
-      suspendAdmin() {
+      restoreCardUser() {
         this.sectionLoading = true;
         BlockToast.fire({
-          text: "suspending admin account ..."
+          text: "restoring account officer's account ..."
         });
-        axios.put(adminSuspendAdmin(this.userDetails.id)).then(({ status }) => {
-          if (status === 204) {
-            Toast.fire({
-              title: "Success",
-              text: "User account suspended",
-              position: "center"
-            });
-          } else {
-            Toast.fire({
-              title: "Failed",
-              text: "Something wrong happend",
-              position: "center"
-            });
-          }
+        axios
+          .put(adminRestoreCardUser(this.userDetails.id))
+          .then(({ status }) => {
+            if (status === 204) {
+              Toast.fire({
+                title: "Success",
+                text: "User account restored",
+                position: "center"
+              });
+            } else {
+              Toast.fire({
+                title: "Failed",
+                text: "Something wrong happend",
+                position: "center"
+              });
+            }
 
-          this.$nextTick(() => {
-            $(() => {
-              this.sectionLoading = false;
+            this.$nextTick(() => {
+              $(() => {
+                this.sectionLoading = false;
+              });
             });
           });
-        });
       },
-      restoreAdmin() {
-        this.sectionLoading = true;
-        BlockToast.fire({
-          text: "restore admin account ..."
-        });
-        axios.put(adminRestoreAdmin(this.userDetails.id)).then(({ status }) => {
-          if (status === 204) {
-            Toast.fire({
-              title: "Success",
-              text: "User account restored",
-              position: "center"
-            });
-          } else {
-            Toast.fire({
-              title: "Failed",
-              text: "Something wrong happend",
-              position: "center"
-            });
-          }
-
-          this.$nextTick(() => {
-            $(() => {
-              this.sectionLoading = false;
-            });
-          });
-        });
-      },
-      createAdmin() {
+      createDebitCard() {
         this.$validator.validateAll().then(result => {
           if (!result) {
             Toast.fire({
@@ -480,20 +455,22 @@
             });
           } else {
             BlockToast.fire({
-              text: "Accessing your dashboard..."
+              text: "creating debit card for user..."
             });
 
             axios
-              .post(adminCreateAdmin, { ...this.details })
+              .post(adminCreateDebitCard(this.details.user_id), {
+                ...this.details
+              })
               .then(({ status, data: { rsp } }) => {
                 console.log(rsp);
 
                 if (undefined !== status && status == 201) {
                   this.details = {};
-                  this.users.push(rsp);
+                  this.userDetails = {};
                   Toast.fire({
                     title: "Created",
-                    text: `They will be required to set a password om their first login`,
+                    text: `They will be required to set a activate it before usage`,
                     icon: "success",
                     position: "center"
                   });
@@ -510,6 +487,12 @@
               });
           }
         });
+      },
+      hasExpired(date) {
+        return new Date(date) < Date.now();
+      },
+      range(start, end) {
+        return _.range(start, end);
       }
     }
   };
@@ -555,5 +538,13 @@
         opacity: 1;
       }
     }
+  }
+
+  .debit-cards {
+    max-height: 40vh;
+    overflow: auto;
+  }
+  .fz-10 {
+    font-size: 10px !important;
   }
 </style>

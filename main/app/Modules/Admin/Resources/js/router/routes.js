@@ -76,23 +76,21 @@ export const allRoutes = [
     },
     {
         path: '/cards',
-        component: {
-            render: h => h( 'router-view' )
-        },
+        component: adminView( 'EmptyComponent' ),
         meta: {
             iconClass: 'home',
-            menuName: 'Manage Cards'
+            menuName: 'Manage Debit Cards'
         },
         children: [ {
             path: '/cards/list',
-            component: adminView( 'cards/View' ),
+            component: adminView( 'cards/ManageDebitCards' ),
             name: 'admin.cards.list',
             meta: {
-                title: APP_NAME + ' | All Cards',
+                title: APP_NAME + ' | All Debit Cards',
                 iconClass: 'home',
-                menuName: 'All Cards'
+                menuName: 'All Debit Cards'
             },
-        } ]
+        }, ]
     },
     {
         path: '/users',
@@ -101,7 +99,18 @@ export const allRoutes = [
             iconClass: 'home',
             menuName: 'Manage User Types'
         },
-        children: [ {
+        children: [
+					{
+                path: '/users/card-users',
+                component: adminView( 'admins/ManageCardUsers' ),
+                name: 'admin.card-users.view',
+                meta: {
+                    title: APP_NAME + ' | View Card Users',
+                    iconClass: 'home',
+                    menuName: 'View Card Users'
+                },
+            },
+					{
                 path: '/users/admins',
                 component: adminView( 'admins/ManageAdmins' ),
                 name: 'admin.admins.view',

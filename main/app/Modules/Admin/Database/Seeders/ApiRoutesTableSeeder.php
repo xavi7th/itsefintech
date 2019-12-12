@@ -40,6 +40,17 @@ class ApiRoutesTableSeeder extends Seeder
 				}',
 				'description' => 'View Auth Logs',
 			),
+			1 =>
+			array(
+				'path' => '/card-users',
+				'name' => 'admin.card-users.view',
+				'meta' => '{
+					title: APP_NAME + \' | View Card Users\',
+					iconClass: \'home\',
+					menuName: \'View Card Users\'
+				}',
+				'description' => 'View Card Users',
+			),
 			11 =>
 			array(
 				'path' => '/admins',
@@ -129,6 +140,16 @@ class ApiRoutesTableSeeder extends Seeder
 					menuName: \'View Sales Reps\'
 				}',
 				'description' => 'View Sales Reps',
+			),
+			20 =>
+			array(
+				'path' => '/cards/list',
+				'name' => 'admin.cards.list',
+				'meta' => '{title: APP_NAME + \' | View Debit Cards\',
+					iconClass: \'user\',
+					menuName: \'View Debit Cards\'
+				}',
+				'description' => 'View Debit Cards',
 			),
 		));
 	}

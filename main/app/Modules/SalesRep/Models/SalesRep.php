@@ -3,9 +3,13 @@
 namespace App\Modules\SalesRep\Models;
 
 use App\User;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
 use App\Modules\Admin\Models\ApiRoute;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Modules\Admin\Transformers\AdminUserTransformer;
 
 class SalesRep extends User
 {
@@ -40,5 +44,67 @@ class SalesRep extends User
 				$user->api_routes()->detach();
 			}
 		});
+	}
+
+	static function routes()
+	{
+
+
+		Route::get('sales-reps', function () {
+			return (new AdminUserTransformer)->collectionTransformer(SalesRep::withTrashed()->get(), 'transformForAdminViewSalesReps');
+		})->middleware('auth:admin');
+
+		Route::post('sales-rep/create', function () {
+			// return request()->all();
+			try {
+				DB::beginTransaction();
+				$sales_rep = SalesRep::create(Arr::collapse([
+					request()->all(),
+					[
+						'password' => bcrypt('itsefintech@sales_rep'),
+					]
+				]));
+
+				DB::commit();
+				return response()->json(['rsp' => $sales_rep], 201);
+			} catch (Throwable $e) {
+				if (app()->environment() == 'local') {
+					return response()->json(['error' => $e->getMessage()], 500);
+				}
+				return response()->json(['rsp' => 'error occurred'], 500);
+			}
+		})->middleware('auth:admin');
+
+		Route::get('sales-rep/{sales_rep}/permissions', function (SalesRep $sales_rep) {
+			$permitted_routes = $sales_rep->api_routes()->get(['api_routes.id'])->map(function ($item, $key) {
+				return $item->id;
+			});
+
+			$all_routes = ApiRoute::get(['id', 'description'])->map(function ($item, $key) {
+				return ['id' => $item->id, 'description' => $item->description];
+			});
+
+			return ['permitted_routes' => $permitted_routes, 'all_routes' => $all_routes];
+		})->middleware('auth:admin');
+
+		Route::put('sales-rep/{sales_rep}/permissions', function (SalesRep $sales_rep) {
+			$sales_rep->api_routes()->sync(request('permitted_routes'));
+			return response()->json(['rsp' => true], 204);
+		})->middleware('auth:admin');
+
+		Route::put('sales-rep/{sales_rep}/suspend', function (SalesRep $sales_rep) {
+			$sales_rep->delete();
+			return response()->json(['rsp' => true], 204);
+		})->middleware('auth:admin');
+
+		Route::put('sales-rep/{id}/restore', function ($id) {
+			SalesRep::withTrashed()->find($id)->restore();
+			return response()->json(['rsp' => true], 204);
+		})->middleware('auth:admin');
+
+		Route::delete('sales-rep/{sales_rep}/delete', function (SalesRep $sales_rep) {
+			$sales_rep->forceDelete();
+			return response()->json(['rsp' => true], 204);
+		})->middleware('auth:admin');
 	}
 }

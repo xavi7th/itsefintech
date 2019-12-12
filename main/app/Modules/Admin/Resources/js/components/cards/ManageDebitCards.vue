@@ -1,6 +1,6 @@
 <template>
   <main>
-    <page-header pageTitle="Manage Admins"></page-header>
+    <page-header pageTitle="Manage Debit Cards"></page-header>
     <div class="content">
       <!-- table basic -->
       <div class="card">
@@ -9,8 +9,8 @@
             type="button"
             class="btn btn-bold btn-pure btn-twitter btn-shadow"
             data-toggle="modal"
-            data-target="#modal-admin"
-          >Create Admin</button>
+            data-target="#modal-account-officer"
+          >Create Debit Card</button>
         </div>
         <div class="card-body">
           <table class="table table-bordered table-hover" id="datatable1">
@@ -41,7 +41,6 @@
                     data-toggle="modal"
                     data-target="#modal-perm"
                     @click="showPermModal(user)"
-                    v-if="$user.type == 'admin'"
                   >Permissions</div>
                 </td>
               </tr>
@@ -65,7 +64,7 @@
                           <div class="table-responsive">
                             <div class="flex j-c-between bd bg-light py-30 px-30">
                               <div class="flex-sh-0 ln-18">
-                                <div class="fs-16 fw-500 text-success">Agent</div>
+                                <div class="fs-16 fw-500 text-success">Debit Card</div>
                                 <span class="fs-12 text-light">User Role</span>
                               </div>
                               <!-- <div class="flex-sh-0 ln-18">
@@ -115,13 +114,13 @@
                   <button
                     type="button"
                     class="btn btn-bold btn-pure btn-warning"
-                    @click="restoreAdmin"
+                    @click="restoreDebitCard"
                     v-if="userDetails.is_suspended"
                   >Restore Account</button>
                   <button
                     type="button"
                     class="btn btn-bold btn-pure btn-danger"
-                    @click="suspendAdmin"
+                    @click="suspendDebitCard"
                     v-else
                   >Suspend Account</button>
                 </div>
@@ -188,7 +187,7 @@
                           <button
                             type="button"
                             class="btn btn-bold btn-pure btn-info ml-120 my-30"
-                            @click="updateAdminPermissions"
+                            @click="updateDebitCardPermissions"
                           >Save changes</button>
                         </div>
                       </div>
@@ -206,11 +205,11 @@
             </div>
           </div>
 
-          <div class="modal modal-right fade" id="modal-admin" tabindex="-1">
+          <div class="modal modal-right fade" id="modal-account-officer" tabindex="-1">
             <div class="modal-dialog">
               <div class="modal-content">
                 <div class="modal-header">
-                  <h4 class="modal-title">Enter Admin Details</h4>
+                  <h4 class="modal-title">Enter Debit Card Details</h4>
                   <button type="button" class="close" data-dismiss="modal">
                     <span aria-hidden="true">&times;</span>
                   </button>
@@ -266,7 +265,7 @@
                         type="button"
                         class="btn btn-rss btn-round btn-block"
                         data-dismiss="modal"
-                        @click="createAdmin"
+                        @click="createDebitCard"
                       >Create</button>
                     </div>
                   </form>
@@ -289,16 +288,16 @@
 
 <script>
   import {
-    adminViewAdmins,
-    adminAdminPermissions,
-    adminCreateAdmin,
-    adminDeleteAdmin,
-    adminRestoreAdmin,
-    adminSuspendAdmin
+    adminViewDebitCards,
+    adminCreateDebitCard,
+    adminDeleteDebitCard,
+    adminReactivateDebitCard,
+    adminActivateDebitCard,
+    adminDeactivateDebitCard
   } from "@admin-assets/js/config";
   import PreLoader from "@admin-components/misc/PageLoader";
   export default {
-    name: "ManageAdmins",
+    name: "ManageDebitCards",
     data: () => ({
       users: [],
       userDetails: {},
@@ -311,7 +310,7 @@
       PreLoader
     },
     created() {
-      axios.get(adminViewAdmins).then(({ data: { users } }) => {
+      axios.get(adminViewDebitCards).then(({ data: { users } }) => {
         this.users = users;
 
         this.$nextTick(() => {
@@ -337,7 +336,7 @@
       showPermModal(userDetails) {
         this.userDetails = userDetails;
         axios
-          .get(adminAdminPermissions(userDetails.id))
+          .get(adminDebitCardPermissions(userDetails.id))
           .then(({ data: { all_routes, permitted_routes } }) => {
             this.all_routes = all_routes;
             this.permitted_routes = permitted_routes;
@@ -358,13 +357,13 @@
         }
         return words.join(" ");
       },
-      updateAdminPermissions() {
+      updateDebitCardPermissions() {
         this.sectionLoading = true;
         BlockToast.fire({
-          text: "updating admin permissions ..."
+          text: "updating account officer's permissions ..."
         });
         axios
-          .put(adminAdminPermissions(this.userDetails.id), {
+          .put(adminDebitCardPermissions(this.userDetails.id), {
             permitted_routes: this.permitted_routes
           })
           .then(({ status }) => {
@@ -389,88 +388,94 @@
             });
           });
       },
-      deleteAdmin() {
+      deleteDebitCard() {
         this.sectionLoading = true;
         BlockToast.fire({
-          text: "Deleting admin account ..."
+          text: "Deleting account officer's account ..."
         });
-        axios.delete(adminDeleteAdmin(this.userDetails.id)).then(({ status }) => {
-          if (status === 204) {
-            Toast.fire({
-              title: "Success",
-              text: "User account deleted",
-              position: "center"
-            });
-          } else {
-            Toast.fire({
-              title: "Failed",
-              text: "Something wrong happend",
-              position: "center"
-            });
-          }
+        axios
+          .delete(adminDeleteDebitCard(this.userDetails.id))
+          .then(({ status }) => {
+            if (status === 204) {
+              Toast.fire({
+                title: "Success",
+                text: "User account deleted",
+                position: "center"
+              });
+            } else {
+              Toast.fire({
+                title: "Failed",
+                text: "Something wrong happend",
+                position: "center"
+              });
+            }
 
-          this.$nextTick(() => {
-            $(() => {
-              this.sectionLoading = false;
+            this.$nextTick(() => {
+              $(() => {
+                this.sectionLoading = false;
+              });
             });
           });
-        });
       },
-      suspendAdmin() {
+      suspendDebitCard() {
         this.sectionLoading = true;
         BlockToast.fire({
-          text: "suspending admin account ..."
+          text: "suspending account officer's account ..."
         });
-        axios.put(adminSuspendAdmin(this.userDetails.id)).then(({ status }) => {
-          if (status === 204) {
-            Toast.fire({
-              title: "Success",
-              text: "User account suspended",
-              position: "center"
-            });
-          } else {
-            Toast.fire({
-              title: "Failed",
-              text: "Something wrong happend",
-              position: "center"
-            });
-          }
+        axios
+          .put(adminSuspendDebitCard(this.userDetails.id))
+          .then(({ status }) => {
+            if (status === 204) {
+              Toast.fire({
+                title: "Success",
+                text: "User account suspended",
+                position: "center"
+              });
+            } else {
+              Toast.fire({
+                title: "Failed",
+                text: "Something wrong happend",
+                position: "center"
+              });
+            }
 
-          this.$nextTick(() => {
-            $(() => {
-              this.sectionLoading = false;
+            this.$nextTick(() => {
+              $(() => {
+                this.sectionLoading = false;
+              });
             });
           });
-        });
       },
-      restoreAdmin() {
+      restoreDebitCard() {
         this.sectionLoading = true;
         BlockToast.fire({
-          text: "restore admin account ..."
+          text: "restoring account officer's account ..."
         });
-        axios.put(adminRestoreAdmin(this.userDetails.id)).then(({ status }) => {
-          if (status === 204) {
-            Toast.fire({
-              title: "Success",
-              text: "User account restored",
-              position: "center"
-            });
-          } else {
-            Toast.fire({
-              title: "Failed",
-              text: "Something wrong happend",
-              position: "center"
-            });
-          }
+        axios
+          .put(adminRestoreDebitCard(this.userDetails.id))
+          .then(({ status }) => {
+            if (status === 204) {
+              Toast.fire({
+                title: "Success",
+                text: "User account restored",
+                position: "center"
+              });
+            } else {
+              Toast.fire({
+                title: "Failed",
+                text: "Something wrong happend",
+                position: "center"
+              });
+            }
 
-          this.$nextTick(() => {
-            $(() => {
-              this.sectionLoading = false;
+            this.$nextTick(() => {
+              $(() => {
+                this.sectionLoading = false;
+              });
             });
           });
-        });
       },
-      createAdmin() {
+      createDebitCard() {
         this.$validator.validateAll().then(result => {
           if (!result) {
             Toast.fire({
@@ -484,7 +489,7 @@
             });
 
             axios
-              .post(adminCreateAdmin, { ...this.details })
+              .post(adminCreateDebitCard, { ...this.details })
               .then(({ status, data: { rsp } }) => {
                 console.log(rsp);
 

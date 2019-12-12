@@ -11,6 +11,7 @@ use App\Modules\NormalAdmin\Models\NormalAdmin;
 use App\Modules\DispatchAdmin\Models\DispatchAdmin;
 use App\Modules\AccountOfficer\Models\AccountOfficer;
 use App\Modules\CustomerSupport\Models\CustomerSupport;
+use App\Modules\CardUser\Models\CardUser;
 
 class AdminUserTransformer
 {
@@ -227,6 +228,26 @@ class AdminUserTransformer
 			'dob' => (string)$user->dob,
 			'is_verified' => (boolean)$user->is_verified(),
 			'is_suspended' => (boolean)$user->deleted_at
+		];
+	}
+	public function transformForAdminViewCardUsers(CardUser $user)
+	{
+		return [
+			'id' => (int)$user->id,
+			'full_name' => (string)$user->first_name . ' ' . $user->first_name,
+			'email' => (string)$user->email,
+			'phone' => (string)$user->phone,
+			'bvn' => (string)$user->bvn,
+			'user_passport' => (string)$user->user_passport,
+			'gender' => (string)$user->gender,
+			'acc_type' => (string)$user->acc_type,
+			'acc_num' => (string)$user->acc_num,
+			'address' => (string)$user->address,
+			'dob' => (string)$user->dob,
+			'is_verified' => (boolean)$user->is_otp_verified(),
+			'is_suspended' => (boolean)$user->deleted_at,
+			'can_withdraw' => (boolean)$user->can_withdraw,
+			'cards' => $user->debit_cards
 		];
 	}
 }

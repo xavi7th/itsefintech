@@ -17,10 +17,13 @@ class CreateDebitCardsTable extends Migration
 			$table->bigIncrements('id');
 			$table->bigInteger('card_user_id')->unsigned();
 			$table->foreign('card_user_id')->references('id')->on('card_users')->onDelete('cascade');
-			$table->bigInteger('card_number')->unique();
+			$table->string('card_number')->unique();
 			$table->integer('csc');
 			$table->integer('month');
 			$table->integer('year');
+			$table->boolean('is_user_activated')->default(false);
+			$table->boolean('is_admin_activated')->default(false);
+			$table->boolean('is_suspended')->default(false);
 
 			$table->timestamps();
 			$table->softDeletes();
