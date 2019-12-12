@@ -312,8 +312,6 @@
       users: [],
       userDetails: {},
       sectionLoading: false,
-      all_routes: [],
-      permitted_routes: [],
       details: {}
     }),
     components: {

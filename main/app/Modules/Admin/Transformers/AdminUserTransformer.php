@@ -12,6 +12,7 @@ use App\Modules\DispatchAdmin\Models\DispatchAdmin;
 use App\Modules\AccountOfficer\Models\AccountOfficer;
 use App\Modules\CustomerSupport\Models\CustomerSupport;
 use App\Modules\CardUser\Models\CardUser;
+use App\Modules\CardUser\Models\DebitCard;
 
 class AdminUserTransformer
 {

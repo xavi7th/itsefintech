@@ -67,9 +67,7 @@ export const adminRestoreCardUser = id => apiBaseUrl + 'card-user/' + id + '/res
  */
 export const adminViewDebitCards = apiBaseUrl + 'debit-cards'
 export const adminCreateDebitCard = id => `${apiBaseUrl}${id}/debit-card/create`
-export const adminDeleteDebitCard = id => apiBaseUrl + 'debit-card/' + id + '/delete'
-export const adminDeactivateDebitCard = id => apiBaseUrl + 'debit-card/' + id + '/deactivate'
-export const adminReactivateDebitCard = id => apiBaseUrl + 'debit-card/' + id + '/reactivate'
+export const toggleDebitCardSuspension = id => apiBaseUrl + 'debit-card/' + id + '/suspension'
 export const adminActivateDebitCard = id => apiBaseUrl + 'debit-card/' + id + '/activate'
 
 

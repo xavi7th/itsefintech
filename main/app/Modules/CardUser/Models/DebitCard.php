@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Modules\CardUser\Models\CardUser;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Modules\Admin\Transformers\AdminUserTransformer;
+use App\Modules\Admin\Transformers\AdminDebitCardTransformer;
 use App\Modules\Admin\Http\Requests\DebitCardCreationValidation;
 
 class DebitCard extends Model
@@ -23,7 +24,7 @@ class DebitCard extends Model
 
 	public function card_user()
 	{
-		return $this->hasOne(CardUser::class);
+		return $this->belongsTo(CardUser::class);
 	}
 
 	public function getExpDateAttribute()
@@ -43,11 +44,10 @@ class DebitCard extends Model
 	static function routes()
 	{
 		Route::get('debit-cards', function () {
-			return (new AdminUserTransformer)->collectionTransformer(DebitCard::withTrashed()->get(), 'transformForAdminViewDebitCards');
+			return (new AdminDebitCardTransformer)->collectionTransformer(DebitCard::withTrashed()->get(), 'transformForAdminViewDebitCards');
 		})->middleware('auth:admin');
 
 		Route::post('{user}/debit-card/create', function (DebitCardCreationValidation $request, CardUser $user) {
-			// dd(encrypt($request->card_number));
 			try {
 				DB::beginTransaction();
 				$debit_card = $user->debit_cards()->create($request->all());
@@ -61,16 +61,16 @@ class DebitCard extends Model
 			}
 		})->middleware('auth:admin');
 
-		Route::get('debit-card/{debit_card}/permissions', function (DebitCard $debit_card) {
-			$permitted_routes = $debit_card->api_routes()->get(['api_routes.id'])->map(function ($item, $key) {
-				return $item->id;
-			});
+		Route::put('debit-card/{debit_card}/suspension', function (DebitCard $debit_card) {
+			$debit_card->is_suspended = !$debit_card->is_suspended;
+			$debit_card->save();
+			return response()->json([], 204);
+		})->middleware('auth:admin');
 
-			$all_routes = ApiRoute::get(['id', 'description'])->map(function ($item, $key) {
-				return ['id' => $item->id, 'description' => $item->description];
-			});
-
-			return ['permitted_routes' => $permitted_routes, 'all_routes' => $all_routes];
+		Route::put('debit-card/{debit_card}/activate', function (DebitCard $debit_card) {
+			$debit_card->is_admin_activated = true;
+			$debit_card->save();
+			return response()->json([], 204);
 		})->middleware('auth:admin');
 
 		Route::put('debit-card/{debit_card}/permissions', function (DebitCard $debit_card) {
