@@ -52,6 +52,15 @@ class Handler extends ExceptionHandler
 	public function render($request, Exception $exception)
 	{
 		// dd(get_class($exception));
+		if ($request->expectsJson()) {
+			if ($exception instanceof NotFoundHttpException) {
+				return response()->json(['message' => 'No such endpoint'], 404);
+			} elseif ($exception instanceof MethodNotAllowedHttpException) {
+				return response()->json(['message' => 'Invalid request'], 405);
+			} elseif ($exception instanceof QueryException) {
+				return response()->json(['message' => 'Gone'], 500);
+			}
+		}
 
 		return parent::render($request, $exception);
 	}
