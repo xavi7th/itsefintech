@@ -43,7 +43,6 @@ class LoginController extends Controller
 
 	public function login(LoginValidation $request)
 	{
-
 		$credentials = request(['email', 'password']);
 
 		if (!$token = auth()->guard('card_user')->attempt($credentials)) {
@@ -51,7 +50,6 @@ class LoginController extends Controller
 		}
 
 		return $this->respondWithToken($token);
-
 	}
 
 	public function refresh(Request $request)
@@ -87,7 +85,7 @@ class LoginController extends Controller
 		return response()->json([
 			'access_token' => $token,
 			'token_type' => 'bearer',
-			'expires_in' => auth()->factory()->getTTL() * 60
+			'expires_in' => auth('card_user')->factory()->getTTL() * 60
 		]);
 	}
 
@@ -98,6 +96,6 @@ class LoginController extends Controller
 	 */
 	protected function guard()
 	{
-		return Auth::guard();
+		return Auth::guard('card_user');
 	}
 }

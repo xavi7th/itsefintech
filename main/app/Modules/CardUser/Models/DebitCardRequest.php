@@ -10,7 +10,9 @@ use App\Modules\Admin\Transformers\AdminDebitCardRequestTransformer;
 
 class DebitCardRequest extends Model
 {
-	protected $fillable = [];
+	protected $fillable = [
+		'address', 'phone', 'debit_card_request_status_id', 'payment_method', 'zip', 'city'
+	];
 
 	public function card_user()
 	{

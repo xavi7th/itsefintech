@@ -2,12 +2,16 @@
 
 namespace App\Modules\CardUser\Http\Controllers;
 
+use Illuminate\Support\Arr;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Route;
 use App\Modules\CardUser\Http\Controllers\LoginController;
 use App\Modules\CardUser\Http\Controllers\RegisterController;
+use App\Modules\CardUser\Http\Requests\CardRequestValidation;
+use App\Modules\CardUser\Http\Requests\CardActivationValidation;
+use App\Modules\CardUser\Models\DebitCard;
 
 class CardUserController extends Controller
 {
@@ -28,8 +32,6 @@ class CardUserController extends Controller
 
 		Route::group(['prefix' => 'v1'], function () {
 
-
-
 			Route::group(['prefix' => 'auth', 'middleware' => ['auth:card_user', 'card_users']], function () {
 
 				Route::group(['middleware' => ['unverified_card_users']], function () {
@@ -41,6 +43,11 @@ class CardUserController extends Controller
 				Route::group(['middleware' => ['verified_card_users']], function () {
 					Route::get('/user', 'CardUserController@user');
 				});
+			});
+
+			Route::group(['prefix' => 'card', 'middleware' => ['auth:card_user', 'card_users']], function () {
+				Route::post('/new', 'CardUserController@requestDebitCard');
+				Route::put('/activate', 'CardUserController@activateDebitCard');
 			});
 		});
 	}
@@ -81,5 +88,33 @@ class CardUserController extends Controller
 		$request->user()->save();
 
 		return response()->json(['message' => 'Account verified'], 205);
+	}
+
+	public function requestDebitCard(CardRequestValidation $request)
+	{
+		return $request->user()->debit_card_requests()->updateOrCreate(
+			[
+				'payment_method' => request('payment_method'),
+				'address' => request('address'),
+			],
+			Arr::collapse(
+				[
+					$request->all(),
+					[
+						'debit_card_request_status_id' => 1,
+					]
+				]
+			)
+		);
+	}
+
+	public function activateDebitCard(CardActivationValidation $request)
+	{
+		DebitCard::unguard();
+		DebitCard::find($request->card_id)->update([
+			'is_user_activated' => true
+		]);
+		DebitCard::reguard();
+		return response()->json(['message' => 'Card Activated'], 204);
 	}
 }

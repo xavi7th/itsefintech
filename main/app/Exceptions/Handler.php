@@ -58,7 +58,10 @@ class Handler extends ExceptionHandler
 			} elseif ($exception instanceof MethodNotAllowedHttpException) {
 				return response()->json(['message' => 'Invalid request'], 405);
 			} elseif ($exception instanceof QueryException) {
-				return response()->json(['message' => 'Gone'], 500);
+				if (getenv('APP_ENV') === 'local') {
+					return response()->json(['Error' => $exception->getMessage()], 500);
+				}
+				return response()->json(['message' => 'Error while trying to handle request'], 500);
 			}
 		}
 
