@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\Facades\Artisan;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -33,7 +35,7 @@ Route::get('/site/setup/{key?}',  function ($key = null) {
 			$rsp =  Artisan::call('module:seed');
 			echo 'done module:seed. Result: ' . $rsp;
 		} catch (Exception $e) {
-			Response::make($e->getMessage(), 500);
+			return Response::make($e->getMessage(), 500);
 		}
 	} else {
 		App::abort(404);
