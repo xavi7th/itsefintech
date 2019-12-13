@@ -20,6 +20,11 @@ class AdminDatabaseSeeder extends Seeder
 
 		$this->call(ApiRoutesTableSeeder::class);
 		$this->call(AdminsTableSeeder::class);
+
+		#iseed_start
+
+
+		#iseed_end
 	}
 }
 

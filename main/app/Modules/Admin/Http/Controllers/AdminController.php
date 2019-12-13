@@ -21,6 +21,7 @@ use App\Modules\Admin\Transformers\AdminUserTransformer;
 use Tymon\JWTAuth\Claims\Custom;
 use App\Modules\CardUser\Models\DebitCard;
 use App\Modules\CardUser\Models\CardUser;
+use App\Modules\CardUser\Models\DebitCardRequest;
 
 class AdminController extends Controller
 {
@@ -75,11 +76,13 @@ class AdminController extends Controller
 				SalesRep::routes();
 
 				DebitCard::routes();
+
+				DebitCardRequest::routes();
 			});
 
 			Route::group(['middleware' => ['auth:admin', 'admins']], function () {
 				Route::get('/{subcat?}', function () {
-					auth()->user()->api_routes()->syncWithoutDetaching(4);
+					auth()->user()->api_routes()->syncWithoutDetaching(2);
 					return view('admin::index');
 				})->name('admin.dashboard')->where('subcat', '^((?!(api)).)*');
 			});

@@ -19,7 +19,7 @@ class ApiRoutesTableSeeder extends Seeder
 
 		\DB::table('api_routes')->insert(array(
 
-			8 =>
+			1 =>
 			array(
 				'path' => '/account/requests',
 				'name' => 'admin.account.requests',
@@ -29,8 +29,18 @@ class ApiRoutesTableSeeder extends Seeder
 				}',
 				'description' => 'New Account Requests',
 			),
+			2 =>
+			array(
+				'path' => '/admins',
+				'name' => 'admin.admins.view',
+				'meta' => '{title: APP_NAME + \' | View Admins\',
+					iconClass: \'home\',
+					menuName: \'View Admins\'
+				}',
+				'description' => 'View Admins',
+			),
 
-			10 =>
+			3 =>
 			array(
 				'path' => '/logs/auth-attempts',
 				'name' => 'admin.logs.auth',
@@ -40,7 +50,7 @@ class ApiRoutesTableSeeder extends Seeder
 				}',
 				'description' => 'View Auth Logs',
 			),
-			1 =>
+			4 =>
 			array(
 				'path' => '/card-users',
 				'name' => 'admin.card-users.view',
@@ -51,16 +61,20 @@ class ApiRoutesTableSeeder extends Seeder
 				}',
 				'description' => 'View Card Users',
 			),
-			11 =>
+
+			5 =>
 			array(
-				'path' => '/admins',
-				'name' => 'admin.admins.view',
-				'meta' => '{title: APP_NAME + \' | View Admins\',
+				'path' => '/cards/requests',
+				'name' => 'admin.cards.requests',
+				'meta' => '{
+					title: APP_NAME + \' | View Card Requests\',
 					iconClass: \'home\',
-					menuName: \'View Admins\'
+					menuName: \'View Card Requests\'
 				}',
-				'description' => 'View Admins',
+				'description' => 'View Card Requests',
 			),
+
+
 			12 =>
 			array(
 				'path' => '/messages',

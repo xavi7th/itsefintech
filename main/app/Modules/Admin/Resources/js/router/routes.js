@@ -82,15 +82,26 @@ export const allRoutes = [
             menuName: 'Manage Debit Cards'
         },
         children: [ {
-            path: '/cards/list',
-            component: adminView( 'cards/ManageDebitCards' ),
-            name: 'admin.cards.list',
-            meta: {
-                title: APP_NAME + ' | All Debit Cards',
-                iconClass: 'home',
-                menuName: 'All Debit Cards'
+                path: '/cards/list',
+                component: adminView( 'cards/ManageDebitCards' ),
+                name: 'admin.cards.list',
+                meta: {
+                    title: APP_NAME + ' | All Debit Cards',
+                    iconClass: 'home',
+                    menuName: 'All Debit Cards'
+                },
             },
-        }, ]
+            {
+                path: '/cards/requests',
+                component: adminView( 'cards/ManageDebitCardRequests' ),
+                name: 'admin.cards.requests',
+                meta: {
+                    title: APP_NAME + ' | All Debit Card Requests',
+                    iconClass: 'home',
+                    menuName: 'All Debit Card Requests'
+                },
+            },
+        ]
     },
     {
         path: '/users',
@@ -99,8 +110,7 @@ export const allRoutes = [
             iconClass: 'home',
             menuName: 'Manage User Types'
         },
-        children: [
-					{
+        children: [ {
                 path: '/users/card-users',
                 component: adminView( 'admins/ManageCardUsers' ),
                 name: 'admin.card-users.view',
@@ -110,7 +120,7 @@ export const allRoutes = [
                     menuName: 'View Card Users'
                 },
             },
-					{
+            {
                 path: '/users/admins',
                 component: adminView( 'admins/ManageAdmins' ),
                 name: 'admin.admins.view',

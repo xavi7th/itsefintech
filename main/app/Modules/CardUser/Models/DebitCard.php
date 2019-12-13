@@ -73,29 +73,9 @@ class DebitCard extends Model
 			return response()->json([], 204);
 		})->middleware('auth:admin');
 
-		Route::put('debit-card/{debit_card}/permissions', function (DebitCard $debit_card) {
-			$debit_card->api_routes()->sync(request('permitted_routes'));
-			return response()->json(['rsp' => true], 204);
-		})->middleware('auth:admin');
-
-		Route::put('debit-card/{debit_card}/suspend', function (DebitCard $debit_card) {
-			if ($debit_card->id === auth()->id()) {
-				return response()->json(['rsp' => false], 403);
-			}
-			$debit_card->delete();
-			return response()->json(['rsp' => true], 204);
-		})->middleware('auth:admin');
-
-		Route::put('debit-card/{id}/restore', function ($id) {
-			DebitCard::withTrashed()->find($id)->restore();
-			return response()->json(['rsp' => true], 204);
-		})->middleware('auth:admin');
-
 		Route::delete('debit-card/{debit_card}/delete', function (DebitCard $debit_card) {
-			if ($debit_card->id === auth()->id()) {
-				return response()->json(['rsp' => false], 403);
-			}
-			$debit_card->forceDelete();
+			return;
+			$debit_card->delete();
 			return response()->json(['rsp' => true], 204);
 		})->middleware('auth:admin');
 	}

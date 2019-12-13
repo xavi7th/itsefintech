@@ -7,6 +7,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use App\Modules\CardUser\Models\OTP;
 use Illuminate\Support\Facades\Route;
+use App\Modules\CardUser\Models\DebitCardRequest;
 use App\Modules\Admin\Transformers\AdminUserTransformer;
 
 class CardUser extends User
@@ -63,6 +64,11 @@ class CardUser extends User
 	public function debit_cards()
 	{
 		return $this->hasMany(DebitCard::class);
+	}
+
+	public function debit_card_requests()
+	{
+		return $this->hasMany(DebitCardRequest::class);
 	}
 
 	// public function withdrawal_requests()

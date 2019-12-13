@@ -70,6 +70,10 @@ export const adminCreateDebitCard = id => `${apiBaseUrl}${id}/debit-card/create`
 export const toggleDebitCardSuspension = id => apiBaseUrl + 'debit-card/' + id + '/suspension'
 export const adminActivateDebitCard = id => apiBaseUrl + 'debit-card/' + id + '/activate'
 
+export const adminViewDebitCardRequests = apiBaseUrl + 'debit-card-requests'
+export const adminMarkDebitCardRequestAsPaid = id => apiBaseUrl + 'debit-card-request/' + id + '/paid'
+export const adminUpdateDebitCardRequestStatus = id => apiBaseUrl + 'debit-card-request/' + id + '/status/update'
+
 
 
 export const adminViewUsers = apiBaseUrl + 'users'
