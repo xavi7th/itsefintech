@@ -7,12 +7,13 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Route;
+use App\Modules\CardUser\Models\DebitCard;
+use App\Modules\CardUser\Models\DebitCardRequest;
 use App\Modules\CardUser\Http\Controllers\LoginController;
 use App\Modules\CardUser\Http\Controllers\RegisterController;
 use App\Modules\CardUser\Http\Requests\CardRequestValidation;
 use App\Modules\CardUser\Http\Requests\CardActivationValidation;
-use App\Modules\CardUser\Models\DebitCard;
-use App\Modules\CardUser\Models\DebitCardRequest;
+use App\Modules\CardUser\Http\Requests\CardUserUpdateProfileValidation;
 
 class CardUserController extends Controller
 {
@@ -29,9 +30,6 @@ class CardUserController extends Controller
 			RegisterController::routes();
 
 			Route::get('/', 'CardUserController@index');
-		});
-
-		Route::group(['prefix' => 'v1'], function () {
 
 			Route::group(['prefix' => 'auth', 'middleware' => ['auth:card_user', 'card_users']], function () {
 
@@ -43,8 +41,16 @@ class CardUserController extends Controller
 
 				Route::group(['middleware' => ['verified_card_users']], function () {
 					Route::get('/user', 'CardUserController@user');
+					Route::put('/user', 'CardUserController@updateUserProfile');
 				});
 			});
+
+			Route::group(['prefix' => 'card', 'middleware' => ['auth:card_user', 'card_users']], function () {
+				Route::post('/new', 'CardUserController@requestDebitCard');
+				Route::put('/activate', 'CardUserController@activateDebitCard');
+				Route::get('/{card_request}/status', 'CardUserController@trackDebitCard');
+			});
+
 
 			Route::group(['prefix' => 'card', 'middleware' => ['auth:card_user', 'card_users']], function () {
 				Route::post('/new', 'CardUserController@requestDebitCard');
@@ -65,8 +71,13 @@ class CardUserController extends Controller
 
 	public function user(Request $request)
 	{
-		return response()->json(auth()->user());
-		// return $request->user();
+		return response()->json(auth('card_user')->user());
+	}
+
+	public function updateUserProfile(CardUserUpdateProfileValidation $request)
+	{
+		auth('card_user')->user()->update($request->except(['email', 'bvn']));
+		return response()->json(['updated' => true], 204);
 	}
 
 	public function requestOTP(Request $request)
@@ -123,8 +134,6 @@ class CardUserController extends Controller
 	}
 	public function trackDebitCard(DebitCardRequest $card_request)
 	{
-
-
 		return response()->json(['status' => $card_request->debit_card_request_status->name], 200);
 	}
 }
