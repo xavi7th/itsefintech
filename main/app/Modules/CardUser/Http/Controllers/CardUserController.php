@@ -12,6 +12,7 @@ use App\Modules\CardUser\Http\Controllers\RegisterController;
 use App\Modules\CardUser\Http\Requests\CardRequestValidation;
 use App\Modules\CardUser\Http\Requests\CardActivationValidation;
 use App\Modules\CardUser\Models\DebitCard;
+use App\Modules\CardUser\Models\DebitCardRequest;
 
 class CardUserController extends Controller
 {
@@ -48,6 +49,7 @@ class CardUserController extends Controller
 			Route::group(['prefix' => 'card', 'middleware' => ['auth:card_user', 'card_users']], function () {
 				Route::post('/new', 'CardUserController@requestDebitCard');
 				Route::put('/activate', 'CardUserController@activateDebitCard');
+				Route::get('/{card_request}/status', 'CardUserController@trackDebitCard');
 			});
 		});
 	}
@@ -92,7 +94,7 @@ class CardUserController extends Controller
 
 	public function requestDebitCard(CardRequestValidation $request)
 	{
-		return $request->user()->debit_card_requests()->updateOrCreate(
+		$card_request = $request->user()->debit_card_requests()->updateOrCreate(
 			[
 				'payment_method' => request('payment_method'),
 				'address' => request('address'),
@@ -106,6 +108,8 @@ class CardUserController extends Controller
 				]
 			)
 		);
+
+		return response()->json($card_request, 201);
 	}
 
 	public function activateDebitCard(CardActivationValidation $request)
@@ -116,5 +120,11 @@ class CardUserController extends Controller
 		]);
 		DebitCard::reguard();
 		return response()->json(['message' => 'Card Activated'], 204);
+	}
+	public function trackDebitCard(DebitCardRequest $card_request)
+	{
+
+
+		return response()->json(['status' => $card_request->debit_card_request_status->name], 200);
 	}
 }

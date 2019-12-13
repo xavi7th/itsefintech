@@ -6,6 +6,7 @@ use Exception;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Database\QueryException;
 use Illuminate\Session\TokenMismatchException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
@@ -55,6 +56,8 @@ class Handler extends ExceptionHandler
 		if ($request->expectsJson()) {
 			if ($exception instanceof NotFoundHttpException) {
 				return response()->json(['message' => 'No such endpoint'], 404);
+			} elseif ($exception instanceof ModelNotFoundException) {
+				return response()->json(['message' => 'Item not found'], 404);
 			} elseif ($exception instanceof MethodNotAllowedHttpException) {
 				return response()->json(['message' => 'Invalid request'], 405);
 			} elseif ($exception instanceof QueryException) {
