@@ -47,8 +47,13 @@ class DebitCard extends Model
 
 	static function routes()
 	{
-		Route::get('debit-cards', function () {
-			return (new AdminDebitCardTransformer)->collectionTransformer(DebitCard::withTrashed()->get(), 'transformForAdminViewDebitCards');
+		Route::get('debit-cards/{rep?}', function ($rep = null) {
+			if (is_null($rep)) {
+				$debit_cards = DebitCard::withTrashed()->get();
+			} else {
+				$debit_cards = SalesRep::find($rep)->assigned_debit_cards()->withTrashed()->get();
+			}
+			return (new AdminDebitCardTransformer)->collectionTransformer($debit_cards, 'transformForAdminViewDebitCards');
 		})->middleware('auth:admin');
 
 		Route::post('debit-card/create', function (DebitCardCreationValidation $request, CardUser $user) {

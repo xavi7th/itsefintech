@@ -232,23 +232,25 @@
         BlockToast.fire({
           text: "loading debit cards..."
         });
-        axios.get(adminViewDebitCards).then(({ data: { debit_cards } }) => {
-          this.debitCards = debit_cards;
+        axios
+          .get(adminViewDebitCards(this.saleRepId))
+          .then(({ data: { debit_cards } }) => {
+            this.debitCards = debit_cards;
 
-          this.$nextTick(() => {
-            $(function() {
-              $("#datatable1").DataTable({
-                responsive: true,
-                language: {
-                  searchPlaceholder: "Search...",
-                  sSearch: ""
-                }
+            this.$nextTick(() => {
+              $(function() {
+                $("#datatable1").DataTable({
+                  responsive: true,
+                  language: {
+                    searchPlaceholder: "Search...",
+                    sSearch: ""
+                  }
+                });
               });
             });
-          });
 
-          swal.close();
-        });
+            swal.close();
+          });
       },
       createDebitCard() {
         this.$validator.validateAll().then(result => {
@@ -409,6 +411,11 @@
       },
       range(start, end) {
         return _.range(start, end);
+      }
+    },
+    computed: {
+      saleRepId() {
+        return this.$route.params.rep;
       }
     }
   };

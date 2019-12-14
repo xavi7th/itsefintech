@@ -65,7 +65,7 @@ export const adminRestoreCardUser = id => apiBaseUrl + 'card-user/' + id + '/res
 /**
  * Card Routes
  */
-export const adminViewDebitCards = apiBaseUrl + 'debit-cards'
+export const adminViewDebitCards = id => !id ? `${apiBaseUrl}debit-cards` : `${apiBaseUrl}debit-cards/${id}`
 export const adminCreateDebitCard = `${apiBaseUrl}debit-card/create`
 export const adminAssignDebitCard = id => `${apiBaseUrl}debit-card/${id}/assign`
 export const toggleDebitCardSuspension = id => apiBaseUrl + 'debit-card/' + id + '/suspension'

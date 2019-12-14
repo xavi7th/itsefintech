@@ -82,7 +82,7 @@ export const allRoutes = [
             menuName: 'Manage Debit Cards'
         },
         children: [ {
-                path: '/cards/list',
+                path: '/cards/:rep?/list',
                 component: adminView( 'cards/ManageDebitCards' ),
                 name: 'admin.cards.list',
                 meta: {
@@ -91,6 +91,16 @@ export const allRoutes = [
                     menuName: 'All Debit Cards'
                 },
             },
+            // {
+            //       path: '/cards/:rep/list',
+            //       component: adminView( 'cards/ManageDebitCards' ),
+            //       name: 'admin.cards.list',
+            //       meta: {
+            //           title: APP_NAME + ' | All Debit Cards',
+            //           iconClass: 'home',
+            //           menuName: 'All Debit Cards'
+            //       },
+            //   },
             {
                 path: '/cards/requests',
                 component: adminView( 'cards/ManageDebitCardRequests' ),

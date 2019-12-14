@@ -42,6 +42,10 @@
                     data-target="#modal-perm"
                     @click="showPermModal(user)"
                   >Permissions</div>
+                  <router-link
+                    class="badge badge-info"
+                    :to="{name: 'admin.cards.list', 'params': {'rep': user.id}}"
+                  >View Assigned Cards</router-link>
                 </td>
               </tr>
             </tbody>
