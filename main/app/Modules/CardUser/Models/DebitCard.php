@@ -80,6 +80,22 @@ class DebitCard extends Model
 			return response()->json([], 204);
 		})->middleware('auth:admin');
 
+		Route::put('debit-card/{debit_card}/assign', function (DebitCard $debit_card) {
+			if (!request('email')) {
+				return response()->json([
+					'error' => 'form validation error',
+					'message' => [
+						'email' => ['Email field is required']
+					]
+				], 422);
+			}
+			$sales_rep = SalesRep::where('email', request('email'))->firstOrFail();
+			$debit_card->update([
+				'sales_rep_id' => $sales_rep->id
+			]);
+			return response()->json([], 204);
+		})->middleware('auth:admin');
+
 		Route::delete('debit-card/{debit_card}/delete', function (DebitCard $debit_card) {
 			return;
 			$debit_card->delete();

@@ -47,6 +47,11 @@
                     @click="toggleDebitCardSuspension(debitCard)"
                     v-if="debitCard.is_suspended"
                   >Unsuspend Card</div>
+                  <div
+                    class="fs-11 btn btn-bold badge badge-purple pointer"
+                    @click="assignCard(debitCard)"
+                    v-if="!debitCard.sales_rep"
+                  >Assign Card</div>
                 </td>
               </tr>
             </tbody>
@@ -157,14 +162,14 @@
                             <span class="text-danger">{{ errors.first('csc') }}</span>
                             <span class="text-danger">{{ errors.first('exp_year') }}</span>
                             <span class="text-danger">{{ errors.first('exp_month') }}</span>
-      </div>
+                          </div>
 
                           <div class="form-group mt-20">
                             <button
                               type="submit"
                               class="btn btn-rss btn-round btn-block btn-bold"
                             >Create</button>
-    </div>
+                          </div>
                         </form>
                       </div>
                     </div>
@@ -190,6 +195,8 @@
   import {
     adminViewDebitCards,
     adminActivateDebitCard,
+    adminAssignDebitCard,
+    toggleDebitCardSuspension,
     adminCreateDebitCard
   } from "@admin-assets/js/config";
   import PreLoader from "@admin-components/misc/PageLoader";
@@ -283,6 +290,52 @@
               });
           }
         });
+      },
+      assignCard(debitCardDetails) {
+        swal
+          .fire({
+            title: "Enter a Sales Rep's email",
+            input: "text",
+            inputAttributes: {
+              autocapitalize: "off"
+            },
+            showCancelButton: true,
+            confirmButtonText: "Assign card",
+            showLoaderOnConfirm: true,
+            preConfirm: email => {
+              return axios
+                .put(adminAssignDebitCard(debitCardDetails.id), {
+                  email
+                })
+                .then(response => {
+                  if (undefined === response) {
+                    throw new Error("");
+                  }
+
+                  if (response.status !== 204) {
+                    throw new Error(response.statusText);
+                  }
+                  return { rsp: true };
+                })
+                .catch(error => {
+                  swal.showValidationMessage(`Request failed: ${error}`);
+                });
+            },
+            allowOutsideClick: () => !swal.isLoading()
+          })
+          .then(result => {
+            if (result.value) {
+              swal
+                .fire({
+                  title: `Success`,
+                  text: "Assigned to sales rep successfully!",
+                  icon: "success"
+                })
+                .then(() => {
+                  location.reload();
+                });
+            }
+          });
       },
       activateDebitCard(debit_card) {
         this.sectionLoading = true;
