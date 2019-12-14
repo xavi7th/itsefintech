@@ -3,23 +3,21 @@
 namespace App\Modules\CardUser\Models;
 
 use Carbon\Carbon;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Database\Eloquent\Model;
 use App\Modules\CardUser\Models\CardUser;
+use App\Modules\SalesRep\Models\SalesRep;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use App\Modules\Admin\Transformers\AdminUserTransformer;
 use App\Modules\Admin\Transformers\AdminDebitCardTransformer;
 use App\Modules\Admin\Http\Requests\DebitCardCreationValidation;
-use App\Modules\SalesRep\Models\SalesRep;
 
 class DebitCard extends Model
 {
 	use SoftDeletes;
 
 	protected $fillable = [
-		'card_number', 'month', 'year', 'csc'
+		'card_number', 'month', 'year', 'csc', 'sales_rep_id', 'card_user_id'
 	];
 	protected $appends = ['exp_date'];
 
@@ -57,6 +55,9 @@ class DebitCard extends Model
 			try {
 				DB::beginTransaction();
 				$debit_card = $user->debit_cards()->create($request->all());
+
+				auth()->user()->log('Created new Debit card ' . $debit_card->card_number);
+
 				DB::commit();
 				return response()->json(['rsp' => $debit_card], 201);
 			} catch (\Throwable $e) {

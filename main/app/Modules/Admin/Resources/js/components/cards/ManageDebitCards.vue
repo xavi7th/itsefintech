@@ -4,12 +4,21 @@
     <div class="content">
       <!-- table basic -->
       <div class="card">
+        <div class="card-title">
+          <button
+            type="button"
+            class="btn btn-bold btn-pure btn-twitter btn-shadow"
+            data-toggle="modal"
+            data-target="#modal-card"
+          >Create Debit Card</button>
+        </div>
         <div class="card-body">
           <table class="table table-bordered table-hover" id="datatable1">
             <thead>
               <tr>
                 <th>ID</th>
                 <th>Card User Email</th>
+                <th>Sales Rep</th>
                 <th>Card Number</th>
                 <th>Status</th>
                 <th>Actions</th>
@@ -18,7 +27,8 @@
             <tbody>
               <tr v-for="debitCard in debitCards" :key="debitCard.id">
                 <td>{{ debitCard.id }}</td>
-                <td>{{ debitCard.card_user.email }}</td>
+                <td>{{ !debitCard.card_user ? 'Unallocated' : debitCard.card_user.email }}</td>
+                <td>{{ !debitCard.sales_rep ? 'Unassigned' : debitCard.sales_rep.email }}</td>
                 <td>{{ debitCard.card_number }}</td>
                 <td>{{ hasExpired(debitCard.exp_date) ? 'Expired' : debitCard.is_suspended ? 'Card Suspended' : debitCard.is_admin_activated ? 'Fully Activated' : debitCard.is_user_activated ? 'Pending Confirmation' : 'Not Activated' }}</td>
                 <td>
@@ -42,6 +52,135 @@
             </tbody>
           </table>
         </div>
+        <div class="modal modal-right fade" id="modal-card" tabindex="-1">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <!-- <h4 class="modal-title">Add Debit Card</h4> -->
+                <button type="button" class="close" data-dismiss="modal">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <pre-loader v-if="sectionLoading" class="section-loader"></pre-loader>
+                <div class="col-md-12">
+                  <div class="card">
+                    <div class="card-title flex j-c-between">
+                      <h3>Add New card</h3>
+                    </div>
+
+                    <div class="card-body py-0">
+                      <div class="card-row">
+                        <form class="m-25" @submit.prevent="createDebitCard">
+                          <div
+                            class="form-group mb-5"
+                            :class="{'has-error': errors.has('card_number')}"
+                          >
+                            <label for="form-full-name">
+                              <strong>Card Number</strong>
+                            </label>
+                            <input
+                              type="text"
+                              class="form-control form-control-pill"
+                              id="form-full-name"
+                              v-model="details.card_number"
+                              v-validate="'required'"
+                              data-vv-as="credit card number"
+                              name="card_number"
+                            />
+                            <!-- v-validate="'required|credit_card'" -->
+                            <span>{{ errors.first('card_number') }}</span>
+                          </div>
+                          <div class="row">
+                            <div class="col-4">
+                              <div
+                                class="form-group mb-5"
+                                :class="{'has-error': errors.has('exp_year')}"
+                              >
+                                <label for="form-year">
+                                  <strong>Year</strong>
+                                </label>
+                                <select
+                                  class="form-control"
+                                  id="form-year"
+                                  name="exp_year"
+                                  v-validate="'required'"
+                                  data-vv-as="expiry year"
+                                  v-model="details.year"
+                                >
+                                  <option value>Pick a Year</option>
+                                  <option v-for="n in range(2021, 2099)" :key="n">{{ n }}</option>
+                                </select>
+                              </div>
+                            </div>
+                            <div class="col-4">
+                              <div
+                                class="form-group mb-5"
+                                :class="{'has-error': errors.has('exp_month')}"
+                              >
+                                <label for="form-year">
+                                  <strong>Month</strong>
+                                </label>
+                                <select
+                                  class="form-control"
+                                  id="form-year"
+                                  name="exp_month"
+                                  v-validate="'required'"
+                                  data-vv-as="expiry month"
+                                  v-model="details.month"
+                                >
+                                  <option value>Pick a Month</option>
+                                  <option v-for="n in range(1, 12)" :key="n">{{ n }}</option>
+                                </select>
+                              </div>
+                            </div>
+                            <div class="col-4">
+                              <div
+                                class="form-group mb-5"
+                                :class="{'has-error': errors.has('csc')}"
+                              >
+                                <label for="form-full-name">
+                                  <strong>CSC/CVV</strong>
+                                </label>
+                                <input
+                                  type="text"
+                                  class="form-control form-control-pill"
+                                  id="form-full-name"
+                                  v-model="details.csc"
+                                  v-validate="'required|numeric'"
+                                  data-vv-as="card security code"
+                                  name="csc"
+                                />
+                              </div>
+                            </div>
+
+                            <span class="text-danger">{{ errors.first('csc') }}</span>
+                            <span class="text-danger">{{ errors.first('exp_year') }}</span>
+                            <span class="text-danger">{{ errors.first('exp_month') }}</span>
+      </div>
+
+                          <div class="form-group mt-20">
+                            <button
+                              type="submit"
+                              class="btn btn-rss btn-round btn-block btn-bold"
+                            >Create</button>
+    </div>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button
+                  type="button"
+                  class="btn btn-bold btn-pure btn-secondary"
+                  data-dismiss="modal"
+                >Close</button>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </main>
@@ -51,7 +190,7 @@
   import {
     adminViewDebitCards,
     adminActivateDebitCard,
-    toggleDebitCardSuspension
+    adminCreateDebitCard
   } from "@admin-assets/js/config";
   import PreLoader from "@admin-components/misc/PageLoader";
   export default {
@@ -60,7 +199,8 @@
       debitCards: [],
       debitCardDetails: {},
       sectionLoading: false,
-      details: {}
+      details: {},
+      userDetails: {}
     }),
     components: {
       PreLoader
@@ -101,6 +241,47 @@
           });
 
           swal.close();
+        });
+      },
+      createDebitCard() {
+        this.$validator.validateAll().then(result => {
+          if (!result) {
+            Toast.fire({
+              title: "Invalid data! Try again",
+              position: "center",
+              icon: "error"
+            });
+          } else {
+            BlockToast.fire({
+              text: "creating debit card for user..."
+            });
+
+            axios
+              .post(adminCreateDebitCard, {
+                ...this.details
+              })
+              .then(({ status, data: { rsp } }) => {
+                if (undefined !== status && status == 201) {
+                  this.details = {};
+                  this.userDetails = {};
+                  Toast.fire({
+                    title: "Created",
+                    text: `It can now bw assigned to a sales rep's stock`,
+                    icon: "success",
+                    position: "center"
+                  });
+                }
+              })
+              .catch(err => {
+                if (err.response.status == 500) {
+                  swal.fire({
+                    title: "Error",
+                    text: `Something went wrong on server. Creation not successful.`,
+                    icon: "error"
+                  });
+                }
+              });
+          }
         });
       },
       activateDebitCard(debit_card) {
@@ -172,6 +353,9 @@
       },
       hasExpired(date) {
         return new Date(date) < Date.now();
+      },
+      range(start, end) {
+        return _.range(start, end);
       }
     }
   };

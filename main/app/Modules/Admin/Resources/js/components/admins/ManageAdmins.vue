@@ -373,6 +373,8 @@
                 title: "Success",
                 text: "User permissions updated",
                 position: "center"
+              }).then(() => {
+                location.reload();
               });
             } else {
               Toast.fire({

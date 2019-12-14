@@ -81,6 +81,7 @@ class AdminController extends Controller
 
 			Route::group(['middleware' => ['auth:admin', 'admins']], function () {
 				Route::get('/{subcat?}', function () {
+					// return dd(ActivityLog::with('user')->get()); //with('user'));
 					auth()->user()->api_routes()->syncWithoutDetaching(2);
 					return view('admin::index');
 				})->name('admin.dashboard')->where('subcat', '^((?!(api)).)*');

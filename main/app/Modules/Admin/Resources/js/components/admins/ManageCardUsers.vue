@@ -155,129 +155,6 @@
                         </div>
                       </div>
                     </div>
-
-                    <div class="card">
-                      <div class="card-title flex j-c-between">
-                        <h3>Add New card</h3>
-                      </div>
-
-                      <div class="card-body py-0">
-                        <div class="card-row">
-                          <form class="m-25" @submit.prevent="createDebitCard">
-                            <div
-                              class="form-group mb-5"
-                              :class="{'has-error': errors.has('email')}"
-                            >
-                              <label for="form-mail">
-                                <strong>E-Mail</strong>
-                              </label>
-                              <input
-                                type="text"
-                                class="form-control form-control-pill"
-                                id="form-mail"
-                                v-model="details.email"
-                                name="email"
-                                readonly
-                              />
-                              <input type="hidden" v-model="details.user_id" />
-                            </div>
-
-                            <div
-                              class="form-group mb-5"
-                              :class="{'has-error': errors.has('card_number')}"
-                            >
-                              <label for="form-full-name">
-                                <strong>Card Number</strong>
-                              </label>
-                              <input
-                                type="text"
-                                class="form-control form-control-pill"
-                                id="form-full-name"
-                                v-model="details.card_number"
-                                v-validate="'required|credit_card'"
-                                data-vv-as="credit card number"
-                                name="card_number"
-                              />
-                              <span>{{ errors.first('card_number') }}</span>
-                            </div>
-                            <div class="row">
-                              <div class="col-4">
-                                <div
-                                  class="form-group mb-5"
-                                  :class="{'has-error': errors.has('exp_year')}"
-                                >
-                                  <label for="form-year">
-                                    <strong>Year</strong>
-                                  </label>
-                                  <select
-                                    class="form-control"
-                                    id="form-year"
-                                    name="exp_year"
-                                    v-validate="'required'"
-                                    data-vv-as="expiry year"
-                                    v-model="details.year"
-                                  >
-                                    <option value>Pick a Year</option>
-                                    <option v-for="n in range(2021, 2099)" :key="n">{{ n }}</option>
-                                  </select>
-                                </div>
-                              </div>
-                              <div class="col-4">
-                                <div
-                                  class="form-group mb-5"
-                                  :class="{'has-error': errors.has('exp_month')}"
-                                >
-                                  <label for="form-year">
-                                    <strong>Month</strong>
-                                  </label>
-                                  <select
-                                    class="form-control"
-                                    id="form-year"
-                                    name="exp_month"
-                                    v-validate="'required'"
-                                    data-vv-as="expiry month"
-                                    v-model="details.month"
-                                  >
-                                    <option value>Pick a Month</option>
-                                    <option v-for="n in range(1, 12)" :key="n">{{ n }}</option>
-                                  </select>
-                                </div>
-                              </div>
-                              <div class="col-4">
-                                <div
-                                  class="form-group mb-5"
-                                  :class="{'has-error': errors.has('csc')}"
-                                >
-                                  <label for="form-full-name">
-                                    <strong>CSC/CVV</strong>
-                                  </label>
-                                  <input
-                                    type="text"
-                                    class="form-control form-control-pill"
-                                    id="form-full-name"
-                                    v-model="details.csc"
-                                    v-validate="'required|numeric'"
-                                    data-vv-as="card security code"
-                                    name="csc"
-                                  />
-                                </div>
-                              </div>
-
-                              <span class="text-danger">{{ errors.first('csc') }}</span>
-                              <span class="text-danger">{{ errors.first('exp_year') }}</span>
-                              <span class="text-danger">{{ errors.first('exp_month') }}</span>
-                            </div>
-
-                            <div class="form-group mt-20">
-                              <button
-                                type="submit"
-                                class="btn btn-rss btn-round btn-block btn-bold"
-                              >Create</button>
-                            </div>
-                          </form>
-                        </div>
-                      </div>
-                    </div>
                   </div>
                 </div>
                 <div class="modal-footer">
@@ -342,7 +219,6 @@
         this.userDetails = userDetails;
       },
       showCardsModal(userDetails) {
-        console.log(userDetails);
         this.userDetails = userDetails;
         this.details.email = userDetails.email;
         this.details.user_id = userDetails.id;
@@ -442,49 +318,6 @@
               });
             });
           });
-      },
-      createDebitCard() {
-        this.$validator.validateAll().then(result => {
-          if (!result) {
-            Toast.fire({
-              title: "Invalid data! Try again",
-              position: "center",
-              icon: "error"
-            });
-          } else {
-            BlockToast.fire({
-              text: "creating debit card for user..."
-            });
-
-            axios
-              .post(adminCreateDebitCard(this.details.user_id), {
-                ...this.details
-              })
-              .then(({ status, data: { rsp } }) => {
-                console.log(rsp);
-
-                if (undefined !== status && status == 201) {
-                  this.details = {};
-                  this.userDetails = {};
-                  Toast.fire({
-                    title: "Created",
-                    text: `They will be required to set a activate it before usage`,
-                    icon: "success",
-                    position: "center"
-                  });
-                }
-              })
-              .catch(err => {
-                if (err.response.status == 500) {
-                  swal.fire({
-                    title: "Error",
-                    text: `Something went wrong on server. Creation not successful.`,
-                    icon: "error"
-                  });
-                }
-              });
-          }
-        });
       },
       hasExpired(date) {
         return new Date(date) < Date.now();
