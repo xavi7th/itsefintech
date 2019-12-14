@@ -15,7 +15,9 @@ class CreateDebitCardsTable extends Migration
 	{
 		Schema::create('debit_cards', function (Blueprint $table) {
 			$table->bigIncrements('id');
-			$table->bigInteger('card_user_id')->unsigned();
+			$table->bigInteger('sales_rep_id')->unsigned()->nullable();
+			$table->foreign('sales_rep_id')->references('id')->on('sales_reps')->onDelete('cascade');
+			$table->bigInteger('card_user_id')->unsigned()->nullable();
 			$table->foreign('card_user_id')->references('id')->on('card_users')->onDelete('cascade');
 			$table->string('card_number')->unique();
 			$table->integer('csc');
@@ -25,6 +27,8 @@ class CreateDebitCardsTable extends Migration
 			$table->boolean('is_admin_activated')->default(false);
 			$table->boolean('is_suspended')->default(false);
 
+			$table->bigInteger('assigned_by')->unsigned()->nullable();
+			$table->bigInteger('created_by')->unsigned()->nullable();
 			$table->timestamps();
 			$table->softDeletes();
 		});

@@ -22,6 +22,7 @@ use Tymon\JWTAuth\Claims\Custom;
 use App\Modules\CardUser\Models\DebitCard;
 use App\Modules\CardUser\Models\CardUser;
 use App\Modules\CardUser\Models\DebitCardRequest;
+use App\Modules\Admin\Models\ActivityLog;
 
 class AdminController extends Controller
 {
@@ -70,8 +71,6 @@ class AdminController extends Controller
 				CardAdmin::routes();
 
 				CustomerSupport::routes();
-
-				DispatchAdmin::routes();
 
 				SalesRep::routes();
 

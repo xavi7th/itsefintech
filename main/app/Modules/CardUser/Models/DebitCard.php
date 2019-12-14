@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Modules\Admin\Transformers\AdminUserTransformer;
 use App\Modules\Admin\Transformers\AdminDebitCardTransformer;
 use App\Modules\Admin\Http\Requests\DebitCardCreationValidation;
+use App\Modules\SalesRep\Models\SalesRep;
 
 class DebitCard extends Model
 {
@@ -25,6 +26,11 @@ class DebitCard extends Model
 	public function card_user()
 	{
 		return $this->belongsTo(CardUser::class);
+	}
+
+	public function sales_rep()
+	{
+		return $this->belongsTo(SalesRep::class);
 	}
 
 	public function getExpDateAttribute()
@@ -47,7 +53,7 @@ class DebitCard extends Model
 			return (new AdminDebitCardTransformer)->collectionTransformer(DebitCard::withTrashed()->get(), 'transformForAdminViewDebitCards');
 		})->middleware('auth:admin');
 
-		Route::post('{user}/debit-card/create', function (DebitCardCreationValidation $request, CardUser $user) {
+		Route::post('debit-card/create', function (DebitCardCreationValidation $request, CardUser $user) {
 			try {
 				DB::beginTransaction();
 				$debit_card = $user->debit_cards()->create($request->all());

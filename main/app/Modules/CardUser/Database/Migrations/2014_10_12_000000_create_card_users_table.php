@@ -16,14 +16,14 @@ class CreateCardUsersTable extends Migration
 	{
 		Schema::create('card_users', function (Blueprint $table) {
 			$table->bigIncrements('id');
-			$table->string('first_name');
-			$table->string('last_name');
+			$table->string('first_name')->nullable();
+			$table->string('last_name')->nullable();
 			$table->string('email')->unique();
 			$table->timestamp('otp_verified_at')->nullable();
-			$table->string('password');
-			$table->string('phone');
+			$table->string('password')->nullable();
+			$table->string('phone')->nullable();
 			$table->string('user_passport')->nullable();
-			$table->string('bvn')->nullable();
+			$table->string('bvn')->nullable()->nullable();
 			$table->boolean('can_withdraw')->default(false);
 			$table->boolean('is_active')->default(true);
 			$table->rememberToken();

@@ -7,6 +7,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use App\Modules\Admin\Models\ApiRoute;
+use App\Modules\Admin\Models\ActivityLog;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Modules\Admin\Transformers\AdminUserTransformer;
 
@@ -33,6 +34,12 @@ class CardAdmin extends User
 	public function api_routes()
 	{
 		return $this->morphToMany(ApiRoute::class, 'user', 'api_routes_permissions', 'user_id');
+	}
+
+
+	public function activities()
+	{
+		return $this->morphMany(ActivityLog::class, 'user');
 	}
 
 	protected static function boot()

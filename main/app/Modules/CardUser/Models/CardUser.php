@@ -9,6 +9,7 @@ use App\Modules\CardUser\Models\OTP;
 use Illuminate\Support\Facades\Route;
 use App\Modules\CardUser\Models\DebitCardRequest;
 use App\Modules\Admin\Transformers\AdminUserTransformer;
+use App\Modules\Admin\Models\ActivityLog;
 
 class CardUser extends User
 {
@@ -64,6 +65,11 @@ class CardUser extends User
 	public function debit_cards()
 	{
 		return $this->hasMany(DebitCard::class);
+	}
+
+	public function activities()
+	{
+		return $this->morphMany(ActivityLog::class, 'user');
 	}
 
 	public function debit_card_requests()
