@@ -114,12 +114,15 @@ class DebitCard extends Model
 			if (!$debit_card->sales_rep) {
 				return response()->json(['message' => 'Unassigned card'], 423);
 			}
-			$card_user = CardUser::where('email', request('email'))->updateOrCreate(
+			$card_user = CardUser::where('email', request('email'))->firstOrFail();
+
+			$card_user->update(
 				[
 					'email' => request('email')
 				],
 				request()->only('email')
 			);
+
 			$debit_card->update([
 				'card_user_id' => $card_user->id
 			]);

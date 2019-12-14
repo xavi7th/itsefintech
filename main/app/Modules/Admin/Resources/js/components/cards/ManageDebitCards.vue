@@ -353,7 +353,7 @@
         swal
           .fire({
             title: "Enter a User's email",
-            input: "text",
+            input: "email",
             inputAttributes: {
               autocapitalize: "off"
             },
