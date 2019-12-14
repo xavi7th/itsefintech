@@ -10,6 +10,7 @@
             class="btn btn-bold btn-pure btn-twitter btn-shadow"
             data-toggle="modal"
             data-target="#modal-card"
+            v-if="!saleRepId"
           >Create Debit Card</button>
         </div>
         <div class="card-body">
@@ -50,8 +51,14 @@
                   <div
                     class="fs-11 btn btn-bold badge badge-purple pointer"
                     @click="assignCard(debitCard)"
-                    v-if="!debitCard.sales_rep"
+                    v-if="!debitCard.sales_rep && $user.type == 'admin'"
                   >Assign Card</div>
+
+                  <div
+                    class="fs-11 btn btn-bold badge badge-success pointer"
+                    @click="allocateCard(debitCard)"
+                    v-if="debitCard.sales_rep && !debitCard.card_user && $user.type == 'admin'"
+                  >Allocate Card</div>
                 </td>
               </tr>
             </tbody>
@@ -196,6 +203,7 @@
     adminViewDebitCards,
     adminActivateDebitCard,
     adminAssignDebitCard,
+    adminAllocateDebitCard,
     toggleDebitCardSuspension,
     adminCreateDebitCard
   } from "@admin-assets/js/config";
@@ -310,6 +318,54 @@
                   email
                 })
                 .then(response => {
+                  if (response.status !== 204) {
+                    throw new Error(response.statusText);
+                  }
+                  return { rsp: true };
+                })
+                .catch(error => {
+                  console.log(error.response);
+
+                  if (error.response.status === 404) {
+                    swal.showValidationMessage(`Sales Rep details not found`);
+                  } else {
+                    swal.showValidationMessage(`Request failed: ${error}`);
+                  }
+                });
+            },
+            allowOutsideClick: () => !swal.isLoading()
+          })
+          .then(result => {
+            if (result.value) {
+              swal
+                .fire({
+                  title: `Success`,
+                  text: "Assigned to sales rep!",
+                  icon: "success"
+                })
+                .then(() => {
+                  location.reload();
+                });
+            }
+          });
+      },
+      allocateCard(debitCardDetails) {
+        swal
+          .fire({
+            title: "Enter a User's email",
+            input: "text",
+            inputAttributes: {
+              autocapitalize: "off"
+            },
+            showCancelButton: true,
+            confirmButtonText: "Allocate card",
+            showLoaderOnConfirm: true,
+            preConfirm: email => {
+              return axios
+                .put(adminAllocateDebitCard(debitCardDetails.id), {
+                  email
+                })
+                .then(response => {
                   if (undefined === response) {
                     throw new Error("");
                   }
@@ -320,7 +376,11 @@
                   return { rsp: true };
                 })
                 .catch(error => {
-                  swal.showValidationMessage(`Request failed: ${error}`);
+                  if (error.response.status === 423) {
+                    swal.showValidationMessage("Unassigned Card");
+                  } else {
+                    swal.showValidationMessage(`Request failed: ${error}`);
+                  }
                 });
             },
             allowOutsideClick: () => !swal.isLoading()
@@ -329,8 +389,9 @@
             if (result.value) {
               swal
                 .fire({
-                  title: `Success`,
-                  text: "Assigned to sales rep successfully!",
+                  title: `Allocated`,
+                  text:
+                    "The user will be required to activate the card before using it!",
                   icon: "success"
                 })
                 .then(() => {

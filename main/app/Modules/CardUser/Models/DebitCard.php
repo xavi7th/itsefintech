@@ -101,6 +101,31 @@ class DebitCard extends Model
 			return response()->json([], 204);
 		})->middleware('auth:admin');
 
+		Route::put('debit-card/{debit_card}/allocate', function (DebitCard $debit_card) {
+
+			if (!request('email')) {
+				return response()->json([
+					'error' => 'form validation error',
+					'message' => [
+						'email' => ['Email field is required']
+					]
+				], 422);
+			}
+			if (!$debit_card->sales_rep) {
+				return response()->json(['message' => 'Unassigned card'], 423);
+			}
+			$card_user = CardUser::where('email', request('email'))->updateOrCreate(
+				[
+					'email' => request('email')
+				],
+				request()->only('email')
+			);
+			$debit_card->update([
+				'card_user_id' => $card_user->id
+			]);
+			return response()->json([], 204);
+		})->middleware('auth:admin');
+
 		Route::delete('debit-card/{debit_card}/delete', function (DebitCard $debit_card) {
 			return;
 			$debit_card->delete();

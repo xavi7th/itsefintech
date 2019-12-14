@@ -165,6 +165,16 @@ class ApiRoutesTableSeeder extends Seeder
 				}',
 				'description' => 'View Debit Cards',
 			),
+			21 =>
+			array(
+				'path' => '/cards/:rep/list',
+				'name' => 'admin.cards.sales-rep.list',
+				'meta' => '{title: APP_NAME + \' | View Sales Rep Debit Cards\',
+					iconClass: \'user\',
+					menuName: \'View Sales Rep Debit Cards\'
+				}',
+				'description' => 'View Sales Rep Debit Cards',
+			),
 		));
 	}
 }
