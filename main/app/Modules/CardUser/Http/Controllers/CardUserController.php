@@ -46,13 +46,7 @@ class CardUserController extends Controller
 			});
 
 			Route::group(['prefix' => 'card', 'middleware' => ['auth:card_user', 'card_users']], function () {
-				Route::post('/new', 'CardUserController@requestDebitCard');
-				Route::put('/activate', 'CardUserController@activateDebitCard');
-				Route::get('/{card_request}/status', 'CardUserController@trackDebitCard');
-			});
-
-
-			Route::group(['prefix' => 'card', 'middleware' => ['auth:card_user', 'card_users']], function () {
+				Route::get('/list', 'CardUserController@getDebitCards');
 				Route::post('/new', 'CardUserController@requestDebitCard');
 				Route::put('/activate', 'CardUserController@activateDebitCard');
 				Route::get('/{card_request}/status', 'CardUserController@trackDebitCard');
@@ -101,6 +95,11 @@ class CardUserController extends Controller
 		$request->user()->save();
 
 		return response()->json(['message' => 'Account verified'], 205);
+	}
+
+	public function getDebitCards()
+	{
+		return response()->json(['cards' => auth('card_user')->user()->debit_cards], 200);
 	}
 
 	public function requestDebitCard(CardRequestValidation $request)
