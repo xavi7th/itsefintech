@@ -81,12 +81,9 @@ class DebitCard extends Model
 
 		Route::post('debit-card/create', function (DebitCardCreationValidation $request, CardUser $user) {
 			if (DebitCard::exists($request->card_number)) {
-				return response()->json([
-					'error' => 'form validation error',
-					'message' => [
-						'card_number' => ['That card already exists in the Database']
-					]
-				], 422);
+				return generate_422_error([
+					'card_number' => ['That card already exists in the Database']
+				]);
 			}
 			try {
 				DB::beginTransaction();
@@ -119,12 +116,7 @@ class DebitCard extends Model
 
 		Route::put('debit-card/{debit_card}/assign', function (DebitCard $debit_card) {
 			if (!request('email')) {
-				return response()->json([
-					'error' => 'form validation error',
-					'message' => [
-						'email' => ['Email field is required']
-					]
-				], 422);
+				return generate_422_error(['email' => ['Email field is required']]);
 			}
 			$sales_rep = SalesRep::where('email', request('email'))->firstOrFail();
 			$debit_card->update([
@@ -136,12 +128,9 @@ class DebitCard extends Model
 		Route::put('debit-card/{debit_card}/allocate', function (DebitCard $debit_card) {
 
 			if (!request('email')) {
-				return response()->json([
-					'error' => 'form validation error',
-					'message' => [
-						'email' => ['Email field is required']
-					]
-				], 422);
+				return generate_422_error([
+					'email' => ['Email field is required']
+				]);
 			}
 			if (!$debit_card->sales_rep) {
 				return response()->json(['message' => 'Unassigned card'], 423);

@@ -52,6 +52,9 @@ class DebitCardRequest extends Model
 
 		Route::put('debit-card-request/{debit_card_request}/status/update', function (DebitCardRequest $debit_card_request) {
 			// return request('details.debit_card_request_status_id');
+			if (is_null($debit_card_request->debit_card_id)) {
+				return generate_422_error(['invalid' => ['No debit card has been assigned to this debit card request']]);
+			}
 			$debit_card_request->debit_card_request_status_id = request('details.debit_card_request_status_id');
 			$debit_card_request->save();
 			return response()->json(['new_status' => DebitCardRequestStatus::find(request('details.debit_card_request_status_id'))->name], 203);
