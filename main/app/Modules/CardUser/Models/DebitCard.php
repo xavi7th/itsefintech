@@ -21,6 +21,16 @@ class DebitCard extends Model
 	];
 	protected $appends = ['exp_date'];
 
+	protected static function getHashingAlgorithm()
+	{
+		return 'sha512';
+	}
+
+	static function hash(string $data): string
+	{
+		return hash(static::getHashingAlgorithm(), $data);
+	}
+
 	public function card_user()
 	{
 		return $this->belongsTo(CardUser::class);
@@ -40,9 +50,16 @@ class DebitCard extends Model
 	{
 		return 'ending in ' . substr(decrypt($value), -4);
 	}
+
 	public function setCardNumberAttribute($value)
 	{
 		$this->attributes['card_number'] = encrypt($value);
+		$this->attributes['card_hash'] = static::hash($value);
+	}
+
+	public function setCscAttribute($value)
+	{
+		$this->attributes['csc'] = bcrypt($value);
 	}
 
 	static function routes()

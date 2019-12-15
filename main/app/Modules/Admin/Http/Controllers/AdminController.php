@@ -2,27 +2,21 @@
 
 namespace App\Modules\Admin\Http\Controllers;
 
-use Throwable;
-use Illuminate\Support\Arr;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\DB;
 use App\Modules\Admin\Models\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Route;
 use App\Modules\Admin\Models\ApiRoute;
+use App\Modules\CardUser\Models\CardUser;
 use App\Modules\SalesRep\Models\SalesRep;
+use App\Modules\CardUser\Models\DebitCard;
 use App\Modules\CardAdmin\Models\CardAdmin;
 use App\Modules\Accountant\Models\Accountant;
 use App\Modules\NormalAdmin\Models\NormalAdmin;
-use App\Modules\DispatchAdmin\Models\DispatchAdmin;
+use App\Modules\CardUser\Models\DebitCardRequest;
 use App\Modules\AccountOfficer\Models\AccountOfficer;
 use App\Modules\CustomerSupport\Models\CustomerSupport;
-use App\Modules\Admin\Transformers\AdminUserTransformer;
-use Tymon\JWTAuth\Claims\Custom;
-use App\Modules\CardUser\Models\DebitCard;
-use App\Modules\CardUser\Models\CardUser;
-use App\Modules\CardUser\Models\DebitCardRequest;
-use App\Modules\Admin\Models\ActivityLog;
+
 
 class AdminController extends Controller
 {

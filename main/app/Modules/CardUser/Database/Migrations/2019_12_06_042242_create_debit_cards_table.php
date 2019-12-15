@@ -20,7 +20,8 @@ class CreateDebitCardsTable extends Migration
 			$table->bigInteger('card_user_id')->unsigned()->nullable();
 			$table->foreign('card_user_id')->references('id')->on('card_users')->onDelete('cascade');
 			$table->string('card_number')->unique();
-			$table->integer('csc');
+			$table->string('card_hash');
+			$table->string('csc');
 			$table->integer('month');
 			$table->integer('year');
 			$table->boolean('is_user_activated')->default(false);
