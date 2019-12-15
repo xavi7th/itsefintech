@@ -77,10 +77,10 @@ class CardUser extends User
 		return $this->hasMany(DebitCardRequest::class);
 	}
 
-	// public function withdrawal_requests()
-	// {
-	// 	return $this->hasMany(WithdrawalRequest::class);
-	// }
+	public function has_card_request()
+	{
+		return $this->hasOne(DebitCardRequest::class)->exists();
+	}
 
 	public function total_deposit_amount()
 	{

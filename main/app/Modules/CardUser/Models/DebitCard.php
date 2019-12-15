@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Modules\CardUser\Models\CardUser;
 use App\Modules\SalesRep\Models\SalesRep;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Modules\Admin\Transformers\AdminDebitCardTransformer;
 use App\Modules\Admin\Http\Requests\DebitCardCreationValidation;
 use App\Modules\Admin\Models\ActivityLog;
@@ -133,26 +134,53 @@ class DebitCard extends Model
 
 		Route::put('debit-card/{debit_card}/allocate', function (DebitCard $debit_card) {
 
+			/** Make sure they supply an email */
 			if (!request('email')) {
 				return generate_422_error([
 					'email' => ['Email field is required']
 				]);
 			}
+
+			/** Make sure the card has been assigned to a sales rep */
 			if (!$debit_card->sales_rep) {
 				return response()->json(['message' => 'Unassigned card'], 423);
 			}
-			$card_user = CardUser::where('email', request('email'))->firstOrFail();
 
-			$card_user->update(
-				[
-					'email' => request('email')
-				],
-				request()->only('email')
-			);
+			/** Get the user associated with that email or return a validation error */
+			try {
+				$card_user = CardUser::where('email', request('email'))->firstOrFail();
+			} catch (ModelNotFoundException $e) {
+				return generate_422_error(['user' => ['No such user found']]);
+			}
 
+			/** Check if the user has a pending existent card request. return a validation error if they do */
+			if ($card_user->has_card_request()) {
+				return generate_422_error(['err' => ['User already has a pending card request. Attend to that instead']]);
+			}
+
+			/** Create a request for the user that the user and we can use to track payment for this card */
+			Model::unguard();
+			$card_user->debit_card_requests()->create([
+				'sales_rep_id' => auth('sales_rep')->id(),
+				'debit_card_request_status_id' => 1,
+				'debit_card_id' => $debit_card->id,
+				'payment_method' => 'Sales Rep',
+				'last_updated_by' => auth('sales_rep')->id(),
+				'phone' => $card_user->phone,
+				'address' => $card_user->address  ?? 'N/A',
+				'zip' => $card_user->zip ?? 'N/A',
+				'city' => $card_user->city ?? 'N/A',
+			]);
+			Model::reguard();
+
+			/** alocate the card to the user */
 			$debit_card->update([
 				'card_user_id' => $card_user->id
 			]);
+
+			/** record activity */
+			ActivityLog::logAdminActivity('Allocated card ' . $debit_card->card_number . ' to user: ' . $card_user->id);
+
 			return response()->json([], 204);
 		})->middleware('auth:admin');
 

@@ -22,6 +22,9 @@ class CreateCardUsersTable extends Migration
 			$table->timestamp('otp_verified_at')->nullable();
 			$table->string('password')->nullable();
 			$table->string('phone')->nullable();
+			$table->string('address')->default('not supplied');
+			$table->string('city')->default('not supplied');
+			$table->string('zip')->default(00000);
 			$table->string('user_passport')->nullable();
 			$table->string('bvn')->nullable()->nullable();
 			$table->boolean('can_withdraw')->default(false);
