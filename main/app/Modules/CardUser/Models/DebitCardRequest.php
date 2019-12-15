@@ -32,20 +32,6 @@ class DebitCardRequest extends Model
 			return (new AdminDebitCardRequestTransformer)->collectionTransformer(DebitCardRequest::all(), 'transformForAdminViewDebitCardRequests');
 		})->middleware('auth:admin');
 
-		// Route::post('{user}/debit-card-request/create', function (DebitCardRequestCreationValidation $request, CardUser $user) {
-		// 	try {
-		// 		DB::beginTransaction();
-		// 		$debit_card_request = $user->debit_card_requests()->create($request->all());
-		// 		DB::commit();
-		// 		return response()->json(['rsp' => $debit_card_request], 201);
-		// 	} catch (\Throwable $e) {
-		// 		if (app()->environment() == 'local') {
-		// 			return response()->json(['error' => $e->getMessage()], 500);
-		// 		}
-		// 		return response()->json(['rsp' => 'error occurred'], 500);
-		// 	}
-		// })->middleware('auth:admin');
-
 		Route::put('debit-card-request/{debit_card_request}/allocate', function (DebitCardRequest $debit_card_request) {
 
 			/** Check that request is a new request */
@@ -90,6 +76,15 @@ class DebitCardRequest extends Model
 
 		Route::put('debit-card-request/{debit_card_request}/paid', function (DebitCardRequest $debit_card_request) {
 			$debit_card_request->is_paid = true;
+			$debit_card_request->save();
+			return response()->json([], 204);
+		})->middleware('auth:admin');
+
+		Route::put('debit-card-request/{debit_card_request}/paid/confirm', function (DebitCardRequest $debit_card_request) {
+			$debit_card_request->is_payment_confirmed = true;
+			$debit_card_request->confirmed_by = auth()->id();
+			$debit_card_request->last_updated_by = auth()->id();
+			// $debit_card_request->last_updater_user_type = get_class(auth()->user());
 			$debit_card_request->save();
 			return response()->json([], 204);
 		})->middleware('auth:admin');

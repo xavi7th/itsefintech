@@ -30,6 +30,7 @@ class AdminDebitCardRequestTransformer
 			'request_date' => (string)$debit_card_request->created_at->diffForHumans(),
 			'requester' => $debit_card_request->card_user,
 			'is_paid' => (boolean)$debit_card_request->is_paid,
+			'is_payment_confirmed' => (boolean)$debit_card_request->is_payment_confirmed,
 			'debit_card_request_status_id' => (int)$debit_card_request->debit_card_request_status_id,
 			'debit_card_id' => (int)$debit_card_request->debit_card_id,
 		];

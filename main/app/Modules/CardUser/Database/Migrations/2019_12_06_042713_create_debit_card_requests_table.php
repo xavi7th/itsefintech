@@ -31,12 +31,13 @@ class CreateDebitCardRequestsTable extends Migration
 			$table->boolean('is_paid')->default(false);
 			$table->boolean('is_payment_confirmed')->default(false);
 			$table->bigInteger('confirmed_by')->unsigned()->nullable();
-			$table->foreign('confirmed_by')->references('id')->on('card_users')->onDelete('cascade');
-			$table->string('confirmation_user_type')->nullable();
+			$table->foreign('confirmed_by')->references('id')->on('accountants')->onDelete('cascade');
+			// $table->string('confirmation_user_type')->nullable();
 
 			$table->bigInteger('last_updated_by')->unsigned()->nullable();
-			$table->foreign('last_updated_by')->references('id')->on('card_admins')->onDelete('cascade');
+			$table->string('last_updater_user_type')->nullable();
 			$table->timestamps();
+			$table->softDeletes()();
 		});
 	}
 

@@ -13,6 +13,7 @@
                 <th>Email</th>
                 <th>Phone</th>
                 <th>Status</th>
+                <th>Payment Status</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -22,6 +23,7 @@
                 <td>{{ debit_card_request.requester.email }}</td>
                 <td>{{ debit_card_request.requester.phone }}</td>
                 <td>{{ debit_card_request.status }}</td>
+                <td>{{ debit_card_request.is_payment_confirmed ? 'Payment Confirmed' : debit_card_request.is_paid ? 'Payment made' : 'Not Paid' }}</td>
                 <td>
                   <div
                     class="badge badge-info badge-shadow pointer"
@@ -34,6 +36,11 @@
                     @click="markAsPaid(debit_card_request)"
                     v-if="!debit_card_request.is_paid"
                   >Mark as Paid</div>
+                  <div
+                    class="badge badge-warning btn-bold pointer"
+                    @click="confirmPayment(debit_card_request)"
+                    v-if="debit_card_request.is_paid && !debit_card_request.is_payment_confirmed"
+                  >Confirm Payment</div>
                   <div
                     class="badge badge-purple badge-shadow pointer"
                     @click="allocateCard(debit_card_request)"
@@ -137,7 +144,8 @@
     adminViewDebitCardRequests,
     adminUpdateDebitCardRequestStatus,
     adminMarkDebitCardRequestAsPaid,
-    adminAllocateDebitCardToRequest
+    adminAllocateDebitCardToRequest,
+    adminConfirmDebitCardRequestPayment
   } from "@admin-assets/js/config";
   import PreLoader from "@admin-components/misc/PageLoader";
   export default {
@@ -184,6 +192,37 @@
               Toast.fire({
                 title: "Success",
                 text: "Request has been flagged as paid",
+                position: "center"
+              });
+            } else {
+              Toast.fire({
+                title: "Failed",
+                text: "Something wrong happend",
+                position: "center",
+                icon: "error"
+              });
+            }
+
+            this.$nextTick(() => {
+              $(() => {
+                this.sectionLoading = false;
+              });
+            });
+          });
+      },
+      confirmPayment(debitCardRequest) {
+        this.sectionLoading = true;
+        BlockToast.fire({
+          text: "processing ..."
+        });
+        axios
+          .put(adminConfirmDebitCardRequestPayment(debitCardRequest.id))
+          .then(({ status }) => {
+            if (status === 204) {
+              debitCardRequest.is_payment_confirmed = true;
+              Toast.fire({
+                title: "Success",
+                text: "The card payment has been confirmed",
                 position: "center"
               });
             } else {
