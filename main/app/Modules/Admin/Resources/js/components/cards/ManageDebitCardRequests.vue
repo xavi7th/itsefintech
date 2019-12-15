@@ -34,6 +34,11 @@
                     @click="markAsPaid(debit_card_request)"
                     v-if="!debit_card_request.is_paid"
                   >Mark as Paid</div>
+                  <div
+                    class="badge badge-purple badge-shadow pointer"
+                    @click="allocateCard(debit_card_request)"
+                    v-if="!debit_card_request.debit_card_id"
+                  >Allocate Card</div>
                 </td>
               </tr>
             </tbody>
@@ -131,7 +136,8 @@
   import {
     adminViewDebitCardRequests,
     adminUpdateDebitCardRequestStatus,
-    adminMarkDebitCardRequestAsPaid
+    adminMarkDebitCardRequestAsPaid,
+    adminAllocateDebitCardToRequest
   } from "@admin-assets/js/config";
   import PreLoader from "@admin-components/misc/PageLoader";
   export default {
@@ -194,6 +200,53 @@
                 this.sectionLoading = false;
               });
             });
+          });
+      },
+      allocateCard(debitCardDetails) {
+        swal
+          .fire({
+            title: "Enter a card number",
+            input: "number",
+            inputAttributes: {
+              autocapitalize: "off"
+            },
+            showCancelButton: true,
+            confirmButtonText: "Allocate card",
+            showLoaderOnConfirm: true,
+            preConfirm: card_number => {
+              return axios
+                .put(adminAllocateDebitCardToRequest(debitCardDetails.id), {
+                  card_number
+                })
+                .then(response => {
+                  if (response.status !== 204) {
+                    throw new Error(response.statusText);
+                  }
+                  return { rsp: true };
+                })
+                .catch(error => {
+                  if (error.response.status === 423) {
+                    swal.showValidationMessage("Unassigned Card");
+                  } else {
+                    swal.showValidationMessage(`Request failed: ${error}`);
+                  }
+                });
+            },
+            allowOutsideClick: () => !swal.isLoading()
+          })
+          .then(result => {
+            if (result.value) {
+              swal
+                .fire({
+                  title: `Allocated`,
+                  text:
+                    "The user will be required to activate the card before using it!",
+                  icon: "success"
+                })
+                .then(() => {
+                  location.reload();
+                });
+            }
           });
       },
       updateDebitCardRequestStatus() {

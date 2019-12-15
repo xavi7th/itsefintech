@@ -36,6 +36,11 @@ class DebitCard extends Model
 		return self::where('card_hash', static::hash($data))->exists();
 	}
 
+	static function retrieve(string $data): DebitCard
+	{
+		return self::where('card_hash', static::hash($data))->first();
+	}
+
 	public function card_user()
 	{
 		return $this->belongsTo(CardUser::class);
@@ -53,8 +58,8 @@ class DebitCard extends Model
 
 	public function getCardNumberAttribute($value)
 	{
-		return decrypt($value);
-		// return 'ending in ' . substr(decrypt($value), -4);
+		// return decrypt($value);
+		return 'ending in ' . substr(decrypt($value), -4);
 	}
 
 	public function setCardNumberAttribute($value)

@@ -203,7 +203,7 @@
     adminViewDebitCards,
     adminActivateDebitCard,
     adminAssignDebitCard,
-    adminAllocateDebitCard,
+    adminAllocateDebitCardToCardUser,
     toggleDebitCardSuspension,
     adminCreateDebitCard
   } from "@admin-assets/js/config";
@@ -378,7 +378,7 @@
             showLoaderOnConfirm: true,
             preConfirm: email => {
               return axios
-                .put(adminAllocateDebitCard(debitCardDetails.id), {
+                .put(adminAllocateDebitCardToCardUser(debitCardDetails.id), {
                   email
                 })
                 .then(response => {
