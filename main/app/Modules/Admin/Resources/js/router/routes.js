@@ -98,7 +98,8 @@ export const allRoutes = [
                 meta: {
                     title: APP_NAME + ' | Sales Rep Debit Cards',
                     iconClass: 'home',
-                    menuName: 'Sales Rep Debit Cards'
+                    menuName: 'Sales Rep Debit Cards',
+                    navSkip: true
                 },
             },
             {

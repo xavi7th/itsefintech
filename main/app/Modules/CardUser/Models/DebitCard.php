@@ -31,6 +31,11 @@ class DebitCard extends Model
 		return hash(static::getHashingAlgorithm(), $data);
 	}
 
+	static function exists(string $data): bool
+	{
+		return self::where('card_hash', static::hash($data))->exists();
+	}
+
 	public function card_user()
 	{
 		return $this->belongsTo(CardUser::class);
@@ -48,6 +53,7 @@ class DebitCard extends Model
 
 	public function getCardNumberAttribute($value)
 	{
+		// return decrypt($value);
 		return 'ending in ' . substr(decrypt($value), -4);
 	}
 
@@ -74,8 +80,17 @@ class DebitCard extends Model
 		})->middleware('auth:admin');
 
 		Route::post('debit-card/create', function (DebitCardCreationValidation $request, CardUser $user) {
+			if (DebitCard::exists($request->card_number)) {
+				return response()->json([
+					'error' => 'form validation error',
+					'message' => [
+						'card_number' => ['That card already exists in the Database']
+					]
+				], 422);
+			}
 			try {
 				DB::beginTransaction();
+
 				$debit_card = $user->debit_cards()->create($request->all());
 
 				auth()->user()->log('Created new Debit card ' . $debit_card->card_number);

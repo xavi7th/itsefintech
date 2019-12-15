@@ -22,11 +22,11 @@
           :key="index"
           :class="{'nav-sub':!item.name}"
         >
-          <router-link :to="item.path" v-if="item.name && !item.meta.skip" class="nav-link">
+          <router-link :to="item.path" v-if="item.name && !item.meta.navSkip" class="nav-link">
             <i class="fa fa-home nav-icon" :class="item.meta.iconClass"></i>
             {{item.meta.menuName}}
           </router-link>
-          <a href="#" v-else-if="!item.meta.skip">
+          <a href="#" v-else-if="!item.meta.navSkip">
             <i class="fa fa-desktop nav-icon" v-bind:class="item.meta.iconClass"></i>
             {{item.meta.menuName}}
           </a>
@@ -34,7 +34,7 @@
             <li
               v-for="childItem in item.children"
               :key="childItem.name"
-              v-show="!childItem.meta.skip"
+              v-show="!childItem.meta.navSkip"
             >
               <router-link :to="childItem.path" class="nav-link">{{childItem.meta.menuName}}</router-link>
             </li>
