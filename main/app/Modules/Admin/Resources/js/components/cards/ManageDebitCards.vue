@@ -245,17 +245,33 @@
           .then(({ data: { debit_cards } }) => {
             this.debitCards = debit_cards;
 
-            this.$nextTick(() => {
-              $(function() {
-                $("#datatable1").DataTable({
-                  responsive: true,
-                  language: {
-                    searchPlaceholder: "Search...",
-                    sSearch: ""
-                  }
+            if (this.$isDesktop) {
+              this.$nextTick(() => {
+                $(function() {
+                  $("#datatable1").DataTable({
+                    responsive: true,
+                    scrollX: false,
+                    language: {
+                      searchPlaceholder: "Search...",
+                      sSearch: ""
+                    }
+                  });
                 });
               });
-            });
+            } else {
+              this.$nextTick(() => {
+                $(function() {
+                  $("#datatable1").DataTable({
+                    responsive: false,
+                    scrollX: true,
+                    language: {
+                      searchPlaceholder: "Search...",
+                      sSearch: ""
+                    }
+                  });
+                });
+              });
+            }
 
             swal.close();
           });

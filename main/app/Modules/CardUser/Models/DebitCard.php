@@ -53,8 +53,8 @@ class DebitCard extends Model
 
 	public function getCardNumberAttribute($value)
 	{
-		// return decrypt($value);
-		return 'ending in ' . substr(decrypt($value), -4);
+		return decrypt($value);
+		// return 'ending in ' . substr(decrypt($value), -4);
 	}
 
 	public function setCardNumberAttribute($value)

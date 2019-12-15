@@ -239,18 +239,33 @@
             this.debit_card_requests = debit_card_requests;
             this.requestStatuses = request_statuses;
 
-            this.$nextTick(() => {
-              $(function() {
-                $("#datatable1").DataTable({
-                  responsive: false,
-                  scrollX: true,
-                  language: {
-                    searchPlaceholder: "Search...",
-                    sSearch: ""
-                  }
+            if (this.$isDesktop) {
+              this.$nextTick(() => {
+                $(function() {
+                  $("#datatable1").DataTable({
+                    responsive: true,
+                    scrollX: false,
+                    language: {
+                      searchPlaceholder: "Search...",
+                      sSearch: ""
+                    }
+                  });
                 });
               });
-            });
+            } else {
+              this.$nextTick(() => {
+                $(function() {
+                  $("#datatable1").DataTable({
+                    responsive: false,
+                    scrollX: true,
+                    language: {
+                      searchPlaceholder: "Search...",
+                      sSearch: ""
+                    }
+                  });
+                });
+              });
+            }
           });
       },
       hasExpired(date) {

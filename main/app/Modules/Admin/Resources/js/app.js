@@ -21,18 +21,23 @@ Vue.use( LoadScript )
 
 routeGenerator().then( router => {
 
-
     let mediaHandler = () => {
         if ( window.matchMedia( '(max-width: 767px)' ).matches ) {
             /**
              * Mobile
              */
-            // console.log( 'mobile view' );
+            Object.defineProperty( Vue.prototype, '$isMobile', {
+                value: true,
+                writable: false
+            } )
         } else {
             /**
              * Desktop
              */
-            // console.log( 'desktop view' );
+            Object.defineProperty( Vue.prototype, '$isDesktop', {
+                value: true,
+                writable: false
+            } )
         }
         /**
          * To set up a watcher
