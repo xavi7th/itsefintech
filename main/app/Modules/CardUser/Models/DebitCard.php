@@ -125,10 +125,16 @@ class DebitCard extends Model
 			if (!request('email')) {
 				return generate_422_error(['email' => ['Email field is required']]);
 			}
-			$sales_rep = SalesRep::where('email', request('email'))->firstOrFail();
-			$debit_card->update([
-				'sales_rep_id' => $sales_rep->id
-			]);
+			try {
+				$sales_rep = SalesRep::where('email', request('email'))->firstOrFail();
+			} catch (ModelNotFoundException $e) {
+				return generate_422_error(['rep' => ['Sales rep not found']]);
+			}
+
+			$debit_card->sales_rep_id = $sales_rep->id;
+			$debit_card->assigned_by = auth()->id();
+			$debit_card->save();
+
 			return response()->json([], 204);
 		})->middleware('auth:admin');
 
