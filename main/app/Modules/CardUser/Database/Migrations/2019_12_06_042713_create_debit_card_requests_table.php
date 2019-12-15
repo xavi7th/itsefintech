@@ -37,7 +37,7 @@ class CreateDebitCardRequestsTable extends Migration
 			$table->bigInteger('last_updated_by')->unsigned()->nullable();
 			$table->string('last_updater_user_type')->nullable();
 			$table->timestamps();
-			$table->softDeletes()();
+			$table->softDeletes();
 		});
 	}
 

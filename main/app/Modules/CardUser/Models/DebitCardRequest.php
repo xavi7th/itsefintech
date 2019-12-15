@@ -9,9 +9,12 @@ use App\Modules\Admin\Models\ActivityLog;
 use App\Modules\CardUser\Models\CardUser;
 use App\Modules\CardUser\Models\DebitCardRequestStatus;
 use App\Modules\Admin\Transformers\AdminDebitCardRequestTransformer;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class DebitCardRequest extends Model
 {
+	use SoftDeletes;
+
 	protected $fillable = [
 		'address', 'phone', 'debit_card_request_status_id', 'payment_method', 'zip', 'city'
 	];
@@ -29,7 +32,7 @@ class DebitCardRequest extends Model
 	static function routes()
 	{
 		Route::get('debit-card-requests', function () {
-			return (new AdminDebitCardRequestTransformer)->collectionTransformer(DebitCardRequest::all(), 'transformForAdminViewDebitCardRequests');
+			return (new AdminDebitCardRequestTransformer)->collectionTransformer(DebitCardRequest::withTrashed()->get(), 'transformForAdminViewDebitCardRequests');
 		})->middleware('auth:admin');
 
 		Route::put('debit-card-request/{debit_card_request}/allocate', function (DebitCardRequest $debit_card_request) {
@@ -95,6 +98,9 @@ class DebitCardRequest extends Model
 				return generate_422_error(['invalid' => ['No debit card has been assigned to this debit card request']]);
 			}
 			$debit_card_request->debit_card_request_status_id = request('details.debit_card_request_status_id');
+			if (request('details.debit_card_request_status_id') == 7) {
+				$debit_card_request->debit_card_request_status_id = now();
+			}
 			$debit_card_request->save();
 			return response()->json(['new_status' => DebitCardRequestStatus::find(request('details.debit_card_request_status_id'))->name], 203);
 		})->middleware('auth:admin');
