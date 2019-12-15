@@ -62,13 +62,6 @@ class User extends Authenticatable implements JWTSubject
 		}
 	}
 
-	public function log(string $activity)
-	{
-		$this->activities()->create([
-			'activity' => $activity
-		]);
-	}
-
 	public function toFlare(): array
 	{
 		// Only `id` will be sent to Flare.

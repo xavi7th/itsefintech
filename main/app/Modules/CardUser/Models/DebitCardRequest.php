@@ -5,6 +5,7 @@ namespace App\Modules\CardUser\Models;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Database\Eloquent\Model;
+use App\Modules\Admin\Models\ActivityLog;
 use App\Modules\CardUser\Models\CardUser;
 use App\Modules\CardUser\Models\DebitCardRequestStatus;
 use App\Modules\Admin\Transformers\AdminDebitCardRequestTransformer;
@@ -81,7 +82,7 @@ class DebitCardRequest extends Model
 			$debit_card->save();
 
 			/** Create activity */
-			auth()->user()->log('Attached debit card ' . $debit_card->card_number . ' to request: ' . $debit_card_request->id);
+			ActivityLog::logAdminActivity('Attached debit card ' . $debit_card->card_number . ' to request: ' . $debit_card_request->id);
 
 			DB::commit();
 			return response()->json([], 204);

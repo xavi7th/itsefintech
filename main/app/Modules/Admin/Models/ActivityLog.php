@@ -12,4 +12,11 @@ class ActivityLog extends Model
 	{
 		return $this->morphTo();
 	}
+
+	static function logAdminActivity(string $activity)
+	{
+		auth()->user()->activities()->create([
+			'activity' => $activity
+		]);;
+	}
 }

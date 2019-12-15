@@ -11,6 +11,7 @@ use App\Modules\SalesRep\Models\SalesRep;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Modules\Admin\Transformers\AdminDebitCardTransformer;
 use App\Modules\Admin\Http\Requests\DebitCardCreationValidation;
+use App\Modules\Admin\Models\ActivityLog;
 
 class DebitCard extends Model
 {
@@ -95,7 +96,7 @@ class DebitCard extends Model
 
 				$debit_card = $user->debit_cards()->create($request->all());
 
-				auth()->user()->log('Created new Debit card ' . $debit_card->card_number);
+				ActivityLog::logAdminActivity('Created new Debit card ' . $debit_card->card_number);
 
 				DB::commit();
 				return response()->json(['rsp' => $debit_card], 201);
