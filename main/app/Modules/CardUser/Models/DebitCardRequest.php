@@ -7,9 +7,10 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Database\Eloquent\Model;
 use App\Modules\Admin\Models\ActivityLog;
 use App\Modules\CardUser\Models\CardUser;
+use App\Modules\CardUser\Models\DebitCard;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Modules\CardUser\Models\DebitCardRequestStatus;
 use App\Modules\Admin\Transformers\AdminDebitCardRequestTransformer;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class DebitCardRequest extends Model
 {
@@ -27,6 +28,11 @@ class DebitCardRequest extends Model
 	public function debit_card_request_status()
 	{
 		return $this->belongsTo(DebitCardRequestStatus::class);
+	}
+
+	public function debit_card()
+	{
+		return $this->belongsTo(DebitCard::class);
 	}
 
 	static function routes()
@@ -61,6 +67,9 @@ class DebitCardRequest extends Model
 
 			/**  Attach debit card id to this request */
 			$debit_card_request->debit_card_id = $debit_card->id;
+
+			/** Set this sales rep as the one attending to the request */
+			$debit_card_request->sales_rep_id = auth()->id();
 
 			/** Set last_updated_by of this request */
 			$debit_card_request->last_updated_by = auth()->id();

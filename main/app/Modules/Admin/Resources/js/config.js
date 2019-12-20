@@ -62,6 +62,7 @@ export const adminDeleteCardUser = id => apiBaseUrl + 'card-user/' + id + '/dele
 export const adminRestoreCardUser = id => apiBaseUrl + 'card-user/' + id + '/restore'
 
 
+
 /**
  * Card Routes
  */
@@ -78,6 +79,14 @@ export const adminMarkDebitCardRequestAsPaid = id => apiBaseUrl + 'debit-card-re
 export const adminConfirmDebitCardRequestPayment = id => apiBaseUrl + 'debit-card-request/' + id + '/paid/confirm'
 export const adminUpdateDebitCardRequestStatus = id => apiBaseUrl + 'debit-card-request/' + id + '/status/update'
 
+
+export const adminViewDebitCardStockRequests = apiBaseUrl + 'stock-requests'
+export const adminMarkDebitCardStockRequestAsProcessed = id => apiBaseUrl + 'stock-request/' + id + '/processed'
+
+
+/** Sales Reps routes */
+export const getSalesRepStatistics = apiBaseUrl + 'statistics'
+export const requestCardStock = apiBaseUrl + 'debit-card/request'
 
 
 export const adminViewUsers = apiBaseUrl + 'users'

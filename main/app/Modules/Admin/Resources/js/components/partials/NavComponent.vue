@@ -49,7 +49,7 @@
   export default {
     name: "AdminNav",
     mounted() {
-      this.$loadScript("/js/admin-main.js");
+      this.$loadScript("/js/admin-nav.js");
       setTimeout(() => {
         $(".menu .nav-link").click(e => {
           $(".header-btn.closed").removeClass("closed");

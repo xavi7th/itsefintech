@@ -16,6 +16,7 @@
     </transition>
 
     <admin-footer v-if="!is404"></admin-footer>
+    <i title="Raphaël Colour Picker" style="display: none; color: orange;"></i>
   </div>
 </template>
 
@@ -28,7 +29,6 @@
   export default {
     name: "AdminApp",
     data: () => ({
-      freshLoad: true,
       isLoading: true
     }),
     components: {
@@ -69,22 +69,10 @@
         this.isLoading = true;
       },
       pageLoaded() {
-        // if (!this.isAuth) {
-        //   this.$loadScript("/js/dashboard-main.js").then(() => {
-        //     if (this.freshLoad) {
-        //       this.freshLoad = false;
-        //       $(".rd-dropdown-item").click(function() {
-        //         $(".rd-nav-item").addClass(
-        //           "rd-navbar--has-dropdown rd-navbar-submenu"
-        //         );
-        //       });
-        //     }
-        //     // $(".preloader").fadeOut(300);
-        //   });
-        // } else {
+        // this.$loadScript("/js/admin-dashboard.js").then(() => {
         $(".preloader").fadeOut(300);
         this.isLoading = false;
-        // }
+        // });
       }
     }
   };

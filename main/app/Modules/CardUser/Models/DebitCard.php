@@ -6,13 +6,15 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Database\Eloquent\Model;
+use App\Modules\Admin\Models\ActivityLog;
 use App\Modules\CardUser\Models\CardUser;
 use App\Modules\SalesRep\Models\SalesRep;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Modules\CardUser\Models\DebitCardRequest;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Modules\Admin\Transformers\AdminDebitCardTransformer;
 use App\Modules\Admin\Http\Requests\DebitCardCreationValidation;
-use App\Modules\Admin\Models\ActivityLog;
+use App\Modules\NormalAdmin\Models\StockRequest;
 
 class DebitCard extends Model
 {
@@ -53,6 +55,11 @@ class DebitCard extends Model
 		return $this->belongsTo(SalesRep::class);
 	}
 
+	public function debit_card_request()
+	{
+		return $this->hasOne(DebitCardRequest::class);
+	}
+
 	public function getExpDateAttribute()
 	{
 		return Carbon::createFromDate($this->year, $this->month + 1, 1);
@@ -60,8 +67,8 @@ class DebitCard extends Model
 
 	public function getCardNumberAttribute($value)
 	{
-		// return decrypt($value);
-		return 'ending in ' . substr(decrypt($value), -4);
+		return decrypt($value);
+		// return 'ending in ' . substr(decrypt($value), -4);
 	}
 
 	public function setCardNumberAttribute($value)

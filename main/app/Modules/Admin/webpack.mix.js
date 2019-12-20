@@ -30,15 +30,20 @@ mix.scripts( [
     __dirname + '/Resources/js/vendor/simplebar.min.js',
     __dirname + '/Resources/js/vendor/jquery.dataTables.min.js',
     __dirname + '/Resources/js/vendor/dataTables.responsive.min.js',
-    // __dirname + '/Resources/js/vendor/morris.min.js',
-    // __dirname + '/Resources/js/vendor/chartjs.min.js',
-    // __dirname + '/Resources/js/vendor/raphael.min.js',
-    // __dirname + '/Resources/js/vendor/owl.carousel.min.js'
+    __dirname + '/Resources/js/vendor/chartjs.min.js',
+    __dirname + '/Resources/js/vendor/morris.min.js',
+    __dirname + '/Resources/js/vendor/jquery.sparkline.min.js',
+    __dirname + '/Resources/js/vendor/js/jquery.peity.min.js',
+    __dirname + '/Resources/js/vendor/raphael.min.js',
 ], 'public_html/js/admin-app-vendor.js' );
 
 mix.scripts( [
+    __dirname + '/Resources/js/vendor/index.js'
+], 'public_html/js/admin-dashboard.js' );
+
+mix.scripts( [
     __dirname + '/Resources/js/vendor/main.js'
-], 'public_html/js/admin-main.js' );
+], 'public_html/js/admin-nav.js' );
 
 mix.copyDirectory( __dirname + '/Resources/img', 'public_html/img' );
 mix.copyDirectory( __dirname + '/Resources/fonts', 'public_html/fonts' );

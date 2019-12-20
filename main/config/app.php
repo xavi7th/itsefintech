@@ -15,6 +15,7 @@ return [
 
 	'name' => env('APP_NAME', 'Laravel'),
 	'migration_key' => env('MIGRATION_KEY', '9999'),
+	'card_cost' => env('CARD_COST', '1000'),
 
 	/*
     |--------------------------------------------------------------------------

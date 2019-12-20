@@ -38,12 +38,6 @@ const customerSupportView = function ( name ) {
     }
 }
 
-const dispatchAdminView = function ( name ) {
-    return function ( resolve ) {
-        require( [ '@dispatchAdmin-components/' + name ], resolve )
-    }
-}
-
 const salesRepView = function ( name ) {
     return function ( resolve ) {
         require( [ '@salesRep-components/' + name ], resolve )
@@ -110,6 +104,16 @@ export const allRoutes = [
                     title: APP_NAME + ' | All Debit Card Requests',
                     iconClass: 'home',
                     menuName: 'All Debit Card Requests'
+                },
+            },
+            {
+                path: '/cards/stock/request',
+                component: adminView( 'cards/ManageDebitCardStockRequests' ),
+                name: 'admin.cards.stock.request',
+                meta: {
+                    title: APP_NAME + ' | All Debit Card Stock Requests',
+                    iconClass: 'cc-visa',
+                    menuName: 'All Debit Card Stock Requests'
                 },
             },
         ]
@@ -189,16 +193,6 @@ export const allRoutes = [
                     title: APP_NAME + ' | View Customer Support',
                     iconClass: 'user',
                     menuName: 'View Customer Support'
-                },
-            },
-            {
-                path: '/users/dispatch-admins',
-                component: adminView( 'admins/ManageDispatchAdmin' ),
-                name: 'admin.dispatch-admins.view',
-                meta: {
-                    title: APP_NAME + ' | View Dispatch Admin',
-                    iconClass: 'user',
-                    menuName: 'View Dispatch Admin'
                 },
             },
             {
@@ -294,19 +288,6 @@ export const cardAdminAuthRoutes = [ {
 export const customerSupportAuthRoutes = [ {
         path: '/login',
         component: customerSupportView( 'auth/Login' ),
-        meta: {}
-    },
-    {
-        path: '*',
-        redirect: {
-            path: '/'
-        }
-    }
-]
-
-export const dispatchAdminAuthRoutes = [ {
-        path: '/login',
-        component: dispatchAdminView( 'auth/Login' ),
         meta: {}
     },
     {

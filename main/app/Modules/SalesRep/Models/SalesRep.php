@@ -12,6 +12,7 @@ use App\Modules\Admin\Models\ActivityLog;
 use App\Modules\CardUser\Models\DebitCard;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Modules\Admin\Transformers\AdminUserTransformer;
+use App\Modules\NormalAdmin\Models\StockRequest;
 
 class SalesRep extends User
 {
@@ -41,6 +42,11 @@ class SalesRep extends User
 	public function activities()
 	{
 		return $this->morphMany(ActivityLog::class, 'user');
+	}
+
+	public function stock_request()
+	{
+		return $this->hasOne(StockRequest::class);
 	}
 
 	public function assigned_debit_cards()

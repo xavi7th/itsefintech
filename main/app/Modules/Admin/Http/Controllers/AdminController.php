@@ -3,6 +3,7 @@
 namespace App\Modules\Admin\Http\Controllers;
 
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
 use App\Modules\Admin\Models\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Route;
@@ -13,9 +14,11 @@ use App\Modules\CardUser\Models\DebitCard;
 use App\Modules\CardAdmin\Models\CardAdmin;
 use App\Modules\Accountant\Models\Accountant;
 use App\Modules\NormalAdmin\Models\NormalAdmin;
+use App\Modules\NormalAdmin\Models\StockRequest;
 use App\Modules\CardUser\Models\DebitCardRequest;
 use App\Modules\AccountOfficer\Models\AccountOfficer;
 use App\Modules\CustomerSupport\Models\CustomerSupport;
+use App\Modules\SalesRep\Transformers\SalesRepDebitCardRequestTransformer;
 
 
 class AdminController extends Controller
@@ -52,6 +55,24 @@ class AdminController extends Controller
 					}
 				})->middleware('auth:admin');
 
+				Route::get('statistics', function () {
+					// $sales_rep_debit_cards = DebitCard::where('sales_rep_id', auth()->id())->count();
+					$sales_rep_sales = DebitCardRequest::where('sales_rep_id', auth()->id())->get();
+					return [
+						'total_assigned_cards' =>  DebitCard::where('sales_rep_id', auth()->id())->count(),
+						'total_allocated_cards' => DebitCard::where('sales_rep_id', auth()->id())->where('card_user_id', '<>', null)->count(),
+						'total_unallocated_cards' =>  DebitCard::where('sales_rep_id', auth()->id())->where('card_user_id', null)->count(),
+						'total_sales_amount' => $sales_rep_sales->where('is_payment_confirmed', true)->count() * config('app.card_cost'),
+						'total_cards_sold' => $sales_rep_sales->where('is_payment_confirmed', true)->count(),
+						'sales_rep_sales' => (new SalesRepDebitCardRequestTransformer)->collectionTransformer($sales_rep_sales, 'transformForSalesRepViewSales')['debit_card_requests'],
+						'recent_activities' => auth()->user()->activities()->take(4)->latest()->get(),
+						'monthly_summary' => DebitCardRequest::whereMonth('created_at', now()->month())->where('sales_rep_id', auth()->id())->groupBy('day')
+							->orderBy('day', 'DESC')->get([DB::raw('Date(created_at) as day'), DB::raw('COUNT(*) as "num_of_sales"')]),
+						'unpaid_sales' => $sales_rep_sales->where('is_paid', false)->count(),
+						'unconfirmed_sales' => $sales_rep_sales->where('is_payment_confirmed', false)->count(),
+					];
+				})->middleware('auth:admin');
+
 				CardUser::routes();
 
 				Admin::routes();
@@ -71,6 +92,8 @@ class AdminController extends Controller
 				DebitCard::routes();
 
 				DebitCardRequest::routes();
+
+				StockRequest::routes();
 			});
 
 			Route::group(['middleware' => ['auth:admin', 'admins']], function () {

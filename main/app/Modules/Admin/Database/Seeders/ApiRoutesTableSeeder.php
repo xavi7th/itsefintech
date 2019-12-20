@@ -175,6 +175,16 @@ class ApiRoutesTableSeeder extends Seeder
 				}',
 				'description' => 'View Sales Rep Debit Cards',
 			),
+			22 =>
+			array(
+				'path' => '/cards/stock/request',
+				'name' => 'admin.cards.stock.request',
+				'meta' => '{title: APP_NAME + \' | View Sales Rep Stock Requests\',
+					iconClass: \'cc-visa\',
+					menuName: \'View Sales Rep Stock Requests\'
+				}',
+				'description' => 'View Stock Requests',
+			),
 		));
 	}
 }
