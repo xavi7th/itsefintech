@@ -22,7 +22,7 @@ class RegistrationValidation extends FormRequest
 			'first_name' => 'required|string|max:50',
 			'last_name' => 'required|string|max:50',
 			'email' => 'required|string|email|max:100|unique:card_users,email',
-			'password' => 'required|string|min:6|confirmed',
+			'password' => 'required|string|min:6',
 			'phone' => 'required|regex:/^[\+]?[0-9\Q()\E\s-]+$/i|unique:card_users,phone',
 			'bvn' => 'required|numeric|digits_between:11,16',
 		];
