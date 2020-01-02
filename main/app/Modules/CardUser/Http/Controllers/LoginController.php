@@ -8,7 +8,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Modules\CardUser\Http\Requests\LoginValidation;
-
+use App\Modules\CardUser\Models\CardUser;
 
 /**
  *
@@ -46,7 +46,7 @@ class LoginController extends Controller
 		$credentials = request(['email', 'password']);
 
 		if (!$token = auth()->guard('card_user')->attempt($credentials)) {
-			return response()->json(['error' => 'Invalid details'], 401);
+			return response()->json(['error' => true, 'rsp' => 'Invalid details supplied'], 401);
 		}
 
 		return $this->respondWithToken($token);
@@ -85,7 +85,11 @@ class LoginController extends Controller
 		return response()->json([
 			'access_token' => $token,
 			'token_type' => 'bearer',
-			'expires_in' => auth('card_user')->factory()->getTTL() * 60
+			'expires_in' => auth('card_user')->factory()->getTTL() * 60,
+			'user' => $user = auth('card_user')->user(),
+			'is_card_activated' => !$user->has_unactivated_card(),
+			'is_card_requested' => $user->debit_card_requests()->exists(),
+			'success' => true
 		]);
 	}
 
