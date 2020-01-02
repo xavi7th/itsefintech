@@ -67,6 +67,12 @@ class CardUser extends User
 		return $this->hasMany(DebitCard::class);
 	}
 
+	public function has_unactivated_card()
+	{
+		return $this->debit_cards()->where('is_user_activated', false)->exists();
+	}
+
+
 	public function activities()
 	{
 		return $this->morphMany(ActivityLog::class, 'user');
