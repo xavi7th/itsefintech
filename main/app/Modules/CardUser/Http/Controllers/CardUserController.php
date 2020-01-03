@@ -18,6 +18,7 @@ use App\Modules\CardUser\Http\Controllers\RegisterController;
 use App\Modules\CardUser\Http\Requests\CardRequestValidation;
 use App\Modules\CardUser\Http\Requests\CardActivationValidation;
 use App\Modules\CardUser\Http\Requests\CardUserUpdateProfileValidation;
+use App\Modules\CardUser\Models\LoanRequest;
 
 class CardUserController extends Controller
 {
@@ -50,6 +51,8 @@ class CardUserController extends Controller
 				Route::put('/user', 'CardUserController@updateUserProfile');
 				// });
 			});
+
+			LoanRequest::cardUserRoutes();
 
 			Route::group(['prefix' => 'card', 'middleware' => ['auth:card_user', 'card_users']], function () {
 				Route::get('/list', 'CardUserController@getDebitCards');

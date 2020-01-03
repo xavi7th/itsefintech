@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 use App\Modules\CardUser\Models\OTP;
 use Illuminate\Support\Facades\Route;
 use App\Modules\Admin\Models\ActivityLog;
+use App\Modules\CardUser\Models\LoanRequest;
 use App\Modules\Admin\Models\CardUserCategory;
 use App\Modules\CardUser\Models\DebitCardRequest;
 use App\Modules\Admin\Transformers\AdminUserTransformer;
@@ -110,6 +111,18 @@ class CardUser extends User
 	{
 		return $this->hasOne(DebitCardRequest::class)->exists();
 	}
+
+	public function loan_request()
+	{
+		return $this->hasOne(LoanRequest::class)->where('is_approved', false);
+	}
+	public function has_loan_request()
+	{
+		return $this->loan_request()->exists();
+	}
+
+
+
 
 	public function total_deposit_amount()
 	{

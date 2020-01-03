@@ -16,6 +16,8 @@ return [
 	'name' => env('APP_NAME', 'Laravel'),
 	'migration_key' => env('MIGRATION_KEY', '9999'),
 	'card_cost' => env('CARD_COST', '1000'),
+	'maximum_repayment_duration' => env('MAXIMUM_REPAYMENT_DURATION', '30'),
+	'minimum_repayment_percentage' => env('MINIMUM_REPAYMENT_PERCENTAGE', '20'),
 
 	/*
     |--------------------------------------------------------------------------
