@@ -43,7 +43,10 @@ class CardUserTransformer
 			'first_name' => $user->first_name,
 			'last_name' => $user->last_name,
 			'bvn' => $user->bvn,
-			'card_user_category' => $user->card_user_category->category_name
+			'card_user_category' => $user->card_user_category->category_name,
+			'assigned_credit_limit' => $user->assigned_credit_limit,
+			'due_for_credit' => $user->due_for_credit(),
+
 		];
 	}
 

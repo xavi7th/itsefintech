@@ -86,6 +86,11 @@ class CardUser extends User
 		return $this->debit_cards()->where('is_user_activated', false)->exists();
 	}
 
+	public function due_for_credit()
+	{
+		return $this->debit_cards()->where('is_admin_activated', true)->where('is_suspended', false)->whereDate('activated_at', '<=', now()->subDays(30)->toDateString())->exists();
+	}
+
 	public function activities()
 	{
 		return $this->morphMany(ActivityLog::class, 'user');
@@ -149,14 +154,13 @@ class CardUser extends User
 		return $this->total_profit_amount() + $this->total_deposit_amount();
 	}
 
-	public function getAssignedCreditLimitAttribute()
+	public function getAssignedCreditLimitAttribute(): float
 	{
 		return $this->credit_limit ?? $this->card_user_category()->first(['credit_limit'])['credit_limit'];
 	}
 
-	public function getBvnAttribute($value)
+	public function getBvnAttribute($value): string
 	{
-		// return decrypt($value);
 		return 'ending in ' . substr(decrypt($value), -4);
 	}
 
@@ -165,7 +169,7 @@ class CardUser extends User
 		$this->attributes['bvn'] = encrypt($value);
 	}
 
-	static function routes()
+	static function adminRoutes()
 	{
 		Route::get('card-users', function () {
 			return (new AdminUserTransformer)->collectionTransformer(CardUser::withTrashed()->get(), 'transformForAdminViewCardUsers');

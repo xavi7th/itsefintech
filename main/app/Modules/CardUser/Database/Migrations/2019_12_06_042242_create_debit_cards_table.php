@@ -26,6 +26,7 @@ class CreateDebitCardsTable extends Migration
 			$table->integer('year');
 			$table->boolean('is_user_activated')->default(false);
 			$table->boolean('is_admin_activated')->default(false);
+			$table->timestamp('activated_at')->nullable();
 			$table->boolean('is_suspended')->default(false);
 
 			$table->bigInteger('assigned_by')->unsigned()->nullable();

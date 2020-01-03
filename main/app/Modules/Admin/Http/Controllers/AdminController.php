@@ -73,7 +73,7 @@ class AdminController extends Controller
 					];
 				})->middleware('auth:admin');
 
-				CardUser::routes();
+				CardUser::adminRoutes();
 
 				Admin::routes();
 
@@ -89,7 +89,7 @@ class AdminController extends Controller
 
 				SalesRep::routes();
 
-				DebitCard::routes();
+				DebitCard::adminRoutes();
 
 				DebitCardRequest::routes();
 

@@ -6,17 +6,18 @@ use Illuminate\Support\Arr;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Route;
 use App\Modules\CardUser\Models\CardUser;
 use App\Modules\CardUser\Models\DebitCard;
 use App\Modules\Admin\Models\CardUserCategory;
 use App\Modules\CardUser\Models\DebitCardRequest;
 use App\Modules\CardUser\Http\Controllers\LoginController;
+use App\Modules\CardUser\Transformers\CardUserTransformer;
 use App\Modules\CardUser\Http\Controllers\RegisterController;
 use App\Modules\CardUser\Http\Requests\CardRequestValidation;
 use App\Modules\CardUser\Http\Requests\CardActivationValidation;
 use App\Modules\CardUser\Http\Requests\CardUserUpdateProfileValidation;
-use App\Modules\CardUser\Transformers\CardUserTransformer;
 
 class CardUserController extends Controller
 {
@@ -129,12 +130,18 @@ class CardUserController extends Controller
 
 	public function activateDebitCard(CardActivationValidation $request)
 	{
-		DebitCard::unguard();
-		DebitCard::find($request->card_id)->update([
-			'is_user_activated' => true
-		]);
-		DebitCard::reguard();
-		return response()->json(['message' => 'Card Activated'], 204);
+
+		$debit_card = DebitCard::find($request->card_id);
+		/**
+		 * Test csc
+		 */
+		if (Hash::check($request->csc, $debit_card->csc)) {
+			$debit_card->is_user_activated = true;
+			$debit_card->save();
+			return response()->json(['message' => 'Card Activated'], 204);
+		} else {
+			return response()->json(['message' => 'Invalid CSC'], 403);
+		}
 	}
 	public function trackDebitCard(DebitCardRequest $card_request)
 	{

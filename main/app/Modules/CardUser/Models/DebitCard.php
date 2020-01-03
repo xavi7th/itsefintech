@@ -82,7 +82,7 @@ class DebitCard extends Model
 		$this->attributes['csc'] = bcrypt($value);
 	}
 
-	static function routes()
+	static function adminRoutes()
 	{
 		Route::get('debit-cards/{rep?}', function ($rep = null) {
 			if (is_null($rep)) {
@@ -123,9 +123,14 @@ class DebitCard extends Model
 		})->middleware('auth:admin');
 
 		Route::put('debit-card/{debit_card}/activate', function (DebitCard $debit_card) {
-			$debit_card->is_admin_activated = true;
-			$debit_card->save();
-			return response()->json([], 204);
+			if ($debit_card->is_user_activated) {
+				$debit_card->is_admin_activated = true;
+				$debit_card->activated_at = now();
+				$debit_card->save();
+				return response()->json([], 204);
+			} else {
+				return response()->json(['message' => 'User has not activated card'], 403);
+			}
 		})->middleware('auth:admin');
 
 		Route::put('debit-card/{debit_card}/assign', function (DebitCard $debit_card) {
