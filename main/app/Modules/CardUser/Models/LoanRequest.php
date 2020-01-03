@@ -2,10 +2,12 @@
 
 namespace App\Modules\CardUser\Models;
 
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Database\Eloquent\Model;
 use App\Modules\CardUser\Models\CardUser;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Modules\CardUser\Transformers\LoanRequestTransformer;
 use App\Modules\CardUser\Http\Requests\CreateLoanRequestValidation;
 
 class LoanRequest extends Model
@@ -51,12 +53,22 @@ class LoanRequest extends Model
 	static function cardUserRoutes()
 	{
 		Route::group(['namespace' => '\App\Modules\CardUser\Models'], function () {
+			Route::get('loan-request', 'LoanRequest@getLoanRequest')->middleware('auth:card_user');
 			Route::post('loan-request/create', 'LoanRequest@makeLoanRequest')->middleware('auth:card_user');
 		});
 	}
 
+	public function getLoanRequest(Request $request)
+	{
+		try {
+			return (new LoanRequestTransformer)->transform($request->user()->loan_request);
+		} catch (\Throwable $th) {
+			return response()->json(['mesage' => 'No request found'], 404);
+		}
+	}
+
 	public function makeLoanRequest(CreateLoanRequestValidation $request)
 	{
-		return $request->user()->loan_request()->create($request->all());
+		return (new LoanRequestTransformer)->transform($request->user()->loan_request()->create($request->all()));
 	}
 }
