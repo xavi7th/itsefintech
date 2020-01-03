@@ -7,13 +7,15 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use App\Modules\CardUser\Models\OTP;
 use Illuminate\Support\Facades\Route;
+use App\Modules\Admin\Models\ActivityLog;
+use App\Modules\Admin\Models\CardUserCategory;
 use App\Modules\CardUser\Models\DebitCardRequest;
 use App\Modules\Admin\Transformers\AdminUserTransformer;
-use App\Modules\Admin\Models\ActivityLog;
 
 class CardUser extends User
 {
 	protected $fillable = [
+		'card_user_category_id',
 		'first_name',
 		'last_name',
 		'email',
@@ -23,9 +25,21 @@ class CardUser extends User
 		'bvn'
 	];
 
+	/**
+	 * The attributes that should be hidden for arrays.
+	 *
+	 * @var array
+	 */
+	protected $hidden = [
+		'password', 'remember_token', 'credit_limit', 'deleted_at', 'created_at', 'updated_at'
+	];
+
+	protected $appends = ['assigned_credit_limit'];
+
 	protected $casts = [
 		'can_withdraw' => 'boolean',
-		'is_active' => 'boolean'
+		'is_active' => 'boolean',
+		'card_user_category_id' => 'integer',
 	];
 	protected $table = "card_users";
 	const DASHBOARD_ROUTE_PREFIX = "user";
@@ -72,10 +86,14 @@ class CardUser extends User
 		return $this->debit_cards()->where('is_user_activated', false)->exists();
 	}
 
-
 	public function activities()
 	{
 		return $this->morphMany(ActivityLog::class, 'user');
+	}
+
+	public function card_user_category()
+	{
+		return $this->belongsTo(CardUserCategory::class);
 	}
 
 	public function debit_card_requests()
@@ -129,6 +147,22 @@ class CardUser extends User
 			return 0;
 		}
 		return $this->total_profit_amount() + $this->total_deposit_amount();
+	}
+
+	public function getAssignedCreditLimitAttribute()
+	{
+		return $this->credit_limit ?? $this->card_user_category()->first(['credit_limit'])['credit_limit'];
+	}
+
+	public function getBvnAttribute($value)
+	{
+		// return decrypt($value);
+		return 'ending in ' . substr(decrypt($value), -4);
+	}
+
+	public function setBvnAttribute($value)
+	{
+		$this->attributes['bvn'] = encrypt($value);
 	}
 
 	static function routes()
@@ -195,5 +229,13 @@ class CardUser extends User
 			$card_user->forceDelete();
 			return response()->json(['rsp' => true], 204);
 		})->middleware('auth:admin');
+	}
+
+	static function cardUserRoutes()
+	{
+
+		Route::get('card-users/categories', function () {
+			return CardUserCategory::get(['category_name', 'id']);
+		});
 	}
 }

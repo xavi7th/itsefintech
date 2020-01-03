@@ -2,9 +2,9 @@
 
 namespace App\Modules\CardUser\Transformers;
 
-use App\Modules\AppUser\Models\AppUser;
-use App\Modules\AppUser\Models\WithdrawalRequest;
-use App\Modules\AppUser\Models\Transaction;
+use App\Modules\CardUser\Models\CardUser;
+use App\Modules\CardUser\Models\Transaction;
+use App\Modules\CardUser\Models\WithdrawalRequest;
 
 class CardUserTransformer
 {
@@ -37,14 +37,17 @@ class CardUserTransformer
 		}
 	}
 
-	public function transform(AppUser $user)
+	public function transform(CardUser $user)
 	{
 		return [
-			'name' => $user->name,
+			'first_name' => $user->first_name,
+			'last_name' => $user->last_name,
+			'bvn' => $user->bvn,
+			'card_user_category' => $user->card_user_category->category_name
 		];
 	}
 
-	public function transformForAppUser(AppUser $user)
+	public function transformForCardUser(CardUser $user)
 	{
 		$curr = (function () use ($user) {
 			switch ($user->currency) {
@@ -109,7 +112,7 @@ class CardUserTransformer
 			'date' => (string)$profit->trans_date->diffForHumans()
 		];
 	}
-	public function transformForProfitChart(AppUser $user)
+	public function transformForProfitChart(CardUser $user)
 	{
 		$deposits = $user->deposit_transactions()->oldest('trans_date')->get();
 		$profits = $user->profit_transactions()->oldest('trans_date')->get();

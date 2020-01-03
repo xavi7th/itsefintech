@@ -25,6 +25,7 @@ class RegistrationValidation extends FormRequest
 			'password' => 'required|string|min:6',
 			'phone' => 'required|regex:/^[\+]?[0-9\Q()\E\s-]+$/i|unique:card_users,phone',
 			'bvn' => 'required|numeric|digits_between:11,16',
+			'card_user_category_id' => 'required|exists:card_user_categories,id'
 		];
 	}
 
@@ -53,8 +54,8 @@ class RegistrationValidation extends FormRequest
 			// 'primary_contact_number.required' => 'The phone number of the primary contact is required',
 			// 'primary_contact_email.required' => 'The email provided for the primary contact is invalid',
 			// 'accommodation_name.required' => 'The name of the accommodation is required',
-			// 'price.required' => 'The price of the accommodation is required',
-			// 'space_type_id.exists' => 'Selected space type is invalid',
+			'card_user_category_id.required' => 'Please select a user category',
+			'card_user_category_id.exists' => 'Invalid user category selected',
 		];
 	}
 

@@ -97,6 +97,7 @@ class RegisterController extends Controller
 		$card_user = CardUser::create([
 			'first_name' => $data['first_name'],
 			'last_name' => $data['last_name'],
+			'card_user_category_id' => $data['card_user_category_id'],
 			'email' => $data['email'],
 			'password' => bcrypt($data['password']),
 			'phone' => $data['phone'],

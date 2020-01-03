@@ -7,13 +7,16 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Route;
+use App\Modules\CardUser\Models\CardUser;
 use App\Modules\CardUser\Models\DebitCard;
+use App\Modules\Admin\Models\CardUserCategory;
 use App\Modules\CardUser\Models\DebitCardRequest;
 use App\Modules\CardUser\Http\Controllers\LoginController;
 use App\Modules\CardUser\Http\Controllers\RegisterController;
 use App\Modules\CardUser\Http\Requests\CardRequestValidation;
 use App\Modules\CardUser\Http\Requests\CardActivationValidation;
 use App\Modules\CardUser\Http\Requests\CardUserUpdateProfileValidation;
+use App\Modules\CardUser\Transformers\CardUserTransformer;
 
 class CardUserController extends Controller
 {
@@ -31,6 +34,8 @@ class CardUserController extends Controller
 
 			Route::get('/', 'CardUserController@index');
 
+			CardUser::cardUserRoutes();
+
 			Route::group(['prefix' => 'auth', 'middleware' => ['auth:card_user', 'card_users']], function () {
 
 				Route::group(['middleware' => ['unverified_card_users']], function () {
@@ -39,10 +44,10 @@ class CardUserController extends Controller
 					Route::put('/user/verify-otp', 'CardUserController@verifyOTP');
 				});
 
-				Route::group(['middleware' => ['verified_card_users']], function () {
-					Route::get('/user', 'CardUserController@user');
-					Route::put('/user', 'CardUserController@updateUserProfile');
-				});
+				// Route::group(['middleware' => ['verified_card_users']], function () {
+				Route::get('/user', 'CardUserController@user');
+				Route::put('/user', 'CardUserController@updateUserProfile');
+				// });
 			});
 
 			Route::group(['prefix' => 'card', 'middleware' => ['auth:card_user', 'card_users']], function () {
@@ -65,7 +70,7 @@ class CardUserController extends Controller
 
 	public function user(Request $request)
 	{
-		return response()->json(auth('card_user')->user());
+		return response()->json((new CardUserTransformer)->transform(auth('card_user')->user()));
 	}
 
 	public function updateUserProfile(CardUserUpdateProfileValidation $request)
