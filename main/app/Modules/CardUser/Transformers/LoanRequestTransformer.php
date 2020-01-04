@@ -37,22 +37,22 @@ class LoanRequestTransformer
 		}
 	}
 
-	public function transform(LoanRequest $user)
+	public function transform(LoanRequest $loan_request)
 	{
 		return [
-			'id' => $user->id,
-			'amount' => $user->amount,
-			'total_duration' => (int)$user->total_duration,
-			'repayment_duration' => (int)$user->repayment_duration,
-			'repayment_amount' => (float)$user->repayment_amount,
-			'is_approved' => (boolean)$user->is_approved,
+			'id' => $loan_request->id,
+			'amount' => $loan_request->amount,
+			'total_duration' => (int)$loan_request->total_duration,
+			'repayment_duration' => (int)$loan_request->repayment_duration,
+			'repayment_amount' => (float)$loan_request->repayment_amount,
+			'is_approved' => (boolean)$loan_request->is_approved,
 		];
 	}
 
-	public function transformForLoanRequest(LoanRequest $user)
+	public function transformForLoanRequest(LoanRequest $loan_request)
 	{
-		$curr = (function () use ($user) {
-			switch ($user->currency) {
+		$curr = (function () use ($loan_request) {
+			switch ($loan_request->currency) {
 				case 'USD':
 					return '$';
 					break;
@@ -64,24 +64,24 @@ class LoanRequestTransformer
 					break;
 
 				default:
-					return $user->currency;
+					return $loan_request->currency;
 					break;
 			}
 		})();
 		return [
-			'id' => (int)$user->id,
-			'name' => (string)$user->name,
-			'email' => (string)$user->email,
-			'country' => (string)$user->country,
+			'id' => (int)$loan_request->id,
+			'name' => (string)$loan_request->name,
+			'email' => (string)$loan_request->email,
+			'country' => (string)$loan_request->country,
 			'currency' => (string)$curr,
-			'phone' => (string)$user->phone,
-			'id_card' => (string)$user->id_card,
-			// 'is_verified' => (bool)$user->is_verified(),
-			'total_deposit' => (double)$user->total_deposit_amount(),
-			'total_withdrawal' => (double)$user->total_withdrawal_amount(),
-			'total_profit' => (double)$user->total_profit_amount(),
-			'target_profit' => (double)$user->expected_withdrawal_amount(),
-			'total_withdrawable' => (double)number_format($user->total_withdrawalable_amount(), 2, '.', '')
+			'phone' => (string)$loan_request->phone,
+			'id_card' => (string)$loan_request->id_card,
+			// 'is_verified' => (bool)$loan_request->is_verified(),
+			'total_deposit' => (double)$loan_request->total_deposit_amount(),
+			'total_withdrawal' => (double)$loan_request->total_withdrawal_amount(),
+			'total_profit' => (double)$loan_request->total_profit_amount(),
+			'target_profit' => (double)$loan_request->expected_withdrawal_amount(),
+			'total_withdrawable' => (double)number_format($loan_request->total_withdrawalable_amount(), 2, '.', '')
 		];
 	}
 
@@ -114,10 +114,10 @@ class LoanRequestTransformer
 			'date' => (string)$profit->trans_date->diffForHumans()
 		];
 	}
-	public function transformForProfitChart(LoanRequest $user)
+	public function transformForProfitChart(LoanRequest $loan_request)
 	{
-		$deposits = $user->deposit_transactions()->oldest('trans_date')->get();
-		$profits = $user->profit_transactions()->oldest('trans_date')->get();
+		$deposits = $loan_request->deposit_transactions()->oldest('trans_date')->get();
+		$profits = $loan_request->profit_transactions()->oldest('trans_date')->get();
 		$transactions = ($deposits->concat($profits))->sortBy('trans_date')->values();
 		// dd($transactions->toArray());
 

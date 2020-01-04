@@ -69,10 +69,28 @@ export const allRoutes = [
         } ]
     },
     {
+        path: '/loans',
+        component: adminView( 'EmptyComponent' ),
+        meta: {
+            iconClass: 'hand-holding-usd',
+            menuName: 'Manage Loan Requests'
+        },
+        children: [ {
+            path: '/loans/requests',
+            component: adminView( 'cards/ManageLoanRequests' ),
+            name: 'admin.loans.requests',
+            meta: {
+                title: APP_NAME + ' | All Loan Requests',
+                iconClass: 'home',
+                menuName: 'All Loan Requests'
+            },
+        } ]
+    },
+    {
         path: '/cards',
         component: adminView( 'EmptyComponent' ),
         meta: {
-            iconClass: 'home',
+            iconClass: 'cc-visa',
             menuName: 'Manage Debit Cards'
         },
         children: [ {

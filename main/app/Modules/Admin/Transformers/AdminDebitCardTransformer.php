@@ -29,4 +29,14 @@ class AdminDebitCardTransformer
 			'is_admin_activated' => (boolean)$card->is_admin_activated,
 		];
 	}
+	public function transformForBasicDebitCardDetails(DebitCard $card)
+	{
+		return [
+			'id' => (int)$card->id,
+			'card_number' => (string)$card->card_number,
+			'is_suspended' => (boolean)$card->is_suspended,
+			'is_user_activated' => (boolean)$card->is_user_activated,
+			'is_admin_activated' => (boolean)$card->is_admin_activated,
+		];
+	}
 }

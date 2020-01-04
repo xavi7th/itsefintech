@@ -20,10 +20,14 @@ class CreateLoanRequestsTable extends Migration
 			$table->integer('total_duration');
 			$table->integer('repayment_duration');
 			$table->integer('repayment_amount');
-			$table->boolean('is_approved')->default(false);
+			$table->timestamp('approved_at')->nullable();
 			$table->bigInteger('approved_by')->unsigned()->nullable()->default(null);
 			$table->foreign('approved_by')->references('id')->on('admins')->onDelete('no action');
-			// $table->string('confirmation_user_type')->nullable();
+			// $table->string('approved_by_user_type')->nullable();
+			$table->timestamp('paid_at')->nullable();
+			$table->bigInteger('marked_paid_by')->unsigned()->nullable()->default(null);
+			$table->foreign('marked_paid_by')->references('id')->on('admins')->onDelete('no action');
+			// $table->string('marked_paid_by_user_type')->nullable();
 
 			$table->timestamps();
 			$table->softDeletes();

@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Modules\CardUser\Models\CardUser;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Modules\CardUser\Transformers\LoanRequestTransformer;
+use App\Modules\Admin\Transformers\AdminLoanRequestTransformer;
 use App\Modules\CardUser\Http\Requests\CreateLoanRequestValidation;
 
 class LoanRequest extends Model
@@ -32,21 +33,7 @@ class LoanRequest extends Model
 	static function adminRoutes()
 	{
 		Route::group(['namespace' => '\App\Modules\CardUser\Models'], function () {
-			Route::get('debit-cards/{rep?}', function ($rep = null) {
-				if (is_null($rep)) {
-					$debit_cards = DebitCard::withTrashed()->get();
-				} else {
-					$debit_cards = SalesRep::find($rep)->assigned_debit_cards()->withTrashed()->get();
-				}
-				return (new AdminDebitCardTransformer)->collectionTransformer($debit_cards, 'transformForAdminViewDebitCards');
-			})->middleware('auth:admin');
-
-
-			Route::delete('debit-card/{debit_card}/delete', function (DebitCard $debit_card) {
-				return;
-				$debit_card->delete();
-				return response()->json(['rsp' => true], 204);
-			})->middleware('auth:admin');
+			Route::get('loan-requests/{admin?}', 'LoanRequest@showAllLoanRequests')->middleware('auth:admin');
 		});
 	}
 
@@ -57,6 +44,10 @@ class LoanRequest extends Model
 			Route::post('loan-request/create', 'LoanRequest@makeLoanRequest')->middleware('auth:card_user');
 		});
 	}
+
+	/**
+	 * Card User Route Methods
+	 */
 
 	public function getLoanRequest(Request $request)
 	{
@@ -70,5 +61,21 @@ class LoanRequest extends Model
 	public function makeLoanRequest(CreateLoanRequestValidation $request)
 	{
 		return (new LoanRequestTransformer)->transform($request->user()->loan_request()->create($request->all()));
+	}
+
+
+
+	/**
+	 * Admin Route Methods
+	 */
+
+	public function showAllLoanRequests($admin = null)
+	{
+		if (is_null($admin)) {
+			$loan_requests = LoanRequest::withTrashed()->get();
+		} else {
+			$loan_requests = Admin::find($admin)->assigned_loan_requests()->withTrashed()->get();
+		}
+		return (new AdminLoanRequestTransformer)->collectionTransformer($loan_requests, 'transformForAdminViewLoanRequests');
 	}
 }

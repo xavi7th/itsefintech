@@ -174,7 +174,7 @@ class CardUser extends User
 
 	public function getBvnAttribute($value): string
 	{
-		return 'ending in ' . substr(decrypt($value), -4);
+		return $value ? 'ending in ' . substr(decrypt($value), -4) : 'Not provided';
 	}
 
 	public function setBvnAttribute($value)

@@ -4,15 +4,16 @@ namespace App\Modules\Admin\Transformers;
 
 use App\User;
 use App\Modules\Admin\Models\Admin;
+use App\Modules\CardUser\Models\CardUser;
 use App\Modules\SalesRep\Models\SalesRep;
+use App\Modules\CardUser\Models\DebitCard;
 use App\Modules\CardAdmin\Models\CardAdmin;
 use App\Modules\Accountant\Models\Accountant;
 use App\Modules\NormalAdmin\Models\NormalAdmin;
 use App\Modules\DispatchAdmin\Models\DispatchAdmin;
 use App\Modules\AccountOfficer\Models\AccountOfficer;
 use App\Modules\CustomerSupport\Models\CustomerSupport;
-use App\Modules\CardUser\Models\CardUser;
-use App\Modules\CardUser\Models\DebitCard;
+use App\Modules\Admin\Transformers\AdminDebitCardTransformer;
 
 class AdminUserTransformer
 {
@@ -235,7 +236,7 @@ class AdminUserTransformer
 	{
 		return [
 			'id' => (int)$user->id,
-			'full_name' => (string)$user->first_name . ' ' . $user->first_name,
+			'full_name' => (string)$user->first_name . ' ' . $user->last_name,
 			'email' => (string)$user->email,
 			'phone' => (string)$user->phone,
 			'bvn' => (string)$user->bvn,
@@ -248,7 +249,7 @@ class AdminUserTransformer
 			'is_verified' => (boolean)$user->is_otp_verified(),
 			'is_suspended' => (boolean)$user->deleted_at,
 			'can_withdraw' => (boolean)$user->can_withdraw,
-			'cards' => $user->debit_cards
+			'cards' => ((new AdminDebitCardTransformer)->collectionTransformer($user->debit_cards, 'transformForBasicDebitCardDetails'))['debit_cards']
 		];
 	}
 }
