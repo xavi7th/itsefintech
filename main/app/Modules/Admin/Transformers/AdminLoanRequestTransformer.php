@@ -24,6 +24,7 @@ class AdminLoanRequestTransformer
 			'due_date' => $loan_request->due_date,
 			'repayment_duration' => (int)$loan_request->repayment_duration,
 			'repayment_amount' => (float)$loan_request->repayment_amount,
+			'loan_balance' => (float)$loan_request->loan_balance(),
 			'is_approved' => (boolean)$loan_request->approved_at,
 			'approved_by' => $loan_request->approved_by ? (new AdminUserTransformer)->transformForAdminViewAdminsBasicDetails(Admin::find($loan_request->approved_by))['full_name'] : null,
 			'is_paid' => (boolean)$loan_request->paid_at,

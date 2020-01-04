@@ -25,10 +25,15 @@
                 <td>{{ loan_request.id }}</td>
                 <td>{{ loan_request.requester.full_name }}</td>
                 <td>{{ loan_request.requester.phone }}</td>
-                <td>{{ loan_request.amount | Naira }}</td>
-                <td>{{ loan_request.total_duration }} days</td>
-                <td>{{ loan_request.due_date }}</td>
-                <td>{{ loan_request.is_paid ? 'Payment made' : loan_request.is_approved ? 'Approved without payment' : 'Not Approved' }}</td>
+                <template v-if="loan_request.loan_balance == 0">
+                  <td colspan="4" class="text-center text-bold text-uppercase">Loan paid</td>
+                </template>
+                <template v-else>
+                  <td>{{ loan_request.amount | Naira }}</td>
+                  <td>{{ loan_request.total_duration + ' days' }}</td>
+                  <td>{{ loan_request.due_date }}</td>
+                  <td>{{ loan_request.is_paid ? 'Payment made' : loan_request.is_approved ? 'Approved without payment' : 'Not Approved' }}</td>
+                </template>
                 <td>
                   <div
                     class="badge badge-info badge-shadow pointer"
