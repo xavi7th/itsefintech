@@ -13,10 +13,11 @@ use App\Modules\CardUser\Models\LoanTransaction;
 use App\Modules\CardUser\Transformers\LoanRequestTransformer;
 use App\Modules\Admin\Transformers\AdminLoanRequestTransformer;
 use App\Modules\CardUser\Http\Requests\CreateLoanRequestValidation;
+use Watson\Rememberable\Rememberable;
 
 class LoanRequest extends Model
 {
-	use SoftDeletes;
+	use SoftDeletes, Rememberable;
 
 	protected $fillable = ['amount', 'total_duration', 'repayment_duration', 'repayment_amount',];
 
@@ -39,6 +40,11 @@ class LoanRequest extends Model
 	public function loan_transactions()
 	{
 		return $this->hasMany(LoanTransaction::class);
+	}
+
+	public function loan_balance()
+	{
+		return $this->amount - $this->loan_transactions()->where('transaction_type', 'repayment')->sum('amount');
 	}
 
 	public function getDueDateAttribute()

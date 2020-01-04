@@ -128,10 +128,17 @@ class CardUser extends User
 		return $this->loan_transactions()->where('transaction_type', 'repayment')->sum('amount');
 	}
 
+	public function running_loan_requests()
+	{
+		return $this->hasMany(LoanRequest::class)->where('paid_at', '<>', null);
+	}
+
+
 	public function loan_request()
 	{
 		return $this->hasOne(LoanRequest::class)->where('paid_at', null);
 	}
+
 	public function has_loan_request()
 	{
 		return $this->loan_request()->exists();

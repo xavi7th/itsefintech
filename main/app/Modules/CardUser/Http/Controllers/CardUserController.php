@@ -19,6 +19,7 @@ use App\Modules\CardUser\Http\Requests\CardRequestValidation;
 use App\Modules\CardUser\Http\Requests\CardActivationValidation;
 use App\Modules\CardUser\Http\Requests\CardUserUpdateProfileValidation;
 use App\Modules\CardUser\Models\LoanRequest;
+use App\Modules\CardUser\Models\LoanTransaction;
 
 class CardUserController extends Controller
 {
@@ -37,6 +38,8 @@ class CardUserController extends Controller
 			Route::get('/', 'CardUserController@index');
 
 			CardUser::cardUserRoutes();
+
+			LoanTransaction::cardUserRoutes();
 
 			Route::group(['prefix' => 'auth', 'middleware' => ['auth:card_user', 'card_users']], function () {
 
