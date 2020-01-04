@@ -1,5 +1,6 @@
 <template>
   <main>
+    <pre-loader v-if="sectionLoading" class="section-loader page-loader"></pre-loader>
     <page-header pageTitle="Manage Loan Requests"></page-header>
     <div class="content">
       <!-- table basic -->
@@ -14,6 +15,7 @@
                 <th>Phone</th>
                 <th>Amount</th>
                 <th>Loan Duration</th>
+                <th>Loan Due Date</th>
                 <th>Approval Status</th>
                 <th>Actions</th>
               </tr>
@@ -23,14 +25,15 @@
                 <td>{{ loan_request.id }}</td>
                 <td>{{ loan_request.requester.full_name }}</td>
                 <td>{{ loan_request.requester.phone }}</td>
-                <td>{{ loan_request.amount }}</td>
-                <td>{{ loan_request.total_duration }}</td>
+                <td>{{ loan_request.amount | Naira }}</td>
+                <td>{{ loan_request.total_duration }} days</td>
+                <td>{{ loan_request.due_date }}</td>
                 <td>{{ loan_request.is_paid ? 'Payment made' : loan_request.is_approved ? 'Approved without payment' : 'Not Approved' }}</td>
                 <td>
                   <div
                     class="badge badge-info badge-shadow pointer"
                     data-toggle="modal"
-                    data-target="#modal-details"
+                    data-target="#loan-request-details"
                     @click="showDetailsModal(loan_request)"
                   >View Request Details</div>
                   <div
@@ -41,14 +44,14 @@
                   <div
                     class="badge badge-warning btn-bold pointer"
                     @click="markAsPaid(loan_request)"
-                    v-if="!loan_request.is_paid"
+                    v-if="loan_request.is_approved && !loan_request.is_paid"
                   >Confirm Payment</div>
                 </td>
               </tr>
             </tbody>
           </table>
 
-          <div class="modal modal-left fade" id="modal-details" tabindex="-1">
+          <div class="modal modal-left fade" id="loan-request-details" tabindex="-1">
             <div class="modal-dialog">
               <div class="modal-content">
                 <div class="modal-header">
@@ -101,8 +104,11 @@
                                 <template
                                   v-for="card_details in LoanRequestDetails.requester.cards"
                                 >
-                                  <tr v-for="(value, property) in card_details" :key="property">
-                                    <td>{{ (property) }}</td>
+                                  <tr
+                                    v-for="(value, property) in card_details"
+                                    :key="property + value"
+                                  >
+                                    <td>{{ slugToString(property) }}</td>
                                     <td>
                                       <span>{{ value }}</span>
                                     </td>
@@ -117,23 +123,6 @@
                   </div>
                 </div>
                 <div class="modal-footer">
-                  <div class="form-group mb-5" :class="{'has-error': errors.has('exp_year')}">
-                    <select
-                      class="form-control"
-                      id="form-year"
-                      name="exp_year"
-                      v-validate="'required'"
-                      data-vv-as="expiry year"
-                      v-model="LoanRequestDetails.loan_request_status_id"
-                    >
-                      <option v-for="n in requestStatuses" :key="n.name" :value="n.id">{{ n.name }}</option>
-                    </select>
-                  </div>
-                  <button
-                    type="button"
-                    class="btn btn-bold btn-pure btn-info ml-15 my-30"
-                    @click="updateLoanRequestStatus"
-                  >Update Status</button>
                   <button
                     type="button"
                     class="btn btn-bold btn-pure btn-secondary"
@@ -153,8 +142,7 @@
   import {
     adminViewLoanRequests,
     adminApproveLoanRequest,
-    adminMarkLoanRequestAsPaid,
-    adminConfirmLoanRequestPayment
+    adminMarkLoanRequestAsPaid
   } from "@admin-assets/js/config";
   import PreLoader from "@admin-components/misc/PageLoader";
   export default {
@@ -167,7 +155,6 @@
         }
       },
       sectionLoading: false,
-      requestStatuses: {},
       details: {}
     }),
     components: {
@@ -192,19 +179,20 @@
         }
         return words.join(" ");
       },
-      approveLoanRequest(LoanRequest) {
+      approveLoanRequest(loanRequest) {
         this.sectionLoading = true;
         BlockToast.fire({
           text: "processing ..."
         });
+
         axios
-          .put(adminMarkLoanRequestAsPaid(LoanRequest.id))
+          .put(adminApproveLoanRequest(loanRequest.id))
           .then(({ status }) => {
-            LoanRequest.is_paid = true;
+            loanRequest.is_approved = true;
             if (status === 204) {
               Toast.fire({
                 title: "Success",
-                text: "Request has been flagged as paid",
+                text: "Request has been marked as approved",
                 position: "center"
               });
             } else {
@@ -215,61 +203,24 @@
                 icon: "error"
               });
             }
-
-            this.$nextTick(() => {
-              $(() => {
-                this.sectionLoading = false;
-              });
-            });
-          });
-      },
-      markAsPaid(LoanRequest) {
-        this.sectionLoading = true;
-        BlockToast.fire({
-          text: "processing ..."
-        });
-        axios
-          .put(adminConfirmLoanRequestPayment(LoanRequest.id))
-          .then(({ status }) => {
-            if (status === 204) {
-              LoanRequest.is_payment_confirmed = true;
-              Toast.fire({
-                title: "Success",
-                text: "The card payment has been confirmed",
-                position: "center"
-              });
-            } else {
-              Toast.fire({
-                title: "Failed",
-                text: "Something wrong happend",
-                position: "center",
-                icon: "error"
-              });
-            }
-
-            this.$nextTick(() => {
-              $(() => {
-                this.sectionLoading = false;
-              });
-            });
-          });
-      },
-
-      updateLoanRequestStatus() {
-        this.sectionLoading = true;
-        BlockToast.fire({
-          text: "Updating Loan request status ..."
-        });
-        axios
-          .put(adminUpdateLoanRequestStatus(this.LoanRequestDetails.id), {
-            details: this.LoanRequestDetails
           })
-          .then(({ status, data: { new_status } }) => {
-            if (status === 203) {
-              this.LoanRequestDetails.status = new_status;
+          .then(() => {
+            this.sectionLoading = false;
+          });
+      },
+      markAsPaid(loanRequest) {
+        this.sectionLoading = true;
+        BlockToast.fire({
+          text: "processing ..."
+        });
+        axios
+          .put(adminMarkLoanRequestAsPaid(loanRequest.id))
+          .then(({ status }) => {
+            if (status === 204) {
+              loanRequest.is_paid = true;
               Toast.fire({
                 title: "Success",
-                text: "Request status updated",
+                text: "The loan request has been marked as paid",
                 position: "center"
               });
             } else {
@@ -280,49 +231,44 @@
                 icon: "error"
               });
             }
-
-            this.$nextTick(() => {
-              $(() => {
-                this.sectionLoading = false;
-              });
-            });
+          })
+          .then(() => {
+            this.sectionLoading = false;
           });
       },
-      getLoanRequests() {
-        axios
-          .get(adminViewLoanRequests)
-          .then(({ data: { loan_requests, request_statuses } }) => {
-            this.loan_requests = loan_requests;
-            this.requestStatuses = request_statuses;
 
-            if (this.$isDesktop) {
-              this.$nextTick(() => {
-                $(function() {
-                  $("#datatable1").DataTable({
-                    responsive: true,
-                    scrollX: false,
-                    language: {
-                      searchPlaceholder: "Search...",
-                      sSearch: ""
-                    }
-                  });
+      getLoanRequests() {
+        axios.get(adminViewLoanRequests).then(({ data: { loan_requests } }) => {
+          this.loan_requests = loan_requests;
+
+          if (this.$isDesktop) {
+            this.$nextTick(() => {
+              $(function() {
+                $("#datatable1").DataTable({
+                  responsive: true,
+                  scrollX: false,
+                  language: {
+                    searchPlaceholder: "Search...",
+                    sSearch: ""
+                  }
                 });
               });
-            } else {
-              this.$nextTick(() => {
-                $(function() {
-                  $("#datatable1").DataTable({
-                    responsive: false,
-                    scrollX: true,
-                    language: {
-                      searchPlaceholder: "Search...",
-                      sSearch: ""
-                    }
-                  });
+            });
+          } else {
+            this.$nextTick(() => {
+              $(function() {
+                $("#datatable1").DataTable({
+                  responsive: false,
+                  scrollX: true,
+                  language: {
+                    searchPlaceholder: "Search...",
+                    sSearch: ""
+                  }
                 });
               });
-            }
-          });
+            });
+          }
+        });
       },
       hasExpired(date) {
         return new Date(date) < Date.now();
@@ -349,6 +295,9 @@
     min-height: 90vh;
     margin-left: 0;
     position: fixed;
+    &.page-loader {
+      margin-left: 260px;
+    }
   }
 
   .form-group {

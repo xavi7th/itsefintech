@@ -93,7 +93,6 @@ export const requestCardStock = apiBaseUrl + 'debit-card/request'
 export const adminViewLoanRequests = apiBaseUrl + 'loan-requests'
 export const adminApproveLoanRequest = id => apiBaseUrl + 'loan-request/' + id + '/approve'
 export const adminMarkLoanRequestAsPaid = id => apiBaseUrl + 'loan-request/' + id + '/paid'
-export const adminConfirmLoanRequestPayment = id => apiBaseUrl + 'loan-request/' + id + '/payment/confirm'
 
 
 export const adminViewUsers = apiBaseUrl + 'users'

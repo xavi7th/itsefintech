@@ -99,6 +99,12 @@ class AdminUserTransformer
 			'is_suspended' => (boolean)$user->deleted_at
 		];
 	}
+	public function transformForAdminViewAdminsBasicDetails(Admin $user)
+	{
+		return [
+			'full_name' => (string)$user->full_name,
+		];
+	}
 
 	public function transformForAdminViewNormalAdmins(NormalAdmin $user)
 	{

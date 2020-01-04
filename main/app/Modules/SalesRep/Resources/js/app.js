@@ -3,7 +3,7 @@ import Vue from 'vue'
 import VeeValidate from 'vee-validate'
 import App from './SalesRepAppComponent'
 import PageHeader from "@admin-components/partials/PageHeaderComponent";
-// import Vue2Filters from 'vue2-filters'
+import Vue2Filters from 'vue2-filters'
 
 const {
     routeGenerator
@@ -11,7 +11,7 @@ const {
 
 import LoadScript from 'vue-plugin-load-script'
 
-// Vue.use( Vue2Filters )
+Vue.use( Vue2Filters )
 Vue.use( VeeValidate, {
     fieldsBagName: 'formFields'
 } )

@@ -9,11 +9,18 @@ const {
 } = require( './router' )
 
 import LoadScript from 'vue-plugin-load-script'
-import Axios from 'axios';
-
-
 
 Vue.use( Vue2Filters )
+
+Vue.filter( 'Naira', function ( value, symbol ) {
+    let currency = Vue.filter( 'currency' )
+    symbol = '₦'
+    return currency( value, symbol, 2, {
+        thousandsSeparator: ',',
+        decimalSeparator: '.'
+    } )
+} )
+
 Vue.use( VeeValidate, {
     fieldsBagName: 'formFields'
 } )
