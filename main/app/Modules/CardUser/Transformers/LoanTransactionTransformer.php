@@ -51,7 +51,7 @@ class LoanTransactionTransformer
 		return [
 			'total_loan_amount' => (float)$request->user()->total_loan_amount(),
 			'total_repayments_amount' => (float)$request->user()->total_repayment_amount(),
-			'total_loan_balance' => (float)$request->user()->total_loan_amount() - $request->user()->total_repayment_amount(),
+			'total_loan_balance' => (float)$request->user()->total_loan_balance(),
 			// 'next_repayment_due_date' => $due_date = ($transaction = $request->user()->loan_transactions()->latest()->first())->next_installment_due_date,
 			// 'next_repayment_minimum_amount' => (float)$transaction->loan_request->repayment_amount,
 			// 'loan_defaulter' => (boolean)now()->gte($due_date)

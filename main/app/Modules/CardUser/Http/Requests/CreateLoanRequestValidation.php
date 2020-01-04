@@ -20,7 +20,7 @@ class CreateLoanRequestValidation extends FormRequest
 	public function rules()
 	{
 		return [
-			'amount' => 'required|numeric',
+			'amount' => 'required|numeric|min:1000',
 			'total_duration' => 'required|numeric',
 			'repayment_duration' => 'required|numeric|lte:total_duration',
 			'repayment_amount' => 'required|numeric',
@@ -53,7 +53,7 @@ class CreateLoanRequestValidation extends FormRequest
 			// 'primary_contact_email.required' => 'The email provided for the primary contact is invalid',
 			// 'accommodation_name.required' => 'The name of the accommodation is required',
 			// 'price.required' => 'The price of the accommodation is required',
-			// 'space_type_id.exists' => 'Selected space type is invalid',
+			'amount.min' => 'The loan amount must be a minimum of ₦1,000',
 		];
 	}
 
@@ -77,17 +77,14 @@ class CreateLoanRequestValidation extends FormRequest
 				return;
 			}
 
-			if ($this->amount > $this->user()->assigned_credit_limit) {
-				$validator->errors()->add('assigned_credit_limit', 'Amount must be ₦' . number_format($this->user()->assigned_credit_limit) . ' or lesser');
+			$requestable_loan_amount = $this->user()->assigned_credit_limit - $this->user()->total_loan_balance();
+
+			if ($this->amount > $requestable_loan_amount) {
+				$validator->errors()->add('assigned_credit_limit', 'You can only request a loan of ₦' . number_format($requestable_loan_amount) . ' or lesser');
 			}
 
 			/**
 			 * Check if the selected repayment duration IN DAYS is less than the minimum allowed
-			 */
-
-			/**
-			 * ! TODO Factor in the amount he has asked for so far and what is remaining from his limit to ask for
-			 * ? Query the loan transactions table, subtract the balance from his assigned limit to get what he can request for
 			 */
 			if ($this->repayment_duration > config('app.maximum_repayment_duration')) {
 				$validator->errors()->add('repayment_duration', 'Maximum repayment duration is ' . config('app.maximum_repayment_duration') . ' days');

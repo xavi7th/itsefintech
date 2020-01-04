@@ -20,7 +20,7 @@ class MakeLoanRepaymentValidation extends FormRequest
 	public function rules()
 	{
 		return [
-			'loan_request_id' => 'required|exists:loan_requests,id',
+			// 'loan_request_id' => 'required|exists:loan_requests,id',
 			'amount' => 'required|numeric',
 		];
 	}
@@ -63,7 +63,7 @@ class MakeLoanRepaymentValidation extends FormRequest
 			/**
 			 * Check if the repayment amount is up to the required amount
 			 */
-			$loan_request = LoanRequest::remember(100)->find($this->loan_request_id);
+			$loan_request = $this->route('loan_request');
 
 			if ($loan_request->loan_balance() <= 0) {
 				$validator->errors()->add('loan_amount', 'Loan has been fully paid already');

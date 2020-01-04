@@ -62,11 +62,11 @@ class LoanRequestTransformer
 			'request_date' => $loan_request->created_at,
 			// 'transactions' => (object)$transactions,
 			'total_paid' => (float)$transactions->where('transaction_type', 'repayment')->sum('amount'),
-			'total_balance' => (float)$loan_request->amount - $transactions->where('transaction_type', 'repayment')->sum('amount'),
+			'total_balance' => (float)$total_balance = $loan_request->amount - $transactions->where('transaction_type', 'repayment')->sum('amount'),
 			'next_repayment_due_date' => $due_date = ($transactions->sortByDesc('id')->values()->first())->next_installment_due_date,
 			// 'next_repayment_due_date' => $due_date = ($transactions->latest()->first())->next_installment_due_date,
 			'next_repayment_minimum_amount' => (float)$loan_request->repayment_amount,
-			'loan_defaulter' => (boolean)now()->gte($due_date)
+			'loan_defaulter' => (boolean)$total_balance == 0 ? false : now()->gte($due_date)
 		];
 	}
 }
