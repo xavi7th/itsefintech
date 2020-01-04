@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Route;
 use App\Modules\Admin\Models\ActivityLog;
 use App\Modules\CardUser\Models\LoanRequest;
 use App\Modules\Admin\Models\CardUserCategory;
+use App\Modules\CardUser\Models\LoanTransaction;
 use App\Modules\CardUser\Models\DebitCardRequest;
 use App\Modules\Admin\Transformers\AdminUserTransformer;
 
@@ -112,60 +113,30 @@ class CardUser extends User
 		return $this->hasOne(DebitCardRequest::class)->exists();
 	}
 
+	public function loan_transactions()
+	{
+		return $this->hasMany(LoanTransaction::class);
+	}
+
+	public function total_loan_amount()
+	{
+		return $this->loan_transactions()->where('transaction_type', 'loan')->sum('amount');
+	}
+
+	public function total_repayment_amount()
+	{
+		return $this->loan_transactions()->where('transaction_type', 'repayment')->sum('amount');
+	}
+
 	public function loan_request()
 	{
-		return $this->hasOne(LoanRequest::class)->where('is_approved', false);
+		return $this->hasOne(LoanRequest::class)->where('paid_at', null);
 	}
 	public function has_loan_request()
 	{
 		return $this->loan_request()->exists();
 	}
 
-
-
-
-	public function total_deposit_amount()
-	{
-		return $this->transactions()->where('trans_type', 'deposit')->sum('amount');
-	}
-
-	public function deposit_transactions()
-	{
-		return $this->transactions()->where('trans_type', 'deposit');
-	}
-
-	public function expected_withdrawal_amount()
-	{
-		return $this->transactions()->where('trans_type', 'deposit')->sum('target_amount');
-	}
-
-	public function total_withdrawal_amount()
-	{
-		return $this->transactions()->where('trans_type', 'withdrawal')->sum('amount');
-	}
-
-	public function total_withdrawalable_amount()
-	{
-		return $this->can_withdraw ? $this->expected_withdrawal_amount() : 0;
-	}
-
-	public function total_profit_amount()
-	{
-		return $this->transactions()->where('trans_type', 'profit')->sum('amount');
-	}
-
-	public function profit_transactions()
-	{
-		return $this->transactions()->where('trans_type', 'profit');
-	}
-
-	public function total_balance()
-	{
-		if ($this->total_profit_amount() <= 0) {
-			return 0;
-		}
-		return $this->total_profit_amount() + $this->total_deposit_amount();
-	}
 
 	public function getAssignedCreditLimitAttribute(): float
 	{

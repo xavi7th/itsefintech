@@ -45,7 +45,7 @@ class LoanRequestTransformer
 			'total_duration' => (int)$loan_request->total_duration,
 			'repayment_duration' => (int)$loan_request->repayment_duration,
 			'repayment_amount' => (float)$loan_request->repayment_amount,
-			'is_approved' => (boolean)$loan_request->is_approved,
+			'is_approved' => (boolean)$loan_request->approved_at,
 		];
 	}
 

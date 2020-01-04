@@ -4,10 +4,12 @@ namespace App\Modules\CardUser\Models;
 
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Database\Eloquent\Model;
 use App\Modules\CardUser\Models\CardUser;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Modules\CardUser\Models\LoanTransaction;
 use App\Modules\CardUser\Transformers\LoanRequestTransformer;
 use App\Modules\Admin\Transformers\AdminLoanRequestTransformer;
 use App\Modules\CardUser\Http\Requests\CreateLoanRequestValidation;
@@ -20,9 +22,23 @@ class LoanRequest extends Model
 
 	protected $appends = ['due_date'];
 
+	/**
+	 * The attributes that should be mutated to dates.
+	 *
+	 * @var array
+	 */
+	protected $dates = [
+		'due_date', 'approved_at', 'paid_at'
+	];
+
 	public function card_user()
 	{
 		return $this->belongsTo(CardUser::class);
+	}
+
+	public function loan_transactions()
+	{
+		return $this->hasMany(LoanTransaction::class);
 	}
 
 	public function getDueDateAttribute()
@@ -64,7 +80,7 @@ class LoanRequest extends Model
 		try {
 			return (new LoanRequestTransformer)->transform($request->user()->loan_request);
 		} catch (\Throwable $th) {
-			return response()->json(['mesage' => 'No request found'], 404);
+			return response()->json(['mesage' => 'User has no existing loan request'], 404);
 		}
 	}
 
@@ -100,10 +116,25 @@ class LoanRequest extends Model
 
 	public function markLoanRequestAsPaid(LoanRequest $loan_request)
 	{
+		DB::beginTransaction();
+
 		$loan_request->paid_at = now();
 		$loan_request->marked_paid_by = auth()->id();
 		$loan_request->save();
 
+		$loan_request->loan_transactions()->updateOrCreate(
+			[
+				'loan_request_id' => $loan_request->id
+			],
+			[
+				'card_user_id' => $loan_request->card_user_id,
+				'amount' => $loan_request->amount,
+				'transaction_type' => 'loan',
+				'next_installment_due_date' => now()->addDays($loan_request->repayment_duration),
+			]
+		);
+
+		DB::commit();
 		return response()->json(['rsp' => []], 204);
 	}
 }
