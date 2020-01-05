@@ -88,11 +88,12 @@ export const adminMarkDebitCardStockRequestAsProcessed = id => apiBaseUrl + 'sto
 export const getSalesRepStatistics = apiBaseUrl + 'statistics'
 export const requestCardStock = apiBaseUrl + 'debit-card/request'
 
-/** Loan Requests */
+/** Loans */
 
 export const adminViewLoanRequests = apiBaseUrl + 'loan-requests'
 export const adminApproveLoanRequest = id => apiBaseUrl + 'loan-request/' + id + '/approve'
 export const adminMarkLoanRequestAsPaid = id => apiBaseUrl + 'loan-request/' + id + '/paid'
+export const adminViewLoanTransactions = apiBaseUrl + 'loan-transactions'
 
 
 export const adminViewUsers = apiBaseUrl + 'users'

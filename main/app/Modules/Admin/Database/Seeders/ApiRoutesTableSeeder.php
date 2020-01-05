@@ -191,6 +191,16 @@ class ApiRoutesTableSeeder extends Seeder
 				}',
 					'description' => 'Manage Loan Requests',
 				],
+
+				[
+					'path' => '/loans/transactions',
+					'name' => 'admin.loans.transactions',
+					'meta' => '{title: APP_NAME + \' | View Loan Transactions\',
+					iconClass: \'cc-visa\',
+					menuName: \'View Loan Transactions\'
+				}',
+					'description' => 'Manage Loan Transactions',
+				],
 			]
 		);
 	}

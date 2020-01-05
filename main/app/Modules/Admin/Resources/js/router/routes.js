@@ -73,18 +73,29 @@ export const allRoutes = [
         component: adminView( 'EmptyComponent' ),
         meta: {
             iconClass: 'hand-holding-usd',
-            menuName: 'Manage Loan Requests'
+            menuName: 'Manage Loans'
         },
         children: [ {
-            path: '/loans/requests',
-            component: adminView( 'cards/ManageLoanRequests' ),
-            name: 'admin.loans.requests',
-            meta: {
-                title: APP_NAME + ' | All Loan Requests',
-                iconClass: 'home',
-                menuName: 'All Loan Requests'
+                path: '/loans/requests',
+                component: adminView( 'loans/ManageLoanRequests' ),
+                name: 'admin.loans.requests',
+                meta: {
+                    title: APP_NAME + ' | All Loan Requests',
+                    iconClass: 'home',
+                    menuName: 'All Loan Requests'
+                },
             },
-        } ]
+            {
+                path: '/loans/transactions',
+                component: adminView( 'loans/ManageLoanTransactions' ),
+                name: 'admin.loans.transactions',
+                meta: {
+                    title: APP_NAME + ' | All Loan Transactions',
+                    iconClass: 'home',
+                    menuName: 'All Loan Transactions'
+                },
+            }
+        ]
     },
     {
         path: '/cards',

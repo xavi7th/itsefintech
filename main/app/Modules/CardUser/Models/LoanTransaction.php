@@ -11,6 +11,7 @@ use App\Modules\CardUser\Models\LoanRequest;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Modules\CardUser\Transformers\LoanRequestTransformer;
 use App\Modules\CardUser\Transformers\LoanTransactionTransformer;
+use App\Modules\Admin\Transformers\AdminLoanTransactionTransformer;
 use App\Modules\CardUser\Http\Requests\MakeLoanRepaymentValidation;
 
 class LoanTransaction extends Model
@@ -89,46 +90,11 @@ class LoanTransaction extends Model
 	 * Admin Route Methods
 	 */
 
-	public function showAllLoanTransactions($admin = null)
+	public function showAllLoanTransactions()
 	{
-		if (is_null($admin)) {
-			$loan_requests = LoanTransaction::withTrashed()->get();
-		} else {
-			$loan_requests = Admin::find($admin)->assigned_loan_requests()->withTrashed()->get();
-		}
+
+		$loan_requests = LoanTransaction::all();
+
 		return (new AdminLoanTransactionTransformer)->collectionTransformer($loan_requests, 'transformForAdminViewLoanTransactions');
-	}
-
-	public function approveLoanTransaction(LoanTransaction $loan_request)
-	{
-		$loan_request->approved_at = now();
-		$loan_request->approved_by = auth()->id();
-		$loan_request->save();
-
-		return response()->json(['rsp' => []], 204);
-	}
-
-	public function markLoanTransactionAsPaid(LoanTransaction $loan_request)
-	{
-		DB::beginTransaction();
-
-		$loan_request->paid_at = now();
-		$loan_request->marked_paid_by = auth()->id();
-		$loan_request->save();
-
-		$loan_request->loan_transactions()->updateOrCreate(
-			[
-				'loan_request_id' => $loan_request->id
-			],
-			[
-				'card_user_id' => $loan_request->card_user_id,
-				'amount' => $loan_request->amount,
-				'transaction_type' => 'loan',
-				'next_installment_due_date' => now()->addDays($loan_request->repayment_duration),
-			]
-		);
-
-		DB::commit();
-		return response()->json(['rsp' => []], 204);
 	}
 }

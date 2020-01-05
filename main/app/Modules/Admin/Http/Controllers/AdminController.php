@@ -20,6 +20,7 @@ use App\Modules\AccountOfficer\Models\AccountOfficer;
 use App\Modules\CustomerSupport\Models\CustomerSupport;
 use App\Modules\SalesRep\Transformers\SalesRepDebitCardRequestTransformer;
 use App\Modules\CardUser\Models\LoanRequest;
+use App\Modules\CardUser\Models\LoanTransaction;
 
 class AdminController extends Controller
 {
@@ -96,6 +97,8 @@ class AdminController extends Controller
 				StockRequest::routes();
 
 				LoanRequest::adminRoutes();
+
+				LoanTransaction::adminRoutes();
 			});
 
 			Route::group(['middleware' => ['auth:admin', 'admins']], function () {
