@@ -152,12 +152,17 @@ class CardUser extends User
 
 	public function getAssignedCreditLimitAttribute(): float
 	{
-		return $this->credit_limit ?? $this->card_user_category()->first(['credit_limit'])['credit_limit'];
+		return $this->credit_limit ?? 0; //?? $this->card_user_category()->first(['credit_limit'])['credit_limit'];
 	}
 
 	public function getBvnAttribute($value): string
 	{
 		return $value ? 'ending in ' . substr(decrypt($value), -4) : 'Not provided';
+	}
+
+	public function getFullBvnAttribute(): string
+	{
+		return $this->attributes['bvn'] ? decrypt($this->attributes['bvn']) : 'Not provided';
 	}
 
 	public function setBvnAttribute($value)
@@ -167,68 +172,74 @@ class CardUser extends User
 
 	static function adminRoutes()
 	{
-		Route::get('card-users', function () {
-			return (new AdminUserTransformer)->collectionTransformer(CardUser::withTrashed()->get(), 'transformForAdminViewCardUsers');
-		})->middleware('auth:admin');
+		Route::group(['namespace' => '\App\Modules\CardUser\Models'], function () {
+			Route::get('card-users', function () {
+				return (new AdminUserTransformer)->collectionTransformer(CardUser::withTrashed()->get(), 'transformForAdminViewCardUsers');
+			})->middleware('auth:admin');
 
-		Route::post('card-user/create', function () {
-			// return request()->all();
-			try {
-				DB::beginTransaction();
-				$admin = CardUser::create(Arr::collapse([
-					request()->all(),
-					[
-						'password' => bcrypt('itsefintech@admin'),
-					]
-				]));
+			Route::post('card-user/create', function () {
+				// return request()->all();
+				try {
+					DB::beginTransaction();
+					$admin = CardUser::create(Arr::collapse([
+						request()->all(),
+						[
+							'password' => bcrypt('itsefintech@admin'),
+						]
+					]));
 
-				DB::commit();
-				return response()->json(['rsp' => $admin], 201);
-			} catch (\Throwable $e) {
-				if (app()->environment() == 'local') {
-					return response()->json(['error' => $e->getMessage()], 500);
+					DB::commit();
+					return response()->json(['rsp' => $admin], 201);
+				} catch (\Throwable $e) {
+					if (app()->environment() == 'local') {
+						return response()->json(['error' => $e->getMessage()], 500);
+					}
+					return response()->json(['rsp' => 'error occurred'], 500);
 				}
-				return response()->json(['rsp' => 'error occurred'], 500);
-			}
-		})->middleware('auth:admin');
+			})->middleware('auth:admin');
 
-		Route::get('card-user/{card_user}/permissions', function (CardUser $card_user) {
-			$permitted_routes = $card_user->api_routes()->get(['api_routes.id'])->map(function ($item, $key) {
-				return $item->id;
-			});
+			Route::get('card-user/{card_user}/bvn', 'CardUser@getFullBvnNumber')->middleware('auth:admin');
 
-			$all_routes = ApiRoute::get(['id', 'description'])->map(function ($item, $key) {
-				return ['id' => $item->id, 'description' => $item->description];
-			});
+			Route::put('card-user/{card_user}/credit-limit', 'CardUser@setUserCreditLimit')->middleware('auth:admin');
 
-			return ['permitted_routes' => $permitted_routes, 'all_routes' => $all_routes];
-		})->middleware('auth:admin');
+			Route::get('card-user/{card_user}/permissions', function (CardUser $card_user) {
+				$permitted_routes = $card_user->api_routes()->get(['api_routes.id'])->map(function ($item, $key) {
+					return $item->id;
+				});
 
-		Route::put('card-user/{card_user}/permissions', function (CardUser $card_user) {
-			$card_user->api_routes()->sync(request('permitted_routes'));
-			return response()->json(['rsp' => true], 204);
-		})->middleware('auth:admin');
+				$all_routes = ApiRoute::get(['id', 'description'])->map(function ($item, $key) {
+					return ['id' => $item->id, 'description' => $item->description];
+				});
 
-		Route::put('card-user/{card_user}/suspend', function (CardUser $card_user) {
-			if ($card_user->id === auth()->id()) {
-				return response()->json(['rsp' => false], 403);
-			}
-			$card_user->delete();
-			return response()->json(['rsp' => true], 204);
-		})->middleware('auth:admin');
+				return ['permitted_routes' => $permitted_routes, 'all_routes' => $all_routes];
+			})->middleware('auth:admin');
 
-		Route::put('card-user/{id}/restore', function ($id) {
-			CardUser::withTrashed()->find($id)->restore();
-			return response()->json(['rsp' => true], 204);
-		})->middleware('auth:admin');
+			Route::put('card-user/{card_user}/permissions', function (CardUser $card_user) {
+				$card_user->api_routes()->sync(request('permitted_routes'));
+				return response()->json(['rsp' => true], 204);
+			})->middleware('auth:admin');
 
-		Route::delete('card-user/{card_user}/delete', function (CardUser $card_user) {
-			if ($card_user->id === auth()->id()) {
-				return response()->json(['rsp' => false], 403);
-			}
-			$card_user->forceDelete();
-			return response()->json(['rsp' => true], 204);
-		})->middleware('auth:admin');
+			Route::put('card-user/{card_user}/suspend', function (CardUser $card_user) {
+				if ($card_user->id === auth()->id()) {
+					return response()->json(['rsp' => false], 403);
+				}
+				$card_user->delete();
+				return response()->json(['rsp' => true], 204);
+			})->middleware('auth:admin');
+
+			Route::put('card-user/{id}/restore', function ($id) {
+				CardUser::withTrashed()->find($id)->restore();
+				return response()->json(['rsp' => true], 204);
+			})->middleware('auth:admin');
+
+			Route::delete('card-user/{card_user}/delete', function (CardUser $card_user) {
+				if ($card_user->id === auth()->id()) {
+					return response()->json(['rsp' => false], 403);
+				}
+				$card_user->forceDelete();
+				return response()->json(['rsp' => true], 204);
+			})->middleware('auth:admin');
+		});
 	}
 
 	static function cardUserRoutes()
@@ -237,5 +248,21 @@ class CardUser extends User
 		Route::get('card-users/categories', function () {
 			return CardUserCategory::get(['category_name', 'id']);
 		});
+	}
+
+	/**
+	 * ! Admin route methods
+	 */
+	public function getFullBvnNumber(CardUser $card_user)
+	{
+		return response()->json(['full_bvn' => $card_user->full_bvn], 200);
+	}
+
+	public function setUserCreditLimit(CardUser $card_user)
+	{
+		$card_user->credit_limit = request('amount');
+		$card_user->save();
+
+		return response()->json(['rsp' => true], 204);
 	}
 }

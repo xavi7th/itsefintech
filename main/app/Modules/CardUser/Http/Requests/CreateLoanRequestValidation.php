@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Http\FormRequest;
 use App\Modules\CardUser\Models\LoanRequest;
 use \Illuminate\Contracts\Validation\Validator;
+use Illuminate\Auth\Access\AuthorizationException;
 use App\Modules\CardUser\Exceptions\AxiosValidationExceptionBuilder;
 
 
@@ -80,7 +81,7 @@ class CreateLoanRequestValidation extends FormRequest
 			$requestable_loan_amount = $this->user()->assigned_credit_limit - $this->user()->total_loan_balance();
 
 			if ($this->amount > $requestable_loan_amount) {
-				$validator->errors()->add('assigned_credit_limit', 'You can only request a loan of ₦' . number_format($requestable_loan_amount) . ' or lesser');
+				$validator->errors()->add('assigned_credit_limit', 'You currently have an available loan limit of ₦' . number_format($requestable_loan_amount) . ' or lesser');
 			}
 
 			/**
@@ -117,5 +118,10 @@ class CreateLoanRequestValidation extends FormRequest
 		 * ? Who knows they might ask for a different format for the enxt validation
 		 */
 		throw new AxiosValidationExceptionBuilder($validator);
+	}
+
+	protected function failedAuthorization()
+	{
+		throw new AuthorizationException('You are not yet due for loan credit facility');
 	}
 }

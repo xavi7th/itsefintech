@@ -124,6 +124,13 @@
                     @click="suspendCardUser"
                     v-else
                   >Suspend Account</button>
+
+                  <button
+                    type="button"
+                    class="btn btn-bold btn-info btn-danger"
+                    @click="adminSetCardUserCreditLimit(userDetails)"
+                    data-dismiss="modal"
+                  >Set User's Credit Limit</button>
                 </div>
               </div>
             </div>
@@ -348,15 +355,50 @@
       adminSetCardUserCreditLimit(card_user) {
         this.sectionLoading = true;
         BlockToast.fire({
-          text: "restoring account officer's account ..."
+          text: "Updating user's credit limit..."
         });
-        axios
-          .put(adminRestoreCardUser(this.userDetails.id))
-          .then(({ status }) => {
-            if (status === 204) {
-              Toast.fire({
+
+        swal
+          .fire({
+            title: "Enter an amount",
+            input: "number",
+            inputAttributes: {
+              autofocus: true
+            },
+            showCancelButton: true,
+            confirmButtonText: "Set Credit Limit",
+            allowEscapeKey: false,
+            focusCancel: true,
+            cancelButtonColor: "#333",
+            confirmButtonColor: "#d33",
+            showLoaderOnConfirm: true,
+            allowOutsideClick: () => !swal.isLoading(),
+            preConfirm: amount => {
+              return axios
+                .put(adminSetCardUserCreditLimit(this.userDetails.id), {
+                  amount
+                })
+                .then(response => {
+                  if (response.status !== 204) {
+                    throw new Error(response.statusText);
+                  }
+                  console.log(amount);
+
+                  card_user.credit_limit = amount;
+                  console.log(card_user);
+
+                  return { rsp: true };
+                })
+                .catch(error => {
+                  swal.showValidationMessage(`Request failed: ${error}`);
+                });
+            }
+          })
+          .then(result => {
+            if (result.value) {
+              swal.fire({
                 title: "Success",
-                text: "User account restored",
+                text: "Credit Limit set",
                 position: "center"
               });
             } else {
@@ -366,12 +408,9 @@
                 position: "center"
               });
             }
-
-            this.$nextTick(() => {
-              $(() => {
-                this.sectionLoading = false;
-              });
-            });
+          })
+          .then(() => {
+            this.sectionLoading = false;
           });
       },
       showFullBvnNumber(card_user) {

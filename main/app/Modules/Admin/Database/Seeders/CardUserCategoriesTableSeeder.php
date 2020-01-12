@@ -22,7 +22,7 @@ class CardUserCategoriesTableSeeder extends Seeder
 			array(
 				'id' => 1,
 				'category_name' => 'others',
-				'credit_limit' => 10000.0,
+				'credit_limit' => 0.0,
 				'created_at' => NULL,
 				'updated_at' => NULL,
 				'last_updated_by' => 1,
@@ -31,7 +31,7 @@ class CardUserCategoriesTableSeeder extends Seeder
 			array(
 				'id' => 2,
 				'category_name' => 'students',
-				'credit_limit' => 10000.0,
+				'credit_limit' => 0.0,
 				'created_at' => '2020-01-02 17:23:15',
 				'updated_at' => '2020-01-02 17:23:15',
 				'last_updated_by' => 1,
@@ -39,8 +39,8 @@ class CardUserCategoriesTableSeeder extends Seeder
 			2 =>
 			array(
 				'id' => 3,
-				'category_name' => 'workers',
-				'credit_limit' => 10000.0,
+				'category_name' => 'salary earners',
+				'credit_limit' => 0.0,
 				'created_at' => NULL,
 				'updated_at' => NULL,
 				'last_updated_by' => 1,
@@ -48,8 +48,8 @@ class CardUserCategoriesTableSeeder extends Seeder
 			3 =>
 			array(
 				'id' => 4,
-				'category_name' => 'business men',
-				'credit_limit' => 10000.0,
+				'category_name' => 'business owners',
+				'credit_limit' => 0.0,
 				'created_at' => NULL,
 				'updated_at' => NULL,
 				'last_updated_by' => 1,
