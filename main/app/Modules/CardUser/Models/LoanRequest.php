@@ -60,6 +60,18 @@ class LoanRequest extends Model
 		return ($percentage / 100) * $amount;
 	}
 
+	static function breakdownStatistics(float $amount, int $total_duration): array
+	{
+		return [
+			'amount' => $amount,
+			'interest_rate' => $interest_rate = auth()->user()->credit_percentage,
+			'minimum_repayment_amount' => $amount * ($interest_rate / 100),
+			'total_interest_amount' => $total_interest_amount = ($interest_rate / 100) * $amount * $total_duration,
+			'total_repayment_amount' => $total_repayment_amount = $total_interest_amount + $amount,
+			'scheduled_repayment_amount' => $total_repayment_amount / $total_duration
+		];
+	}
+
 	static function adminRoutes()
 	{
 		Route::group(['namespace' => '\App\Modules\CardUser\Models'], function () {
@@ -73,6 +85,7 @@ class LoanRequest extends Model
 	{
 		Route::group(['namespace' => '\App\Modules\CardUser\Models'], function () {
 			Route::get('loan-request', 'LoanRequest@getLoanRequest')->middleware('auth:card_user');
+			Route::get('loan-request/create', 'LoanRequest@getLoanRequestBreakdown')->middleware('auth:card_user');
 			Route::post('loan-request/create', 'LoanRequest@makeLoanRequest')->middleware('auth:card_user');
 		});
 	}
@@ -90,8 +103,15 @@ class LoanRequest extends Model
 		}
 	}
 
+	public function getLoanRequestBreakdown(CreateLoanRequestValidation $request)
+	{
+		return LoanRequest::breakdownStatistics((float)$request->input('amount'), (int)$request->input('total_duration'));
+		return (new LoanRequestTransformer)->transform($request->user()->loan_request()->create($request->all()));
+	}
+
 	public function makeLoanRequest(CreateLoanRequestValidation $request)
 	{
+		return $request->all();
 		return (new LoanRequestTransformer)->transform($request->user()->loan_request()->create($request->all()));
 	}
 

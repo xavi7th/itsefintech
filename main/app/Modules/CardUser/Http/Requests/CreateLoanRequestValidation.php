@@ -23,8 +23,8 @@ class CreateLoanRequestValidation extends FormRequest
 		return [
 			'amount' => 'required|numeric|min:1000',
 			'total_duration' => 'required|numeric',
-			'repayment_duration' => 'required|numeric|lte:total_duration',
-			'repayment_amount' => 'required|numeric',
+			// 'repayment_duration' => 'required|numeric|lte:total_duration',
+			// 'repayment_amount' => 'required|numeric',
 		];
 	}
 
@@ -71,35 +71,35 @@ class CreateLoanRequestValidation extends FormRequest
 			 * Check if user has an unprocessed loan request already
 			 */
 
-			// dd($this->amount);
 
-			if ($this->user()->has_loan_request()) {
+
+			if ($this->isMethod('post') && $this->user()->has_loan_request()) {
 				$validator->errors()->add('existing_loan_request', 'You have a pending loan request');
 				return;
 			}
 
 			$requestable_loan_amount = $this->user()->assigned_credit_limit - $this->user()->total_loan_balance();
 
-			if ($this->amount > $requestable_loan_amount) {
+			if ($this->isMethod('post') && $this->amount > $requestable_loan_amount) {
 				$validator->errors()->add('assigned_credit_limit', 'You currently have an available loan limit of ₦' . number_format($requestable_loan_amount) . ' or lesser');
 			}
 
-			/**
-			 * Check if the selected repayment duration IN DAYS is less than the minimum allowed
-			 */
-			if ($this->repayment_duration > config('app.maximum_repayment_duration')) {
-				$validator->errors()->add('repayment_duration', 'Maximum repayment duration is ' . config('app.maximum_repayment_duration') . ' days');
-				return;
-			}
+			// /**
+			//  * Check if the selected repayment duration IN DAYS is less than the minimum allowed
+			//  */
+			// if ($this->repayment_duration > config('app.maximum_repayment_duration')) {
+			// 	$validator->errors()->add('repayment_duration', 'Maximum repayment duration is ' . config('app.maximum_repayment_duration') . ' days');
+			// 	return;
+			// }
 
-			/**
-			 * Check if the selected repayment amount is less than the minimum allowed
-			 */
-			$min_repayment_amount = LoanRequest::minimumRepaymentAmount($this->amount, $this->total_duration, $this->repayment_duration);
+			// /**
+			//  * Check if the selected repayment amount is less than the minimum allowed
+			//  */
+			// $min_repayment_amount = LoanRequest::minimumRepaymentAmount($this->amount, $this->total_duration, $this->repayment_duration);
 
-			if ($this->repayment_amount < $min_repayment_amount) {
-				$validator->errors()->add('repayment_amount', 'Minimum repayment amount is ₦' . number_format($min_repayment_amount));
-			}
+			// if ($this->repayment_amount < $min_repayment_amount) {
+			// 	$validator->errors()->add('repayment_amount', 'Minimum repayment amount is ₦' . number_format($min_repayment_amount));
+			// }
 		});
 	}
 

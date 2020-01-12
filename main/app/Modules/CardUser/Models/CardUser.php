@@ -13,6 +13,7 @@ use App\Modules\Admin\Models\CardUserCategory;
 use App\Modules\CardUser\Models\LoanTransaction;
 use App\Modules\CardUser\Models\DebitCardRequest;
 use App\Modules\Admin\Transformers\AdminUserTransformer;
+use App\Modules\Admin\Http\Requests\SetCardUserCreditLimitValidation;
 
 class CardUser extends User
 {
@@ -258,11 +259,11 @@ class CardUser extends User
 		return response()->json(['full_bvn' => $card_user->full_bvn], 200);
 	}
 
-	public function setUserCreditLimit(CardUser $card_user)
+	public function setUserCreditLimit(SetCardUserCreditLimitValidation $request, CardUser $card_user)
 	{
-		$card_user->credit_limit = request('amount');
+		$card_user->credit_limit = $request->input('amount');
+		$card_user->credit_percentage = $request->input('interest');
 		$card_user->save();
-
 		return response()->json(['rsp' => true], 204);
 	}
 }

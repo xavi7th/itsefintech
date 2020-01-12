@@ -361,10 +361,10 @@
         swal
           .fire({
             title: "Enter an amount",
-            input: "number",
-            inputAttributes: {
-              autofocus: true
-            },
+            html: `<div class="d-flex">
+      										<input id="amount-input" class="swal2-input" required placeholder="Enter credit limit">
+      										<input id="interest-input" class="swal2-input" required placeholder="Enter interest">
+      									</div>`,
             showCancelButton: true,
             confirmButtonText: "Set Credit Limit",
             allowEscapeKey: false,
@@ -373,20 +373,19 @@
             confirmButtonColor: "#d33",
             showLoaderOnConfirm: true,
             allowOutsideClick: () => !swal.isLoading(),
-            preConfirm: amount => {
+            preConfirm: () => {
               return axios
                 .put(adminSetCardUserCreditLimit(this.userDetails.id), {
-                  amount
+                  amount: document.getElementById("amount-input").value,
+                  interest: document.getElementById("interest-input").value
                 })
                 .then(response => {
                   if (response.status !== 204) {
                     throw new Error(response.statusText);
                   }
-                  console.log(amount);
-
-                  card_user.credit_limit = amount;
-                  console.log(card_user);
-
+                  card_user.credit_limit = document.getElementById(
+                    "amount-input"
+                  ).value;
                   return { rsp: true };
                 })
                 .catch(error => {
