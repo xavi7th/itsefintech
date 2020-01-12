@@ -97,7 +97,11 @@ routeGenerator().then( router => {
     } ) => {
 
         Object.defineProperty( Vue.prototype, '$user', {
-            value: user,
+            value: {
+                ...user,
+                isAdmin: user.type == 'admin',
+                isSalesRep: user.type == 'sales_rep',
+            },
             writable: false
         } )
 

@@ -84,10 +84,18 @@
                                 <tr v-for="(value, property, idx) in userDetails" :key="idx">
                                   <td>{{ slugToString(property) }}</td>
                                   <td>
-                                    <span v-if="property != 'user_passport'">{{ value }}</span>
+                                    <span v-if="property != 'cards'">{{ value }}</span>
                                     <a :href="value" v-else target="_blank">
                                       <img :src="value" alt class="img-fluid" />
                                     </a>
+                                    <div
+                                      class="badge badge-danger pointer btn-bold pull-right"
+                                      @click="showFullBvnNumber(user)"
+                                      v-if="$user.isAdmin && property == 'bvn'"
+                                    >
+                                      REVEAL
+                                      <i class="fa fa-eye"></i>
+                                    </div>
                                   </td>
                                 </tr>
                               </tbody>
@@ -180,7 +188,9 @@
     adminCreateDebitCard,
     adminDeleteCardUser,
     adminRestoreCardUser,
-    adminSuspendCardUser
+    adminSuspendCardUser,
+    adminSetCardUserCreditLimit,
+    adminShowFullBvnNumber
   } from "@admin-assets/js/config";
   import PreLoader from "@admin-components/misc/PageLoader";
   export default {
@@ -335,6 +345,61 @@
             });
           });
       },
+      adminSetCardUserCreditLimit(card_user) {
+        this.sectionLoading = true;
+        BlockToast.fire({
+          text: "restoring account officer's account ..."
+        });
+        axios
+          .put(adminRestoreCardUser(this.userDetails.id))
+          .then(({ status }) => {
+            if (status === 204) {
+              Toast.fire({
+                title: "Success",
+                text: "User account restored",
+                position: "center"
+              });
+            } else {
+              Toast.fire({
+                title: "Failed",
+                text: "Something wrong happend",
+                position: "center"
+              });
+            }
+
+            this.$nextTick(() => {
+              $(() => {
+                this.sectionLoading = false;
+              });
+            });
+          });
+      },
+      showFullBvnNumber(card_user) {
+        this.sectionLoading = true;
+        BlockToast.fire({
+          text: "decrypting user bvn ..."
+        });
+        axios
+          .get(adminShowFullBvnNumber(this.userDetails.id))
+          .then(({ status, data: { full_bvn } }) => {
+            if (status === 200) {
+              swal.fire(full_bvn, "User's BVN", "info");
+            } else {
+              Toast.fire({
+                title: "Failed",
+                text: "Something wrong happend",
+                position: "center",
+                icon: "error"
+              });
+            }
+
+            this.$nextTick(() => {
+              $(() => {
+                this.sectionLoading = false;
+              });
+            });
+          });
+      },
       hasExpired(date) {
         return new Date(date) < Date.now();
       },
@@ -393,5 +458,9 @@
   }
   .fz-10 {
     font-size: 10px !important;
+  }
+
+  .pull-right {
+    float: right !important;
   }
 </style>

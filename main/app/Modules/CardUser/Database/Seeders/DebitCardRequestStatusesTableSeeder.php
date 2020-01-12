@@ -21,7 +21,7 @@ class DebitCardRequestStatusesTableSeeder extends Seeder
 			0 =>
 			array(
 				'id' => 1,
-				'name' => 'Client requested',
+				'name' => 'Card requested',
 			),
 			1 =>
 			array(
@@ -41,18 +41,13 @@ class DebitCardRequestStatusesTableSeeder extends Seeder
 			4 =>
 			array(
 				'id' => 5,
-				'name' => 'Enroute to client',
+				'name' => 'Enroute to customer',
 			),
 			5 =>
 			array(
 				'id' => 6,
-				'name' => 'Delivered',
-			),
-			6 =>
-			array(
-				'id' => 7,
-				'name' => 'Processed',
-			),
+				'name' => 'Delivered to customer',
+			)
 		));
 	}
 }

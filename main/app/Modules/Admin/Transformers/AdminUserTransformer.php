@@ -246,15 +246,12 @@ class AdminUserTransformer
 			'email' => (string)$user->email,
 			'phone' => (string)$user->phone,
 			'bvn' => (string)$user->bvn,
-			'user_passport' => (string)$user->user_passport,
-			'gender' => (string)$user->gender,
-			'acc_type' => (string)$user->acc_type,
-			'acc_num' => (string)$user->acc_num,
 			'address' => (string)$user->address,
-			'dob' => (string)$user->dob,
-			'is_verified' => (boolean)$user->is_otp_verified(),
+			'date_of_birth' => (string)$user->dob,
+			// 'is_otp_verified' => (boolean)$user->is_otp_verified(),
 			'is_suspended' => (boolean)$user->deleted_at,
-			'can_withdraw' => (boolean)$user->can_withdraw,
+			'credit_limit' => (float)$user->credit_limit,
+			'credit_percentage' => (float)$user->credit_percentage,
 			'cards' => ((new AdminDebitCardTransformer)->collectionTransformer($user->debit_cards, 'transformForBasicDebitCardDetails'))['debit_cards']
 		];
 	}
