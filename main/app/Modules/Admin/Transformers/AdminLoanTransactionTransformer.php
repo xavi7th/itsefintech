@@ -17,13 +17,13 @@ class AdminLoanTransactionTransformer
 	}
 	public function transformForAdminViewLoanTransactions(LoanTransaction $loan_transaction)
 	{
-		return [
+		return collect($loan_transaction->loan_request->breakdownStatistics())->merge([
 			'id' => (int)$loan_transaction->id,
 			'amount' => $loan_transaction->amount,
 			'transaction_type' => (string)$loan_transaction->transaction_type,
-			'next_installment_due_date' => $loan_transaction->next_installment_due_date,
-			'created_at' => $loan_transaction->created_at,
+			'next_installment_due_date' => $loan_transaction->next_installment_due_date->toDateString(),
+			'created_at' => $loan_transaction->created_at->toDateString(),
 			'requester' => (new AdminUserTransformer)->transformForAdminViewCardUsers($loan_transaction->card_user)
-		];
+		]);
 	}
 }

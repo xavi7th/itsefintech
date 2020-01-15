@@ -30,7 +30,7 @@
                 </template>
                 <template v-else>
                   <td>{{ loan_request.amount | Naira }}</td>
-                  <td>{{ loan_request.total_duration + ' days' }}</td>
+                  <td>{{ loan_request.total_duration + ' months' }}</td>
                   <td>{{ loan_request.due_date }}</td>
                   <td>{{ loan_request.is_paid ? 'Payment made' : loan_request.is_approved ? 'Approved without payment' : 'Not Approved' }}</td>
                 </template>

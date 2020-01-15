@@ -19,7 +19,7 @@ class LoanRequest extends Model
 {
 	use SoftDeletes, Rememberable;
 
-	protected $fillable = ['amount', 'total_duration', 'repayment_duration', 'repayment_amount',];
+	protected $fillable = ['amount', 'total_duration', 'monthly_interest',];
 
 	protected $appends = ['due_date'];
 
@@ -44,31 +44,24 @@ class LoanRequest extends Model
 
 	public function loan_balance()
 	{
-		return $this->amount - $this->loan_transactions()->where('transaction_type', 'repayment')->sum('amount');
+		return $this->breakdownStatistics()->total_repayment_amount - $this->loan_transactions()->where('transaction_type', 'repayment')->sum('amount');
 	}
 
 	public function getDueDateAttribute()
 	{
-		return Carbon::parse($this->attributes['created_at'])->addDays($this->attributes['total_duration'])->toDateString();
+		return Carbon::parse($this->attributes['created_at'])->addMonths($this->attributes['total_duration'])->toDateString();
 	}
 
-	static function minimumRepaymentAmount(float $amount, int $total_days, int $repayment_days)
+	public function breakdownStatistics(): object
 	{
-
-		$percentage = (100 * $repayment_days) / $total_days;
-
-		return ($percentage / 100) * $amount;
-	}
-
-	static function breakdownStatistics(float $amount, int $total_duration): array
-	{
-		return [
-			'amount' => $amount,
-			'interest_rate' => $interest_rate = auth()->user()->credit_percentage,
-			'minimum_repayment_amount' => $amount * ($interest_rate / 100),
-			'total_interest_amount' => $total_interest_amount = ($interest_rate / 100) * $amount * $total_duration,
-			'total_repayment_amount' => $total_repayment_amount = $total_interest_amount + $amount,
-			'scheduled_repayment_amount' => $total_repayment_amount / $total_duration
+		return (object)[
+			'amount' => (float)$this->amount,
+			'interest_rate' => (int)$this->monthly_interest,
+			'total_duration' => (string)$this->total_duration . ' months',
+			'minimum_repayment_amount' => (float)$this->amount * ($this->monthly_interest / 100),
+			'total_interest_amount' => (float)$total_interest_amount = ($this->monthly_interest / 100) * $this->amount * $this->total_duration,
+			'total_repayment_amount' => (float)$total_repayment_amount = $total_interest_amount + $this->amount,
+			'scheduled_repayment_amount' => (float)$total_repayment_amount / $this->total_duration
 		];
 	}
 
@@ -105,14 +98,21 @@ class LoanRequest extends Model
 
 	public function getLoanRequestBreakdown(CreateLoanRequestValidation $request)
 	{
-		return LoanRequest::breakdownStatistics((float)$request->input('amount'), (int)$request->input('total_duration'));
-		return (new LoanRequestTransformer)->transform($request->user()->loan_request()->create($request->all()));
+		$loan_request = resolve(LoanRequest::class);
+		$loan_request->amount = (float)$request->input('amount');
+		$loan_request->monthly_interest = auth()->user()->credit_percentage;
+		$loan_request->total_duration = (int)$request->input('total_duration');
+		return (array)$loan_request->breakdownStatistics();
 	}
 
 	public function makeLoanRequest(CreateLoanRequestValidation $request)
 	{
-		return $request->all();
-		return (new LoanRequestTransformer)->transform($request->user()->loan_request()->create($request->all()));
+		$loan_request = $request->user()->loan_request()->create([
+			'amount' => $request->input('amount'),
+			'total_duration' => $request->input('total_duration'),
+			'monthly_interest' => auth()->user()->credit_percentage,
+		]);
+		return (array)$loan_request->breakdownStatistics();
 	}
 
 
@@ -154,9 +154,9 @@ class LoanRequest extends Model
 			],
 			[
 				'card_user_id' => $loan_request->card_user_id,
-				'amount' => $loan_request->amount,
+				'amount' => ((object)$loan_request->breakdownStatistics())->total_repayment_amount,
 				'transaction_type' => 'loan',
-				'next_installment_due_date' => now()->addDays($loan_request->repayment_duration),
+				'next_installment_due_date' => now()->addMonth(),
 			]
 		);
 

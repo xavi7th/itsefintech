@@ -17,9 +17,8 @@ class CreateLoanRequestsTable extends Migration
 			$table->bigIncrements('id');
 			$table->bigInteger('card_user_id');
 			$table->double('amount');
+			$table->double('monthly_interest');
 			$table->integer('total_duration');
-			$table->integer('repayment_duration');
-			$table->integer('repayment_amount');
 			$table->timestamp('approved_at')->nullable();
 			$table->bigInteger('approved_by')->unsigned()->nullable()->default(null);
 			$table->foreign('approved_by')->references('id')->on('admins')->onDelete('no action');

@@ -5,6 +5,7 @@ namespace App\Modules\CardUser\Transformers;
 use App\Modules\CardUser\Models\LoanRequest;
 use App\Modules\CardUser\Models\Transaction;
 use App\Modules\CardUser\Models\WithdrawalRequest;
+use App\Modules\CardUser\Transformers\LoanTransactionTransformer;
 
 class LoanRequestTransformer
 {
@@ -41,32 +42,26 @@ class LoanRequestTransformer
 	{
 		return [
 			'id' => $loan_request->id,
-			'amount' => $loan_request->amount,
-			'total_duration' => (int)$loan_request->total_duration,
-			'repayment_duration' => (int)$loan_request->repayment_duration,
-			'repayment_amount' => (float)$loan_request->repayment_amount,
+			'total_duration' => (string)$loan_request->total_duration . ' months',
+			'breakdown' => $loan_request->breakdownStatistics(),
 			'is_approved' => (boolean)$loan_request->approved_at,
+			'is_paid' => (boolean)$loan_request->paid_at,
 		];
 	}
 
 	public function transformWithLoanTransactions(LoanRequest $loan_request)
 	{
 		$transactions = $loan_request->loan_transactions;
-		return [
+		$breakdown_statistics = $loan_request->breakdownStatistics();
+		return collect([
 			'id' => $loan_request->id,
-			'amount' => $loan_request->amount,
-			'total_duration' => (int)$loan_request->total_duration,
-			'repayment_duration' => (int)$loan_request->repayment_duration,
-			'repayment_amount' => (float)$loan_request->repayment_amount,
+			// 'amount' => $loan_request->amount,
 			'is_approved' => (boolean)$loan_request->approved_at,
-			'request_date' => $loan_request->created_at,
-			// 'transactions' => (object)$transactions,
-			'total_paid' => (float)$transactions->where('transaction_type', 'repayment')->sum('amount'),
-			'total_balance' => (float)$total_balance = $loan_request->amount - $transactions->where('transaction_type', 'repayment')->sum('amount'),
-			'next_repayment_due_date' => $due_date = ($transactions->sortByDesc('id')->values()->first())->next_installment_due_date,
-			// 'next_repayment_due_date' => $due_date = ($transactions->latest()->first())->next_installment_due_date,
-			'next_repayment_minimum_amount' => (float)$loan_request->repayment_amount,
+			'request_date' => $loan_request->created_at->toDateString(),
+			'total_paid' => (float)$total_paid = $transactions->where('transaction_type', 'repayment')->sum('amount'),
+			'total_balance' => (float)$total_balance = ((object)$breakdown_statistics)->total_repayment_amount - $total_paid,
+			'next_repayment_due_date' => $due_date = ($transactions->sortByDesc('id')->values()->first())->next_installment_due_date->toDateString(),
 			'loan_defaulter' => (boolean)$total_balance == 0 ? false : now()->gte($due_date)
-		];
+		])->merge($breakdown_statistics)->merge((new LoanTransactionTransformer)->collectionTransformer($transactions, 'transformForUserViewLoanTransactions'));
 	}
 }

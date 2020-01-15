@@ -79,9 +79,10 @@ class CreateLoanRequestValidation extends FormRequest
 			}
 
 			$requestable_loan_amount = $this->user()->assigned_credit_limit - $this->user()->total_loan_balance();
+			$requestable_loan_amount =  $requestable_loan_amount < 0 ? 0 : $requestable_loan_amount;
 
 			if ($this->isMethod('post') && $this->amount > $requestable_loan_amount) {
-				$validator->errors()->add('assigned_credit_limit', 'You currently have an available loan limit of ₦' . number_format($requestable_loan_amount) . ' or lesser');
+				$validator->errors()->add('assigned_credit_limit', 'You currently have an available loan limit of ₦' . number_format($requestable_loan_amount));
 			}
 
 			// /**

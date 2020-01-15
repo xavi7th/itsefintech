@@ -77,13 +77,24 @@ class LoanTransaction extends Model
 
 	public function makeLoanRepayment(MakeLoanRepaymentValidation $request, LoanRequest $loan_request)
 	{
-		return $loan_request->loan_transactions()->create([
+		/**
+		 * Determine if the user is repaying the loan or just paying the minimum repayment
+		 */
+		$trans_type = $request->amount == $loan_request->breakdownStatistics()->minimum_repayment_amount ? 'servicing' : 'repayment';
+
+		/**
+		 * Create a transaction for this loan request
+		 */
+		$loan_transaction = $loan_request->loan_transactions()->create([
 			'card_user_id' => auth()->id(),
 			'amount' => $request->amount,
-			'transaction_type' => 'repayment',
-			'next_installment_due_date' => now()->addDays($loan_request->repayment_duration),
+			'transaction_type' => $trans_type,
+			/**
+			 * ? Get the $loan_request->loan_transactions->last()'s next_installment_due_date and add a month to it?
+			 */
+			'next_installment_due_date' => now()->addMonth(),
 		]);
-		return (new LoanTransactionTransformer)->transform($request->user()->loan_request()->create($request->all()));
+		return (new LoanTransactionTransformer)->transformForUserViewLoanTransactions($loan_transaction);
 	}
 
 	/**

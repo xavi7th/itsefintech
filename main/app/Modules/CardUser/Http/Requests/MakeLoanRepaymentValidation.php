@@ -67,10 +67,20 @@ class MakeLoanRepaymentValidation extends FormRequest
 
 			if ($loan_request->loan_balance() <= 0) {
 				$validator->errors()->add('loan_amount', 'Loan has been fully paid already');
+				return;
 			}
 
-			if ($this->amount < $repayment_amount = optional($loan_request)->repayment_amount) {
-				$validator->errors()->add('repayment_amount', 'Repayment amount must be ₦' . number_format($repayment_amount) . ' or greater');
+			if ($this->amount > $loan_request->loan_balance()) {
+				$validator->errors()->add('loan_amount', 'Amount paid is greater than loan balance');
+			}
+
+
+			if ($this->amount < $loan_request->breakdownStatistics()->minimum_repayment_amount) {
+				$validator->errors()->add('loan_amount', 'Amount cannot be less than the minimum repayment amount');
+			}
+
+			if ($this->amount > $loan_request->breakdownStatistics()->minimum_repayment_amount && ($this->amount < $loan_request->loan_balance() && $this->amount < $loan_request->breakdownStatistics()->scheduled_repayment_amount)) {
+				$validator->errors()->add('loan_amount', 'Amount paid is greater than interest amount but less than the loan\'s scheduled repayment amount');
 			}
 		});
 	}
