@@ -86,7 +86,7 @@ class CardUser extends User
 
 	public function has_unactivated_card()
 	{
-		return $this->debit_cards()->where('is_user_activated', false)->exists();
+		return $this->debit_cards()->exists() ? $this->debit_cards()->where('is_user_activated', false)->exists() : true;
 	}
 
 	public function due_for_credit()

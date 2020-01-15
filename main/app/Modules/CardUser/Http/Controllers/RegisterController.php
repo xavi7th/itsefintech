@@ -125,6 +125,7 @@ class RegisterController extends Controller
 			'user' => $user = auth('card_user')->user(),
 			'is_card_activated' => !$user->has_unactivated_card(),
 			'is_card_requested' => $user->debit_card_requests()->exists(),
+			'success' => true
 		], 201);
 	}
 }
