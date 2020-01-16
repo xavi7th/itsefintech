@@ -10,17 +10,19 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Route;
 use App\Modules\CardUser\Models\CardUser;
 use App\Modules\CardUser\Models\DebitCard;
+use App\Modules\CardUser\Models\LoanRequest;
 use App\Modules\Admin\Models\CardUserCategory;
+use App\Modules\CardUser\Models\DebitCardType;
+use App\Modules\CardUser\Models\LoanTransaction;
 use App\Modules\CardUser\Models\DebitCardRequest;
+use App\Modules\CardUser\Models\DebitCardRequestStatus;
 use App\Modules\CardUser\Http\Controllers\LoginController;
 use App\Modules\CardUser\Transformers\CardUserTransformer;
 use App\Modules\CardUser\Http\Controllers\RegisterController;
 use App\Modules\CardUser\Http\Requests\CardRequestValidation;
 use App\Modules\CardUser\Http\Requests\CardActivationValidation;
+use App\Modules\CardUser\Transformers\CardUserDebitCardTransformer;
 use App\Modules\CardUser\Http\Requests\CardUserUpdateProfileValidation;
-use App\Modules\CardUser\Models\LoanRequest;
-use App\Modules\CardUser\Models\LoanTransaction;
-use App\Modules\CardUser\Models\DebitCardRequestStatus;
 
 class CardUserController extends Controller
 {
@@ -58,8 +60,11 @@ class CardUserController extends Controller
 
 			LoanRequest::cardUserRoutes();
 
+			DebitCardType::cardUserRoutes();
+
 			Route::group(['prefix' => 'card', 'middleware' => ['auth:card_user', 'card_users']], function () {
 				Route::get('/list', 'CardUserController@getDebitCards');
+				Route::get('/{debit_card}', 'CardUserController@getCardDetails');
 				Route::post('/new', 'CardUserController@requestDebitCard');
 				Route::put('/activate', 'CardUserController@activateDebitCard');
 				Route::get('/status', 'CardUserController@trackDebitCard');
@@ -112,7 +117,12 @@ class CardUserController extends Controller
 
 	public function getDebitCards()
 	{
-		return response()->json(['cards' => auth('card_user')->user()->debit_cards], 200);
+		return response()->json((new CardUserDebitCardTransformer)->collectionTransformer(auth('card_user')->user()->debit_cards, 'transformForCardList'), 200);
+	}
+
+	public function getCardDetails(DebitCard $debit_card)
+	{
+		return response()->json((new CardUserDebitCardTransformer)->transformForCardDetails($debit_card), 200);
 	}
 
 	public function requestDebitCard(CardRequestValidation $request)
@@ -139,6 +149,9 @@ class CardUserController extends Controller
 	{
 
 		$debit_card = DebitCard::find($request->card_id);
+		if ($debit_card->is_card_activated) {
+			return generate_422_error(['card_activation' => 'Card already activated']);
+		}
 		/**
 		 * Test csc
 		 */

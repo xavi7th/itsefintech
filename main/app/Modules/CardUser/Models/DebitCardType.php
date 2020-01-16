@@ -32,53 +32,85 @@ class DebitCardType extends Model
 
 	static function adminRoutes()
 	{
-		Route::get('debit-card-types', function ($rep = null) {
-			$debit_card_types = DebitCardType::all();
-			return (new AdminDebitCardTypeTransformer)->collectionTransformer($debit_card_types, 'transformForAdminViewDebitCardTypes');
-		})->middleware('auth:admin');
+		Route::group(['namespace' => '\App\Modules\CardUser\Models'], function () {
+			Route::get('debit-card-types', 'DebitCardType@getDebitCardTypes')->middleware('auth:admin');
 
-		Route::post('debit-card-type/create', function (DebitCardTypeCreationValidation $request) {
+			Route::post('debit-card-type/create', 'DebitCardType@createDebitCardType')->middleware('auth:admin');
 
-			try {
-				DB::beginTransaction();
+			Route::put('debit-card-type/{debit_card_type}', 'DebitCardType@editDebitCardType')->middleware('auth:admin');
 
-				$debit_card_type = DebitCardType::create($request->all());
+			Route::delete('debit-card/{debit_card}/delete', 'DebitCardType@deleteDebitCardType')->middleware('auth:admin');
+		});
+	}
 
-				ActivityLog::logAdminActivity('Created new Debit card type ' . $debit_card_type->card_type_name);
+	static function cardUserRoutes()
+	{
+		Route::group(['namespace' => '\App\Modules\CardUser\Models'], function () {
+			Route::get('debit-card-type/{debit_card_type}/price', 'DebitCardType@getPrice')->middleware('auth:card_user');
+		});
+	}
 
-				DB::commit();
-				return response()->json(['rsp' => $debit_card_type], 201);
-			} catch (\Throwable $e) {
-				if (app()->environment() == 'local') {
-					return response()->json(['error' => $e->getMessage()], 500);
-				}
-				return response()->json(['rsp' => 'error occurred'], 500);
+	/**
+	 * ! Card User Routes
+	 */
+	public function getPrice(DebitCardType $debit_card_type)
+	{
+		return $debit_card_type;
+	}
+
+	/**
+	 * ! Admin Routes
+	 */
+	public function getDebitCardTypes($rep = null)
+	{
+		$debit_card_types = DebitCardType::all();
+		return (new AdminDebitCardTypeTransformer)->collectionTransformer($debit_card_types, 'transformForAdminViewDebitCardTypes');
+	}
+
+	public function createDebitCardType(DebitCardTypeCreationValidation $request)
+	{
+
+		try {
+			DB::beginTransaction();
+
+			$debit_card_type = DebitCardType::create($request->all());
+
+			ActivityLog::logAdminActivity('Created new Debit card type ' . $debit_card_type->card_type_name);
+
+			DB::commit();
+			return response()->json(['rsp' => $debit_card_type], 201);
+		} catch (\Throwable $e) {
+			if (app()->environment() == 'local') {
+				return response()->json(['error' => $e->getMessage()], 500);
 			}
-		})->middleware('auth:admin');
+			return response()->json(['rsp' => 'error occurred'], 500);
+		}
+	}
 
-		Route::put('debit-card-type/{debit_card_type}', function (DebitCardTypeCreationValidation $request, DebitCardType $debit_card_type) {
+	public function editDebitCardType(DebitCardTypeCreationValidation $request, DebitCardType $debit_card_type)
+	{
 
-			try {
-				DB::beginTransaction();
+		try {
+			DB::beginTransaction();
 
-				$debit_card_type->update($request->all());
+			$debit_card_type->update($request->all());
 
-				ActivityLog::logAdminActivity('Created edited Debit card type: ' . $debit_card_type->card_type_name);
+			ActivityLog::logAdminActivity('Created edited Debit card type: ' . $debit_card_type->card_type_name);
 
-				DB::commit();
-				return response()->json(['rsp' => true], 204);
-			} catch (\Throwable $e) {
-				if (app()->environment() == 'local') {
-					return response()->json(['error' => $e->getMessage()], 500);
-				}
-				return response()->json(['rsp' => 'error occurred'], 500);
-			}
-		})->middleware('auth:admin');
-
-		Route::delete('debit-card/{debit_card}/delete', function (DebitCard $debit_card) {
-			return;
-			$debit_card->delete();
+			DB::commit();
 			return response()->json(['rsp' => true], 204);
-		})->middleware('auth:admin');
+		} catch (\Throwable $e) {
+			if (app()->environment() == 'local') {
+				return response()->json(['error' => $e->getMessage()], 500);
+			}
+			return response()->json(['rsp' => 'error occurred'], 500);
+		}
+	}
+
+	public function deleteDebitCardType(DebitCard $debit_card)
+	{
+		return;
+		$debit_card->delete();
+		return response()->json(['rsp' => true], 204);
 	}
 }
