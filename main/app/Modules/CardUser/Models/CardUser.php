@@ -109,6 +109,11 @@ class CardUser extends User
 		return $this->hasMany(DebitCardRequest::class);
 	}
 
+	public function last_debit_card_request()
+	{
+		return $this->hasOne(DebitCardRequest::class)->latest();
+	}
+
 	public function has_card_request()
 	{
 		return $this->hasOne(DebitCardRequest::class)->exists();

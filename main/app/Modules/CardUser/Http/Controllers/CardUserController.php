@@ -62,7 +62,7 @@ class CardUserController extends Controller
 				Route::get('/list', 'CardUserController@getDebitCards');
 				Route::post('/new', 'CardUserController@requestDebitCard');
 				Route::put('/activate', 'CardUserController@activateDebitCard');
-				Route::get('/{card_request}/status', 'CardUserController@trackDebitCard');
+				Route::get('/status', 'CardUserController@trackDebitCard');
 			});
 		});
 	}
@@ -150,11 +150,11 @@ class CardUserController extends Controller
 			return response()->json(['message' => 'Invalid CSC'], 403);
 		}
 	}
-	public function trackDebitCard(DebitCardRequest $card_request)
+	public function trackDebitCard()
 	{
-		$current_request_id = $card_request->debit_card_request_status->id;
-		$status = collect(DebitCardRequestStatus::all())->reject(function ($v) use ($current_request_id) {
-			return $v->id > $current_request_id;
+		$current_request_id = auth()->user()->last_debit_card_request->debit_card_request_status_id;
+		$status = collect(DebitCardRequestStatus::all())->reject(function ($status) use ($current_request_id) {
+			return $status->id > $current_request_id;
 		});
 		// 		$status = collect(DebitCardRequestStatus::all())->merge(['current' => $card_request->debit_card_request_status->id]);
 		return response()->json(['status' => $status], 200);
