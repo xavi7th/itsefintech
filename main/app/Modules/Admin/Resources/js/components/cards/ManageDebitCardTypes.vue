@@ -11,7 +11,7 @@
             data-toggle="modal"
             data-target="#modal-card"
             @click="details = {}"
-          >Create Debit Card</button>
+          >Create Debit Card Type</button>
         </div>
         <div class="card-body">
           <table class="table table-bordered table-hover" id="debit-card-types">
@@ -286,6 +286,7 @@
               .then(({ status, data: { rsp } }) => {
                 if (undefined !== status && status == 201) {
                   this.details = {};
+                  this.sectionLoading = false;
                   Toast.fire({
                     title: "Created",
                     text: `Debit Cards of this type can now be created`,
@@ -295,7 +296,8 @@
                 }
               })
               .catch(err => {
-                if (err.response.status == 500) {
+                this.sectionLoading = false;
+                if (err.response && err.response.status == 500) {
                   swal.fire({
                     title: "Error",
                     text: `Something went wrong on server. Creation not successful.`,

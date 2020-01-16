@@ -6,10 +6,9 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Database\Eloquent\Model;
 use App\Modules\Admin\Models\ActivityLog;
-use App\Modules\CardUser\Models\CardUser;
 use App\Modules\CardUser\Models\DebitCard;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use App\Modules\Admin\Http\Requests\DebitCardCreationValidation;
+use App\Modules\CardUser\Models\DebitCardRequest;
 use App\Modules\Admin\Transformers\AdminDebitCardTypeTransformer;
 use App\Modules\Admin\Http\Requests\DebitCardTypeCreationValidation;
 
@@ -24,6 +23,11 @@ class DebitCardType extends Model
 	public function debit_cards()
 	{
 		return $this->hadMany(DebitCard::class);
+	}
+
+	public function debit_card_requests()
+	{
+		return $this->hadMany(DebitCardRequest::class);
 	}
 
 	static function adminRoutes()

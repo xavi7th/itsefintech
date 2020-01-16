@@ -95,7 +95,7 @@ class AdminController extends Controller
 
 				DebitCardType::adminRoutes();
 
-				DebitCardRequest::routes();
+				DebitCardRequest::adminRoutes();
 
 				StockRequest::routes();
 

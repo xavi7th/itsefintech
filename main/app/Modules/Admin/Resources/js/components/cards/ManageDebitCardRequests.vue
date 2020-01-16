@@ -12,6 +12,7 @@
                 <th>ID</th>
                 <th>Email</th>
                 <th>Phone</th>
+                <th>Type</th>
                 <th>Status</th>
                 <th>Payment Status</th>
                 <th>Actions</th>
@@ -22,6 +23,7 @@
                 <td>{{ debit_card_request.id }}</td>
                 <td>{{ debit_card_request.requester.email }}</td>
                 <td>{{ debit_card_request.requester.phone }}</td>
+                <td>{{ debit_card_request.requested_card_type }}</td>
                 <td>{{ debit_card_request.status }}</td>
                 <td>{{ debit_card_request.is_payment_confirmed ? 'Payment Confirmed' : debit_card_request.is_paid ? 'Payment made' : 'Not Paid' }}</td>
                 <td>

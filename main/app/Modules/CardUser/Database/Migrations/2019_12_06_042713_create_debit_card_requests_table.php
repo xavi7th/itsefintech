@@ -17,6 +17,8 @@ class CreateDebitCardRequestsTable extends Migration
 			$table->bigIncrements('id');
 			$table->bigInteger('debit_card_id')->unsigned()->nullable();
 			$table->foreign('debit_card_id')->references('id')->on('debit_cards')->onDelete('cascade');
+			$table->bigInteger('debit_card_type_id')->unsigned()->nullable();
+			$table->foreign('debit_card_type_id')->references('id')->on('debit_card_types')->onDelete('cascade');
 			$table->bigInteger('card_user_id')->unsigned();
 			$table->foreign('card_user_id')->references('id')->on('card_users')->onDelete('cascade');
 			$table->bigInteger('sales_rep_id')->unsigned()->nullable();

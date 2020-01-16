@@ -33,6 +33,7 @@ class AdminDebitCardRequestTransformer
 			'is_payment_confirmed' => (boolean)$debit_card_request->is_payment_confirmed,
 			'debit_card_request_status_id' => (int)$debit_card_request->debit_card_request_status_id,
 			'debit_card_id' => (int)$debit_card_request->debit_card_id,
+			'requested_card_type' => (string)$debit_card_request->debit_card_type->card_type_name,
 		];
 	}
 }
