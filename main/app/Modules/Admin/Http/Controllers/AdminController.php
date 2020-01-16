@@ -21,6 +21,7 @@ use App\Modules\CustomerSupport\Models\CustomerSupport;
 use App\Modules\SalesRep\Transformers\SalesRepDebitCardRequestTransformer;
 use App\Modules\CardUser\Models\LoanRequest;
 use App\Modules\CardUser\Models\LoanTransaction;
+use App\Modules\CardUser\Models\DebitCardType;
 
 class AdminController extends Controller
 {
@@ -91,6 +92,8 @@ class AdminController extends Controller
 				SalesRep::routes();
 
 				DebitCard::adminRoutes();
+
+				DebitCardType::adminRoutes();
 
 				DebitCardRequest::routes();
 

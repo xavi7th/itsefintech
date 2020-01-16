@@ -19,6 +19,8 @@ class CreateDebitCardsTable extends Migration
 			$table->foreign('sales_rep_id')->references('id')->on('sales_reps')->onDelete('cascade');
 			$table->bigInteger('card_user_id')->unsigned()->nullable();
 			$table->foreign('card_user_id')->references('id')->on('card_users')->onDelete('cascade');
+			$table->bigInteger('debit_card_type_id')->unsigned();
+			$table->foreign('debit_card_type_id')->references('id')->on('debit_card_types')->onDelete('cascade');
 			$table->string('card_number')->unique();
 			$table->string('card_hash');
 			$table->string('csc');

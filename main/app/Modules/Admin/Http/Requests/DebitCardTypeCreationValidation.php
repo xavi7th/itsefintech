@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Modules\CardUser\Http\Requests;
+namespace App\Modules\Admin\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use \Illuminate\Contracts\Validation\Validator;
 use App\Modules\CardUser\Exceptions\AxiosValidationExceptionBuilder;
 
 
-class CardRequestValidation extends FormRequest
+class DebitCardTypeCreationValidation extends FormRequest
 {
 	/**
 	 * Get the validation rules that apply to the request.
@@ -17,12 +17,9 @@ class CardRequestValidation extends FormRequest
 	public function rules()
 	{
 		return [
-			'address' => 'required|string',
-			'phone' => 'required|string',
-			'zip' => 'required|string',
-			'payment_method' => 'required|string',
-			'city' => 'required|string',
-			'debit_card_type_id' => 'required|exists:debit_card_types,id'
+
+			'card_type_name' => 'required|string|unique:debit_card_types,card_type_name',
+			'amount' => 'required|numeric',
 		];
 	}
 
@@ -33,7 +30,7 @@ class CardRequestValidation extends FormRequest
 	 */
 	public function authorize()
 	{
-		return true;
+		return auth('admin')->check();
 	}
 
 

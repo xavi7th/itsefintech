@@ -76,6 +76,17 @@ export const adminAllocateDebitCardToRequest = id => `${apiBaseUrl}debit-card-re
 export const toggleDebitCardSuspension = id => apiBaseUrl + 'debit-card/' + id + '/suspension'
 export const adminActivateDebitCard = id => apiBaseUrl + 'debit-card/' + id + '/activate'
 
+
+/**
+ * Debit Card Type Routes
+ */
+export const adminViewDebitCardTypes = `${apiBaseUrl}debit-card-types`
+export const adminCreateDebitCardType = `${apiBaseUrl}debit-card-type/create`
+export const adminEditDebitCardType = id => `${apiBaseUrl}debit-card-type/${id}`
+
+
+
+
 export const adminViewDebitCardRequests = apiBaseUrl + 'debit-card-requests'
 export const adminMarkDebitCardRequestAsPaid = id => apiBaseUrl + 'debit-card-request/' + id + '/paid'
 export const adminConfirmDebitCardRequestPayment = id => apiBaseUrl + 'debit-card-request/' + id + '/paid/confirm'
@@ -91,7 +102,6 @@ export const getSalesRepStatistics = apiBaseUrl + 'statistics'
 export const requestCardStock = apiBaseUrl + 'debit-card/request'
 
 /** Loans */
-
 export const adminViewLoanRequests = apiBaseUrl + 'loan-requests'
 export const adminApproveLoanRequest = id => apiBaseUrl + 'loan-request/' + id + '/approve'
 export const adminMarkLoanRequestAsPaid = id => apiBaseUrl + 'loan-request/' + id + '/paid'

@@ -22,6 +22,7 @@ class DebitCardCreationValidation extends FormRequest
 			'month' => 'required|numeric|between:1,12',
 			'year' => 'required|numeric|date_format:Y',
 			'csc' => 'required|numeric',
+			'debit_card_type_id' => 'required|exists:debit_card_types,id'
 		];
 	}
 

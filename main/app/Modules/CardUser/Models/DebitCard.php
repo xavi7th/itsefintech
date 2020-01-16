@@ -10,18 +10,19 @@ use App\Modules\Admin\Models\ActivityLog;
 use App\Modules\CardUser\Models\CardUser;
 use App\Modules\SalesRep\Models\SalesRep;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Modules\CardUser\Models\DebitCardType;
+use App\Modules\NormalAdmin\Models\StockRequest;
 use App\Modules\CardUser\Models\DebitCardRequest;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Modules\Admin\Transformers\AdminDebitCardTransformer;
 use App\Modules\Admin\Http\Requests\DebitCardCreationValidation;
-use App\Modules\NormalAdmin\Models\StockRequest;
 
 class DebitCard extends Model
 {
 	use SoftDeletes;
 
 	protected $fillable = [
-		'card_number', 'month', 'year', 'csc', 'sales_rep_id', 'card_user_id'
+		'card_number', 'month', 'year', 'csc', 'sales_rep_id', 'card_user_id', 'debit_card_type_id'
 	];
 	protected $appends = ['exp_date'];
 
@@ -58,6 +59,11 @@ class DebitCard extends Model
 	public function debit_card_request()
 	{
 		return $this->hasOne(DebitCardRequest::class);
+	}
+
+	public function debit_card_type()
+	{
+		return $this->belongsTo(DebitCardType::class);
 	}
 
 	public function getExpDateAttribute()

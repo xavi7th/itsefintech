@@ -20,6 +20,7 @@ use App\Modules\CardUser\Http\Requests\CardActivationValidation;
 use App\Modules\CardUser\Http\Requests\CardUserUpdateProfileValidation;
 use App\Modules\CardUser\Models\LoanRequest;
 use App\Modules\CardUser\Models\LoanTransaction;
+use App\Modules\CardUser\Models\DebitCardRequestStatus;
 
 class CardUserController extends Controller
 {
@@ -151,6 +152,11 @@ class CardUserController extends Controller
 	}
 	public function trackDebitCard(DebitCardRequest $card_request)
 	{
-		return response()->json(['status' => $card_request->debit_card_request_status->name], 200);
+		$current_request_id = $card_request->debit_card_request_status->id;
+		$status = collect(DebitCardRequestStatus::all())->reject(function ($v) use ($current_request_id) {
+			return $v->id > $current_request_id;
+		});
+		// 		$status = collect(DebitCardRequestStatus::all())->merge(['current' => $card_request->debit_card_request_status->id]);
+		return response()->json(['status' => $status], 200);
 	}
 }

@@ -163,6 +163,16 @@ class ApiRoutesTableSeeder extends Seeder
 				],
 
 				[
+					'path' => '/cards/types',
+					'name' => 'admin.cards.types',
+					'meta' => '{title: APP_NAME + \' | Debit Card Types\',
+						iconClass: \'user\',
+						menuName: \'View Debit Card Types\'
+					}',
+					'description' => 'Manage Debit Card Types',
+				],
+
+				[
 					'path' => '/cards/:rep/list',
 					'name' => 'admin.cards.sales-rep.list',
 					'meta' => '{title: APP_NAME + \' | View Sales Rep Debit Cards\',
@@ -201,6 +211,7 @@ class ApiRoutesTableSeeder extends Seeder
 				}',
 					'description' => 'Manage Loan Transactions',
 				],
+
 			]
 		);
 	}

@@ -20,7 +20,8 @@
                 <th>ID</th>
                 <th>Card User Email</th>
                 <th>Sales Rep</th>
-                <th>Card Number</th>
+                <th>Number</th>
+                <th>Amount</th>
                 <th>Status</th>
                 <th>Actions</th>
               </tr>
@@ -31,6 +32,7 @@
                 <td>{{ !debitCard.card_user ? 'Unallocated' : debitCard.card_user.email }}</td>
                 <td>{{ !debitCard.sales_rep ? 'Unassigned' : debitCard.sales_rep.email }}</td>
                 <td>{{ debitCard.card_number }}</td>
+                <td>{{ debitCard.amount | Naira }}</td>
                 <td>{{ hasExpired(debitCard.exp_date) ? 'Expired' : debitCard.is_suspended ? 'Card Suspended' : debitCard.is_admin_activated ? 'Fully Activated' : debitCard.is_user_activated ? 'Pending Confirmation' : 'Not Activated' }}</td>
                 <td>
                   <div
@@ -170,6 +172,35 @@
                             <span class="text-danger">{{ errors.first('exp_year') }}</span>
                             <span class="text-danger">{{ errors.first('exp_month') }}</span>
                           </div>
+                          <div class="row">
+                            <div class="col-12">
+                              <div
+                                class="form-group mb-5"
+                                :class="{'has-error': errors.has('debit_card_type')}"
+                              >
+                                <label for="form-year">
+                                  <strong>Month</strong>
+                                </label>
+                                <select
+                                  class="form-control"
+                                  id="form-year"
+                                  name="debit_card_type"
+                                  v-validate="'required'"
+                                  data-vv-as="debit card type"
+                                  v-model="details.debit_card_type_id"
+                                >
+                                  <option :value="null">Card Type</option>
+                                  <option
+                                    v-for="card_type in debitCardTypes"
+                                    :key="card_type.id"
+                                    :value="card_type.id"
+                                  >{{ card_type.card_type_name }}</option>
+                                </select>
+                              </div>
+                            </div>
+
+                            <span class="text-danger">{{ errors.first('debit_card_type') }}</span>
+                          </div>
 
                           <div class="form-group mt-20">
                             <button
@@ -212,9 +243,12 @@
     name: "ManageDebitCards",
     data: () => ({
       debitCards: [],
+      debitCardTypes: [],
       debitCardDetails: {},
       sectionLoading: false,
-      details: {},
+      details: {
+        debit_card_type_id: null
+      },
       userDetails: {}
     }),
     components: {
@@ -242,8 +276,9 @@
         });
         axios
           .get(adminViewDebitCards(this.saleRepId))
-          .then(({ data: { debit_cards } }) => {
+          .then(({ data: { debit_cards, debit_card_types } }) => {
             this.debitCards = debit_cards;
+            this.debitCardTypes = debit_card_types;
 
             if (this.$isDesktop) {
               this.$nextTick(() => {

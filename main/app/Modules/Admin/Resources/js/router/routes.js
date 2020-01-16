@@ -105,6 +105,16 @@ export const allRoutes = [
             menuName: 'Manage Debit Cards'
         },
         children: [ {
+                path: '/cards/types',
+                component: adminView( 'cards/ManageDebitCardTypes' ),
+                name: 'admin.cards.types',
+                meta: {
+                    title: APP_NAME + ' | Debit Card Types',
+                    iconClass: 'home',
+                    menuName: 'Debit Card Types'
+                },
+            },
+            {
                 path: '/cards/list',
                 component: adminView( 'cards/ManageDebitCards' ),
                 name: 'admin.cards.list',

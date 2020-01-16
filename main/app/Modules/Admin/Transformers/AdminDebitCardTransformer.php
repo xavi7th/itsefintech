@@ -3,6 +3,7 @@
 namespace App\Modules\Admin\Transformers;
 
 use App\Modules\CardUser\Models\DebitCard;
+use App\Modules\CardUser\Models\DebitCardType;
 
 class AdminDebitCardTransformer
 {
@@ -11,7 +12,8 @@ class AdminDebitCardTransformer
 		return [
 			'debit_cards' => $collection->map(function ($v) use ($transformerMethod) {
 				return $this->$transformerMethod($v);
-			})
+			}),
+			'debit_card_types' => DebitCardType::get(['card_type_name', 'id'])
 		];
 	}
 	public function transformForAdminViewDebitCards(DebitCard $card)
@@ -27,6 +29,7 @@ class AdminDebitCardTransformer
 			'is_suspended' => (boolean)$card->is_suspended,
 			'is_user_activated' => (boolean)$card->is_user_activated,
 			'is_admin_activated' => (boolean)$card->is_admin_activated,
+			'amount' => (float)$card->debit_card_type->amount
 		];
 	}
 	public function transformForBasicDebitCardDetails(DebitCard $card)
