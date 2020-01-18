@@ -95,6 +95,7 @@ class CardUser extends User
 
 	public function due_for_credit()
 	{
+		return (boolean)$this->credit_limit;
 		return $this->debit_cards()->where('is_admin_activated', true)->where('is_suspended', false)->whereDate('activated_at', '<=', now()->subDays(30)->toDateString())->exists();
 	}
 
