@@ -76,6 +76,36 @@ export const allRoutes = [
             menuName: 'Manage Loans'
         },
         children: [ {
+                path: '/vouchers',
+                component: adminView( 'vouchers/ManageVouchers' ),
+                name: 'admin.vouchers',
+                meta: {
+                    title: APP_NAME + ' | Vouchers',
+                    iconClass: 'home',
+                    menuName: 'Vouchers'
+                },
+            },
+            {
+                path: '/vouchers/requests',
+                component: adminView( 'vouchers/ManageVoucherRequests' ),
+                name: 'admin.voucher.requests',
+                meta: {
+                    title: APP_NAME + ' | Manage Voucher Requests',
+                    iconClass: 'home',
+                    menuName: 'Manage Voucher Requests'
+                },
+            },
+            {
+                path: '/vouchers/transactions',
+                component: adminView( 'vouchers/ManageVoucherTransactions' ),
+                name: 'admin.voucher.transactions',
+                meta: {
+                    title: APP_NAME + ' | Voucher Transactions',
+                    iconClass: 'home',
+                    menuName: 'Voucher Transactions'
+                },
+            },
+            {
                 path: '/loans/requests',
                 component: adminView( 'loans/ManageLoanRequests' ),
                 name: 'admin.loans.requests',

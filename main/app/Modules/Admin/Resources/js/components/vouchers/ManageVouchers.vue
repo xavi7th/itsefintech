@@ -1,7 +1,7 @@
 <template>
   <main>
     <pre-loader v-if="sectionLoading" class="section-loader"></pre-loader>
-    <page-header pageTitle="Manage Merchants"></page-header>
+    <page-header pageTitle="Manage Vouchers"></page-header>
     <div class="content">
       <!-- table basic -->
       <div class="card">
@@ -10,57 +10,45 @@
             type="button"
             class="btn btn-bold btn-pure btn-twitter btn-shadow"
             data-toggle="modal"
-            data-target="#modal-merchant"
-          >Create Merchant</button>
+            data-target="#modal-voucher"
+          >Create Voucher</button>
         </div>
         <div class="card-body">
-          <table class="table table-bordered table-hover" id="merchants-table">
+          <table class="table table-bordered table-hover" id="vouchers-table">
             <thead>
               <tr>
                 <th>ID</th>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Phone</th>
-                <th>Merchant Code</th>
+                <th>Card User</th>
+                <th>Amount</th>
+                <th>Voucher Code</th>
                 <th>Status</th>
                 <th>Actions</th>
               </tr>
             </thead>
             <tbody>
-              <tr v-for="merchant in merchants" :key="merchant.id">
-                <td>{{ merchant.id }}</td>
-                <td>{{ merchant.name }}</td>
-                <td>{{ merchant.email }}</td>
-                <td>{{ merchant.phone }}</td>
-                <td>{{ merchant.unique_code }}</td>
-                <td>{{ merchant.is_active ? 'Active' : 'Suspended' }}</td>
+              <tr v-for="voucher in vouchers" :key="voucher.id">
+                <td>{{ voucher.id }}</td>
+                <td>{{ voucher.card_user ? voucher.card_user.email : 'Not Assigned' }}</td>
+                <td>{{ voucher.amount }}</td>
+                <td>{{ voucher.code }}</td>
+                <td>{{ voucher.is_expired ? 'Expired' : 'Valid' }}</td>
                 <td>
                   <div
                     class="badge badge-success badge-shadow pointer"
                     data-toggle="modal"
-                    data-target="#modal-details"
-                    @click="showModal(merchant)"
+                    data-target="#modal-transactions"
+                    @click="showModal(voucher)"
                   >Transactions</div>
-                  <button
-                    class="btn btn-pure btn-danger btn-xs btn-bold"
-                    @click="suspendMerchant(merchant)"
-                    v-if="merchant.is_active"
-                  >Suspend</button>
-                  <button
-                    class="btn btn-pure btn-warning btn-xs btn-bold"
-                    @click="restoreMerchant(merchant)"
-                    v-else
-                  >Restore</button>
                 </td>
               </tr>
             </tbody>
           </table>
 
-          <div class="modal modal-left fade" id="modal-details" tabindex="-1">
+          <div class="modal modal-left fade" id="modal-transactions" tabindex="-1">
             <div class="modal-dialog">
               <div class="modal-content">
                 <div class="modal-header">
-                  <h4 class="modal-title">{{ merchantDetails.full_name }}' details</h4>
+                  <h4 class="modal-title">{{ voucherDetails.code }}' transactions</h4>
                   <button type="button" class="close" data-dismiss="modal">
                     <span aria-hidden="true">&times;</span>
                   </button>
@@ -72,22 +60,22 @@
                         <div class="card-row">
                           <div class="table-responsive">
                             <div class="flex j-c-between bd bg-light py-30 px-30">
-                              <div class="flex-sh-0 ln-18">
+                              <!-- <div class="flex-sh-0 ln-18">
                                 <div class="fs-16 fw-500 text-success">Agent</div>
                                 <span class="fs-12 text-light">User Role</span>
-                              </div>
-                              <!-- <div class="flex-sh-0 ln-18">
-                                <div class="fs-16 fw-500 text-danger">3 Problem</div>
+                              </div>-->
+                              <div class="flex-sh-0 ln-18">
+                                <div class="fs-16 fw-500 text-danger">{{ 2000 | Naira }}</div>
                                 <span class="fs-12 text-light">
-                                  <i class="far fa-clock"></i> 24 hours
+                                  <i class="far fa-clock"></i> Voucher amount
                                 </span>
                               </div>
                               <div class="flex-sh-0 ln-18">
-                                <div class="fs-16 fw-500 text-warning">14 Waiting</div>
+                                <div class="fs-16 fw-500 text-warning">{{ 1500 | Naira }}</div>
                                 <span class="fs-12 text-light">
-                                  <i class="far fa-clock"></i> 24 hours
+                                  <i class="far fa-clock"></i> Voucher balance
                                 </span>
-                              </div>-->
+                              </div>
                             </div>
                             <table class="table table-striped">
                               <thead>
@@ -97,10 +85,13 @@
                                 </tr>
                               </thead>
                               <tbody>
-                                <tr v-for="(value, property, idx) in merchantDetails" :key="idx">
+                                <tr
+                                  v-for="(value, property, idx) in voucherDetails.transactions"
+                                  :key="idx"
+                                >
                                   <td>{{ slugToString(property) }}</td>
                                   <td>
-                                    <span v-if="property != 'merchant_passport'">{{ value }}</span>
+                                    <span v-if="property != 'voucher_passport'">{{ value }}</span>
                                     <a :href="value" v-else target="_blank">
                                       <img :src="value" alt class="img-fluid" />
                                     </a>
@@ -125,11 +116,11 @@
             </div>
           </div>
 
-          <div class="modal modal-right fade" id="modal-merchant" tabindex="-1">
+          <div class="modal modal-right fade" id="modal-voucher" tabindex="-1">
             <div class="modal-dialog">
               <div class="modal-content">
                 <div class="modal-header">
-                  <h4 class="modal-title">Enter Merchant Details</h4>
+                  <h4 class="modal-title">Enter Voucher Details</h4>
                   <button type="button" class="close" data-dismiss="modal">
                     <span aria-hidden="true">&times;</span>
                   </button>
@@ -137,51 +128,20 @@
                 <div class="modal-body">
                   <pre-loader v-if="sectionLoading" class="section-loader"></pre-loader>
                   <form class="m-25">
-                    <div class="form-group mb-5" :class="{'has-error': errors.has('full_name')}">
-                      <label for="form-full-name">
-                        <strong>Merchant Name</strong>
+                    <div class="form-group mb-5" :class="{'has-error': errors.has('amount')}">
+                      <label for="form-amount">
+                        <strong>Voucher Amount</strong>
                       </label>
                       <input
                         type="text"
                         class="form-control form-control-pill"
-                        id="form-full-name"
-                        data-vv-as="merchant name"
-                        v-model="details.name"
-                        v-validate="'required'"
-                        name="full_name"
+                        id="form-amount"
+                        data-vv-as="voucher amount"
+                        v-model="details.amount"
+                        v-validate="'required|numeric'"
+                        name="amount"
                       />
-                      <span>{{ errors.first('full_name') }}</span>
-                    </div>
-                    <div class="form-group mb-5" :class="{'has-error': errors.has('email')}">
-                      <label for="form-mail">
-                        <strong>E-Mail</strong>
-                      </label>
-                      <input
-                        type="text"
-                        class="form-control form-control-pill"
-                        id="form-mail"
-                        data-vv-as="merchant's email"
-                        v-model="details.email"
-                        v-validate="'required|email'"
-                        name="email"
-                      />
-                      <span>{{ errors.first('email') }}</span>
-                    </div>
-
-                    <div class="form-group mb-5" :class="{'has-error': errors.has('phone')}">
-                      <label for="form-phone">
-                        <strong>Phone</strong>
-                      </label>
-                      <input
-                        type="text"
-                        class="form-control form-control-pill"
-                        id="form-phone"
-                        data-vv-as="merchant's phone"
-                        v-model="details.phone"
-                        v-validate="'required'"
-                        name="phone"
-                      />
-                      <span>{{ errors.first('phone') }}</span>
+                      <span>{{ errors.first('amount') }}</span>
                     </div>
 
                     <div class="form-group mb-5 mt-20">
@@ -193,7 +153,7 @@
                             v-model="details.auto_generate"
                             class="mr-5"
                           />
-                          <label for="input-auto-generate" class="mb-0">Auto generate Merchant ID</label>
+                          <label for="input-auto-generate" class="mb-0">Auto generate Voucher Code</label>
                         </label>
                       </div>
                     </div>
@@ -201,22 +161,22 @@
                     <transition name="nav-transition">
                       <div
                         class="form-group mb-5"
-                        :class="{'has-error': errors.has('unique_code')}"
+                        :class="{'has-error': errors.has('code')}"
                         v-if="!details.auto_generate"
                       >
                         <label for="form-code">
-                          <strong>Merchant Code</strong>
+                          <strong>Voucher Code</strong>
                         </label>
                         <input
                           type="text"
                           class="form-control form-control-pill"
                           placeholder="Alpha numeric and dash characters only"
                           id="form-code"
-                          v-model="details.unique_code"
+                          v-model="details.code"
                           v-validate="'alpha_dash'"
-                          name="unique_code"
+                          name="code"
                         />
-                        <div class="text-danger">{{ errors.first('unique_code') }}</div>
+                        <div class="text-danger">{{ errors.first('code') }}</div>
                       </div>
                     </transition>
 
@@ -224,7 +184,7 @@
                       <button
                         type="button"
                         class="btn btn-rss btn-round btn-block"
-                        @click="createMerchant"
+                        @click="createVoucher"
                       >Create</button>
                     </div>
                   </form>
@@ -246,19 +206,13 @@
 </template>
 
 <script>
-  import {
-    adminViewMerchants,
-    adminCreateMerchant,
-    adminDeleteMerchant,
-    adminRestoreMerchant,
-    adminSuspendMerchant
-  } from "@admin-assets/js/config";
+  import { adminViewVouchers, adminCreateVoucher } from "@admin-assets/js/config";
   import PreLoader from "@admin-components/misc/PageLoader";
   export default {
-    name: "ManageMerchants",
+    name: "ManageVouchers",
     data: () => ({
-      merchants: [],
-      merchantDetails: {},
+      vouchers: [],
+      voucherDetails: {},
       sectionLoading: false,
       details: {}
     }),
@@ -266,14 +220,14 @@
       PreLoader
     },
     created() {
-      this.getAllMerchants();
+      this.getAllVouchers();
     },
     mounted() {
       this.$emit("page-loaded");
     },
     methods: {
-      showModal(merchantDetails) {
-        this.merchantDetails = merchantDetails;
+      showModal(voucherDetails) {
+        this.voucherDetails = voucherDetails;
       },
       slugToString(slug) {
         let words = slug.split("_");
@@ -284,18 +238,18 @@
         }
         return words.join(" ");
       },
-      getAllMerchants() {
+      getAllVouchers() {
         BlockToast.fire({
-          text: "Retrieving merchants ..."
+          text: "Retrieving vouchers ..."
         });
         this.sectionLoading = true;
-        axios.get(adminViewMerchants).then(({ data: { merchants } }) => {
-          this.merchants = merchants;
+        axios.get(adminViewVouchers).then(({ data: { vouchers } }) => {
+          this.vouchers = vouchers;
 
           if (this.$isDesktop) {
             this.$nextTick(() => {
               $(function() {
-                $("#merchants-table").DataTable({
+                $("#vouchers-table").DataTable({
                   responsive: true,
                   scrollX: false,
                   language: {
@@ -308,7 +262,7 @@
           } else {
             this.$nextTick(() => {
               $(function() {
-                $("#merchants-table").DataTable({
+                $("#vouchers-table").DataTable({
                   responsive: false,
                   scrollX: true,
                   language: {
@@ -324,92 +278,7 @@
         });
       },
 
-      deleteMerchant() {
-        this.sectionLoading = true;
-        BlockToast.fire({
-          text: "Deleting merchant account ..."
-        });
-        axios
-          .delete(adminDeleteMerchant(this.merchantDetails.id))
-          .then(({ status }) => {
-            if (status === 204) {
-              Toast.fire({
-                title: "Success",
-                text: "User account deleted",
-                position: "center"
-              });
-            } else {
-              Toast.fire({
-                title: "Failed",
-                text: "Something wrong happend",
-                position: "center"
-              });
-            }
-
-            this.$nextTick(() => {
-              $(() => {
-                this.sectionLoading = false;
-              });
-            });
-          });
-      },
-      suspendMerchant(merchant) {
-        this.sectionLoading = true;
-        BlockToast.fire({
-          text: "suspending merchant account ..."
-        });
-        axios.put(adminSuspendMerchant(merchant.id)).then(({ status }) => {
-          if (status === 204) {
-            merchant.is_active = false;
-            Toast.fire({
-              title: "Success",
-              text: "Merchant account suspended",
-              position: "center"
-            });
-          } else {
-            Toast.fire({
-              title: "Failed",
-              text: "Something wrong happend",
-              position: "center"
-            });
-          }
-
-          this.$nextTick(() => {
-            $(() => {
-              this.sectionLoading = false;
-            });
-          });
-        });
-      },
-      restoreMerchant(merchant) {
-        this.sectionLoading = true;
-        BlockToast.fire({
-          text: "Restoring merchant account ..."
-        });
-        axios.put(adminRestoreMerchant(merchant.id)).then(({ status }) => {
-          merchant.is_active = true;
-          if (status === 204) {
-            Toast.fire({
-              title: "Success",
-              text: "Merchant account re-activated",
-              position: "center"
-            });
-          } else {
-            Toast.fire({
-              title: "Failed",
-              text: "Something wrong happend",
-              position: "center"
-            });
-          }
-
-          this.$nextTick(() => {
-            $(() => {
-              this.sectionLoading = false;
-            });
-          });
-        });
-      },
-      createMerchant() {
+      createVoucher() {
         this.$validator.validateAll().then(result => {
           if (!result) {
             Toast.fire({
@@ -419,18 +288,18 @@
             });
           } else {
             BlockToast.fire({
-              text: "Creating merchant..."
+              text: "Creating voucher..."
             });
 
             axios
-              .post(adminCreateMerchant, { ...this.details })
-              .then(({ status, data: { merchant } }) => {
+              .post(adminCreateVoucher, { ...this.details })
+              .then(({ status, data: { voucher } }) => {
                 if (undefined !== status && status == 201) {
                   this.details = {};
-                  this.merchants.push(merchant);
+                  this.vouchers.push(voucher);
                   Toast.fire({
                     title: "Created",
-                    text: `Merchant created`,
+                    text: `Voucher created`,
                     icon: "success",
                     position: "center"
                   });

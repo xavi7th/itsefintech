@@ -23,6 +23,7 @@ use App\Modules\CardUser\Models\DebitCardRequest;
 use App\Modules\AccountOfficer\Models\AccountOfficer;
 use App\Modules\CustomerSupport\Models\CustomerSupport;
 use App\Modules\SalesRep\Transformers\SalesRepDebitCardRequestTransformer;
+use App\Modules\Admin\Models\Voucher;
 
 class AdminController extends Controller
 {
@@ -105,6 +106,8 @@ class AdminController extends Controller
 				LoanTransaction::adminRoutes();
 
 				Merchant::adminRoutes();
+
+				Voucher::adminRoutes();
 			});
 
 			Route::group(['middleware' => ['auth:admin', 'admins']], function () {

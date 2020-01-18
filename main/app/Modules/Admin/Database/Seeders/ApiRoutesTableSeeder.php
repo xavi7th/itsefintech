@@ -216,10 +216,40 @@ class ApiRoutesTableSeeder extends Seeder
 					'path' => '/loans/transactions',
 					'name' => 'admin.loans.transactions',
 					'meta' => '{title: APP_NAME + \' | View Loan Transactions\',
-					iconClass: \'cc-visa\',
-					menuName: \'View Loan Transactions\'
-				}',
+						iconClass: \'cc-visa\',
+						menuName: \'View Loan Transactions\'
+					}',
 					'description' => 'Manage Loan Transactions',
+				],
+
+				[
+					'path' => '/vouchers',
+					'name' => 'admin.vouchers',
+					'meta' => '{title: APP_NAME + \' | View Vouchers\',
+						iconClass: \'cc-visa\',
+						menuName: \'View Vouchers\'
+					}',
+					'description' => 'Manage Vouchers',
+				],
+
+				[
+					'path' => '/voucher/requests',
+					'name' => 'admin.voucher.requests',
+					'meta' => '{title: APP_NAME + \' | View Voucher Requests\',
+						iconClass: \'cc-visa\',
+						menuName: \'View Voucher Requests\'
+					}',
+					'description' => 'Manage Voucher Requests',
+				],
+
+				[
+					'path' => '/voucher/transactions',
+					'name' => 'admin.voucher.transactions',
+					'meta' => '{title: APP_NAME + \' | View Voucher Transactions\',
+						iconClass: \'cc-visa\',
+						menuName: \'View Voucher Transactions\'
+					}',
+					'description' => 'Manage Voucher Transactions',
 				],
 
 			]

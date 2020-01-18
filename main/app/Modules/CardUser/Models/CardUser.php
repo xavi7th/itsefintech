@@ -14,6 +14,7 @@ use App\Modules\CardUser\Models\LoanTransaction;
 use App\Modules\CardUser\Models\DebitCardRequest;
 use App\Modules\Admin\Transformers\AdminUserTransformer;
 use App\Modules\Admin\Http\Requests\SetCardUserCreditLimitValidation;
+use App\Modules\Admin\Models\Voucher;
 
 class CardUser extends User
 {
@@ -63,7 +64,7 @@ class CardUser extends User
 	}
 
 	/**
-	 * Create a new OIP for the user
+	 * Create a new OTP for the user
 	 *
 	 * Deletes all previous OTP codes, creates a new unique one and then returns it
 	 * @return int
@@ -76,6 +77,11 @@ class CardUser extends User
 		]);
 
 		return $otp;
+	}
+
+	public function vouchers()
+	{
+		return $this->hasMany(Voucher::class);
 	}
 
 	public function debit_cards()
