@@ -30,6 +30,7 @@ class CreateCardUsersTable extends Migration
 			$table->string('user_passport')->nullable();
 			$table->string('bvn')->nullable();
 			$table->double('merchant_limit')->nullable();
+			$table->double('merchant_percentage')->nullable();
 			$table->double('credit_limit')->nullable();
 			$table->double('credit_percentage')->nullable();
 			// $table->boolean('can_withdraw')->default(false);

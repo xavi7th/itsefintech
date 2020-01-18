@@ -71,6 +71,13 @@ class DebitCard extends Model
 		return Carbon::createFromDate($this->year, $this->month + 1, 1);
 	}
 
+
+	public function getFullPanNumberAttribute(): string
+	{
+		return decrypt($this->attributes['card_number']);
+	}
+
+
 	public function getCardNumberAttribute($value)
 	{
 		// return decrypt($value);
@@ -105,6 +112,8 @@ class DebitCard extends Model
 			Route::put('debit-card/{debit_card}/allocate', 'DebitCard@allocateDebitCard')->middleware('auth:admin');
 
 			Route::delete('debit-card/{debit_card}/delete', 'DebitCard@deleteDebitCard')->middleware('auth:admin');
+
+			Route::get('debit-card/{debit_card}/pan', 'DebitCard@showFullPANNumber')->middleware('auth:admin');
 		});
 	}
 
@@ -243,5 +252,10 @@ class DebitCard extends Model
 		return;
 		$debit_card->delete();
 		return response()->json(['rsp' => true], 204);
+	}
+
+	public function showFullPANNumber(DebitCard $debit_card)
+	{
+		return response()->json(['full_pan' => $debit_card->full_pan_number], 200);
 	}
 }

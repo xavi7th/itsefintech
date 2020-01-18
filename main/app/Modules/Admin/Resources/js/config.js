@@ -85,6 +85,7 @@ export const adminAllocateDebitCardToCardUser = id => `${apiBaseUrl}debit-card/$
 export const adminAllocateDebitCardToRequest = id => `${apiBaseUrl}debit-card-request/${id}/allocate`
 export const toggleDebitCardSuspension = id => apiBaseUrl + 'debit-card/' + id + '/suspension'
 export const adminActivateDebitCard = id => apiBaseUrl + 'debit-card/' + id + '/activate'
+export const adminShowFullPANNumber = id => apiBaseUrl + 'debit-card/' + id + '/pan'
 
 
 /**

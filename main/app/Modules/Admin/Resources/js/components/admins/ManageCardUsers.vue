@@ -140,7 +140,7 @@
             <div class="modal-dialog">
               <div class="modal-content">
                 <div class="modal-header">
-                  <h4 class="modal-title">{{ userDetails.full_name }}' Debit Cards</h4>
+                  <h4 class="modal-title">{{ userDetails.full_name }}'s Debit Cards</h4>
                   <button type="button" class="close" data-dismiss="modal">
                     <span aria-hidden="true">&times;</span>
                   </button>
@@ -164,7 +164,12 @@
                               <button
                                 type="button"
                                 class="btn btn-bold btn-info btn-xs fz-10"
-                              >Details</button>
+                                v-if="$user.isAdmin"
+                                @click="showFullPANNumber(value)"
+                              >
+                                REVEAL
+                                <i class="fa fa-eye"></i>
+                              </button>
                             </div>
                           </div>
                         </div>
@@ -197,7 +202,8 @@
     adminRestoreCardUser,
     adminSuspendCardUser,
     adminSetCardUserCreditLimit,
-    adminShowFullBvnNumber
+    adminShowFullBvnNumber,
+    adminShowFullPANNumber
   } from "@admin-assets/js/config";
   import PreLoader from "@admin-components/misc/PageLoader";
   export default {
@@ -362,9 +368,9 @@
           .fire({
             title: "Enter an amount",
             html: `<div class="d-flex">
-      										<input id="amount-input" class="swal2-input" required placeholder="Enter credit limit">
-      										<input id="interest-input" class="swal2-input" required placeholder="Enter interest">
-      									</div>`,
+                  										<input id="amount-input" class="swal2-input" required placeholder="Enter credit limit">
+                  										<input id="interest-input" class="swal2-input" required placeholder="Enter interest">
+                  									</div>`,
             showCancelButton: true,
             confirmButtonText: "Set Credit Limit",
             allowEscapeKey: false,
@@ -410,6 +416,33 @@
           })
           .then(() => {
             this.sectionLoading = false;
+          });
+      },
+      showFullPANNumber(card) {
+        this.sectionLoading = true;
+        BlockToast.fire({
+          text: "decrypting card PAN number ..."
+        });
+
+        axios
+          .get(adminShowFullPANNumber(card.id))
+          .then(({ status, data: { full_pan } }) => {
+            if (status === 200) {
+              swal.fire(full_pan, "Card's PAN", "info");
+            } else {
+              Toast.fire({
+                title: "Failed",
+                text: "Something wrong happend",
+                position: "center",
+                icon: "error"
+              });
+            }
+
+            this.$nextTick(() => {
+              $(() => {
+                this.sectionLoading = false;
+              });
+            });
           });
       },
       showFullBvnNumber(card_user) {
