@@ -41,6 +41,16 @@
                     data-target="#modal-details"
                     @click="showModal(merchant)"
                   >Transactions</div>
+                  <button
+                    class="btn btn-pure btn-danger btn-xs btn-bold"
+                    @click="suspendMerchant(merchant)"
+                    v-if="merchant.is_active"
+                  >Suspend</button>
+                  <button
+                    class="btn btn-pure btn-warning btn-xs btn-bold"
+                    @click="restoreMerchant(merchant)"
+                    v-else
+                  >Restore</button>
                 </td>
               </tr>
             </tbody>
@@ -110,18 +120,6 @@
                     class="btn btn-bold btn-pure btn-secondary"
                     data-dismiss="modal"
                   >Close</button>
-                  <button
-                    type="button"
-                    class="btn btn-bold btn-pure btn-warning"
-                    @click="restoreMerchant"
-                    v-if="merchantDetails.is_suspended"
-                  >Restore Account</button>
-                  <button
-                    type="button"
-                    class="btn btn-bold btn-pure btn-danger"
-                    @click="suspendMerchant"
-                    v-else
-                  >Suspend Account</button>
                 </div>
               </div>
             </div>
@@ -249,11 +247,11 @@
 
 <script>
   import {
-    merchantViewMerchants,
-    merchantCreateMerchant,
-    merchantDeleteMerchant,
-    merchantRestoreMerchant,
-    merchantSuspendMerchant
+    adminViewMerchants,
+    adminCreateMerchant,
+    adminDeleteMerchant,
+    adminRestoreMerchant,
+    adminSuspendMerchant
   } from "@admin-assets/js/config";
   import PreLoader from "@admin-components/misc/PageLoader";
   export default {
@@ -293,7 +291,7 @@
           text: "Retrieving merchants ..."
         });
         this.sectionLoading = true;
-        axios.get(merchantViewMerchants).then(({ data: { merchants } }) => {
+        axios.get(adminViewMerchants).then(({ data: { merchants } }) => {
           this.merchants = merchants;
 
           if (this.$isDesktop) {
@@ -334,7 +332,7 @@
           text: "Deleting merchant account ..."
         });
         axios
-          .delete(merchantDeleteMerchant(this.merchantDetails.id))
+          .delete(adminDeleteMerchant(this.merchantDetails.id))
           .then(({ status }) => {
             if (status === 204) {
               Toast.fire({
@@ -357,63 +355,61 @@
             });
           });
       },
-      suspendMerchant() {
+      suspendMerchant(merchant) {
         this.sectionLoading = true;
         BlockToast.fire({
           text: "suspending merchant account ..."
         });
-        axios
-          .put(merchantSuspendMerchant(this.merchantDetails.id))
-          .then(({ status }) => {
-            if (status === 204) {
-              Toast.fire({
-                title: "Success",
-                text: "User account suspended",
-                position: "center"
-              });
-            } else {
-              Toast.fire({
-                title: "Failed",
-                text: "Something wrong happend",
-                position: "center"
-              });
-            }
+        axios.put(adminSuspendMerchant(merchant.id)).then(({ status }) => {
+          if (status === 204) {
+            merchant.is_active = false;
+            Toast.fire({
+              title: "Success",
+              text: "Merchant account suspended",
+              position: "center"
+            });
+          } else {
+            Toast.fire({
+              title: "Failed",
+              text: "Something wrong happend",
+              position: "center"
+            });
+          }
 
-            this.$nextTick(() => {
-              $(() => {
-                this.sectionLoading = false;
-              });
+          this.$nextTick(() => {
+            $(() => {
+              this.sectionLoading = false;
             });
           });
+        });
       },
-      restoreMerchant() {
+      restoreMerchant(merchant) {
         this.sectionLoading = true;
         BlockToast.fire({
-          text: "restore merchant account ..."
+          text: "Restoring merchant account ..."
         });
-        axios
-          .put(merchantRestoreMerchant(this.merchantDetails.id))
-          .then(({ status }) => {
-            if (status === 204) {
-              Toast.fire({
-                title: "Success",
-                text: "User account restored",
-                position: "center"
-              });
-            } else {
-              Toast.fire({
-                title: "Failed",
-                text: "Something wrong happend",
-                position: "center"
-              });
-            }
+        axios.put(adminRestoreMerchant(merchant.id)).then(({ status }) => {
+          merchant.is_active = true;
+          if (status === 204) {
+            Toast.fire({
+              title: "Success",
+              text: "Merchant account re-activated",
+              position: "center"
+            });
+          } else {
+            Toast.fire({
+              title: "Failed",
+              text: "Something wrong happend",
+              position: "center"
+            });
+          }
 
-            this.$nextTick(() => {
-              $(() => {
-                this.sectionLoading = false;
-              });
+          this.$nextTick(() => {
+            $(() => {
+              this.sectionLoading = false;
             });
           });
+        });
       },
       createMerchant() {
         this.$validator.validateAll().then(result => {
@@ -429,7 +425,7 @@
             });
 
             axios
-              .post(merchantCreateMerchant, { ...this.details })
+              .post(adminCreateMerchant, { ...this.details })
               .then(({ status, data: { merchant } }) => {
                 if (undefined !== status && status == 201) {
                   this.details = {};

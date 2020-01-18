@@ -58,7 +58,7 @@ class LoanRequest extends Model
 			'amount' => (float)$this->amount,
 			'interest_rate' => (int)$this->monthly_interest,
 			'total_duration' => (string)$this->total_duration . ' months',
-			'minimum_repayment_amount' => (float)$this->amount * ($this->monthly_interest / 100),
+			'minimum_repayment_amount' => (float)round($this->amount * ($this->monthly_interest / 100), 2),
 			'total_interest_amount' => (float)$total_interest_amount = ($this->monthly_interest / 100) * $this->amount * $this->total_duration,
 			'total_repayment_amount' => (float)$total_repayment_amount = $total_interest_amount + $this->amount,
 			'scheduled_repayment_amount' => (float)number_format($total_repayment_amount / $this->total_duration, 2, '.', '')

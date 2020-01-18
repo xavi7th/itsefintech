@@ -1,5 +1,5 @@
 <template>
-  <footer>©2019 Orion Tech Inc. All Rights Reserved.</footer>
+  <footer>©2019 DoubleSouthNg. All Rights Reserved.</footer>
 </template>
 
 <script>

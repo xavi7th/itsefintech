@@ -31,6 +31,8 @@ class Merchant extends Model
 		Route::group(['namespace' => '\App\Modules\Admin\Models'], function () {
 			Route::get('merchants', 'Merchant@getAllMerchants')->middleware('auth:admin,normal_admin');
 			Route::post('merchant/create', 'Merchant@createMerchant')->middleware('auth:admin,normal_admin');
+			Route::put('merchant/{merchant}/suspend', 'Merchant@suspendMerchant')->middleware('auth:admin,normal_admin');
+			Route::put('merchant/{merchant}/restore', 'Merchant@restoreMerchant')->middleware('auth:admin,normal_admin');
 		});
 	}
 
@@ -52,5 +54,18 @@ class Merchant extends Model
 			$merchant = Merchant::create($request->all());
 		}
 		return response()->json(['merchant' => $merchant], 201);
+	}
+	public function suspendMerchant(Merchant $merchant)
+	{
+		$merchant->is_active = false;
+		$merchant->save();
+		return response()->json(['merchant' => $merchant], 204);
+	}
+
+	public function restoreMerchant(Merchant $merchant)
+	{
+		$merchant->is_active = true;
+		$merchant->save();
+		return response()->json(['merchant' => $merchant], 204);
 	}
 }

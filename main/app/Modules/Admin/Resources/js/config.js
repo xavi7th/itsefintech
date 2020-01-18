@@ -69,11 +69,11 @@ export const adminShowFullBvnNumber = id => apiBaseUrl + 'card-user/' + id + '/b
  * @param {id} id int
  */
 
-export const merchantViewMerchants = apiBaseUrl + 'merchants'
-export const merchantCreateMerchant = apiBaseUrl + 'merchant/create'
-export const merchantDeleteMerchant = apiBaseUrl + 'merchant/delete'
-export const merchantRestoreMerchant = apiBaseUrl + 'merchant/restore'
-export const merchantSuspendMerchant = apiBaseUrl + 'merchant/suspend'
+export const adminViewMerchants = apiBaseUrl + 'merchants'
+export const adminCreateMerchant = apiBaseUrl + 'merchant/create'
+export const adminSuspendMerchant = id => apiBaseUrl + 'merchant/' + id + '/suspend'
+export const adminRestoreMerchant = id => apiBaseUrl + 'merchant/' + id + '/restore'
+export const adminDeleteMerchant = id => apiBaseUrl + 'merchant/' + id + '/delete'
 
 /**
  * Card Routes
