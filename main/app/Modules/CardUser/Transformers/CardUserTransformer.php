@@ -42,6 +42,8 @@ class CardUserTransformer
 		return [
 			'first_name' => $user->first_name,
 			'last_name' => $user->last_name,
+			'email' => $user->email,
+			'phone' => $user->phone,
 			'bvn' => $user->bvn,
 			'card_user_category' => $user->card_user_category->category_name,
 			'assigned_credit_limit' => $user->assigned_credit_limit,

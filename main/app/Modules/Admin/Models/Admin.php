@@ -121,18 +121,4 @@ class Admin extends User
 			return response()->json(['rsp' => true], 204);
 		})->middleware('auth:admin');
 	}
-
-	// /**
-	//  * The booting method of the model
-	//  *
-	//  * @return void
-	//  */
-	// protected static function boot()
-	// {
-	// 	parent::boot();
-
-	// 	static::addGlobalScope('adminsOnly', function (Builder $builder) {
-	// 		$builder->where('role_id', parent::$admin_id);
-	// 	});
-	// }
 }

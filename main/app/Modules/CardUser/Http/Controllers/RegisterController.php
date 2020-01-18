@@ -2,17 +2,14 @@
 
 namespace App\Modules\CardUser\Http\Controllers;
 
-use App\User;
-use Illuminate\Support\Str;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
-use App\Modules\CardUser\Models\OTP;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Auth\Events\Registered;
 use App\Modules\CardUser\Models\CardUser;
 use Illuminate\Foundation\Auth\RegistersUsers;
+use App\Modules\CardUser\Transformers\CardUserTransformer;
 use App\Modules\CardUser\Http\Requests\RegistrationValidation;
 
 
@@ -122,7 +119,7 @@ class RegisterController extends Controller
 			'access_token' => $token,
 			'token_type' => 'bearer',
 			'expires_in' => auth('card_user')->factory()->getTTL() * 60,
-			'user' => $user = auth('card_user')->user(),
+			'user' => (new CardUserTransformer)->transform($user = auth('card_user')->user()),
 			'is_card_activated' => !$user->has_unactivated_card(),
 			'is_card_requested' => $user->debit_card_requests()->exists(),
 			'success' => true

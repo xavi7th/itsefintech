@@ -64,10 +64,10 @@ class CardUserController extends Controller
 
 			Route::group(['prefix' => 'card', 'middleware' => ['auth:card_user', 'card_users']], function () {
 				Route::get('/list', 'CardUserController@getDebitCards');
-				Route::get('/{debit_card}', 'CardUserController@getCardDetails');
 				Route::post('/new', 'CardUserController@requestDebitCard');
 				Route::put('/activate', 'CardUserController@activateDebitCard');
 				Route::get('/status', 'CardUserController@trackDebitCard');
+				Route::get('/{debit_card}', 'CardUserController@getCardDetails');
 			});
 		});
 	}
@@ -165,11 +165,11 @@ class CardUserController extends Controller
 	}
 	public function trackDebitCard()
 	{
-		$current_request_id = auth()->user()->last_debit_card_request->debit_card_request_status_id;
+		$current_request_id = optional(auth()->user()->last_debit_card_request)->debit_card_request_status_id;
 		$status = collect(DebitCardRequestStatus::all())->reject(function ($status) use ($current_request_id) {
 			return $status->id > $current_request_id;
 		});
-		// 		$status = collect(DebitCardRequestStatus::all())->merge(['current' => $card_request->debit_card_request_status->id]);
+		// $status = collect(DebitCardRequestStatus::all())->merge(['current' => $card_request->debit_card_request_status->id]);
 		return response()->json(['status' => $status], 200);
 	}
 }
