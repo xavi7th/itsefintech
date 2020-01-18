@@ -87,7 +87,7 @@ class DebitCardRequest extends Model
 		$debit_card = DebitCard::retrieve(request('card_number'));
 
 		/** Check card has being assigned to this sales rep */
-		if (auth()->id() !== $debit_card->sales_rep_id) {
+		if (auth()->id() !== intval($debit_card->sales_rep_id)) {
 			return generate_422_error(['card' => ['This Debit Card has not being assigned to you']]);
 		}
 
@@ -97,7 +97,7 @@ class DebitCardRequest extends Model
 		}
 
 		/** Check that the debit card matches the request type */
-		if ($debit_card_request->debit_card_type_id !== $debit_card->debit_card_type->id) {
+		if (intval($debit_card_request->debit_card_type_id) !== intval($debit_card->debit_card_type->id)) {
 			return generate_422_error(['card' => ['This Debit Card type does not match the requested card type']]);
 		}
 
