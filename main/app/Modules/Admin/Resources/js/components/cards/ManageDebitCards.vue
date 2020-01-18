@@ -21,6 +21,7 @@
                 <th>Card User Email</th>
                 <th>Sales Rep</th>
                 <th>Number</th>
+                <th>Type</th>
                 <th>Amount</th>
                 <th>Status</th>
                 <th>Actions</th>
@@ -32,6 +33,7 @@
                 <td>{{ !debitCard.card_user ? 'Unallocated' : debitCard.card_user.email }}</td>
                 <td>{{ !debitCard.sales_rep ? 'Unassigned' : debitCard.sales_rep.email }}</td>
                 <td>{{ debitCard.card_number }}</td>
+                <td>{{ debitCard.card_type }}</td>
                 <td>{{ debitCard.amount | Naira }}</td>
                 <td>{{ hasExpired(debitCard.exp_date) ? 'Expired' : debitCard.is_suspended ? 'Card Suspended' : debitCard.is_admin_activated ? 'Fully Activated' : debitCard.is_user_activated ? 'Pending Confirmation' : 'Not Activated' }}</td>
                 <td>

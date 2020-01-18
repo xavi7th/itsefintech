@@ -8,20 +8,21 @@ use App\Modules\Admin\Models\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Route;
 use App\Modules\Admin\Models\ApiRoute;
+use App\Modules\Admin\Models\Merchant;
 use App\Modules\CardUser\Models\CardUser;
 use App\Modules\SalesRep\Models\SalesRep;
 use App\Modules\CardUser\Models\DebitCard;
 use App\Modules\CardAdmin\Models\CardAdmin;
+use App\Modules\CardUser\Models\LoanRequest;
 use App\Modules\Accountant\Models\Accountant;
+use App\Modules\CardUser\Models\DebitCardType;
 use App\Modules\NormalAdmin\Models\NormalAdmin;
+use App\Modules\CardUser\Models\LoanTransaction;
 use App\Modules\NormalAdmin\Models\StockRequest;
 use App\Modules\CardUser\Models\DebitCardRequest;
 use App\Modules\AccountOfficer\Models\AccountOfficer;
 use App\Modules\CustomerSupport\Models\CustomerSupport;
 use App\Modules\SalesRep\Transformers\SalesRepDebitCardRequestTransformer;
-use App\Modules\CardUser\Models\LoanRequest;
-use App\Modules\CardUser\Models\LoanTransaction;
-use App\Modules\CardUser\Models\DebitCardType;
 
 class AdminController extends Controller
 {
@@ -102,6 +103,8 @@ class AdminController extends Controller
 				LoanRequest::adminRoutes();
 
 				LoanTransaction::adminRoutes();
+
+				Merchant::adminRoutes();
 			});
 
 			Route::group(['middleware' => ['auth:admin', 'admins']], function () {

@@ -1,8 +1,8 @@
 <?php
-use Illuminate\Contracts\Filesystem\FileNotFoundException as FileGetException;
 
+use Illuminate\Support\Str;
 use League\Flysystem\FileNotFoundException as FileDownloadException;
-use Carbon\Carbon;
+use Illuminate\Contracts\Filesystem\FileNotFoundException as FileGetException;
 
 // if (env('APP_DEBUG')) ini_set('opcache.revalidate_freq', '0');
 
@@ -44,7 +44,7 @@ if (!function_exists('unique_random')) {
 	 * @param int $chars - length of the random string
 	 *
 	 */
-	function unique_random($table, $col, $chars = null)
+	function unique_random($table, $col, $prefix = null, $chars = null)
 	{
 		$unique = false;
 
@@ -56,9 +56,9 @@ if (!function_exists('unique_random')) {
 			// Generate random string of characters
 
 			if ($chars == null) {
-				$random = rand(100001, 999999999);
+				$random = $prefix . rand(100001, 999999999);
 			} else {
-				$random = str_random($chars);
+				$random = $prefix . Str::random($chars);
 			}
 
 			// Check if it's already testing

@@ -55,7 +55,7 @@
     <div class="auth-right" style="background-image:url('/img/amju-building.jpg')">
       <div class="auth-content">
         <div class="auth-right__caption">
-          <h1>Admin Panel</h1>
+          <h1>Accountant Login Panel</h1>
           <p>
             Unauthorized attempts to access information or change information on these pages are strictly prohibited and
             are punishable under the Computer Fraud and Abuse Act of 2010 and the Private Information Infrastructure Protection Act.

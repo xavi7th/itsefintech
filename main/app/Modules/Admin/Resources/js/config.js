@@ -64,6 +64,16 @@ export const adminSetCardUserCreditLimit = id => apiBaseUrl + 'card-user/' + id 
 export const adminShowFullBvnNumber = id => apiBaseUrl + 'card-user/' + id + '/bvn'
 
 
+/**
+ * Merchant Routes
+ * @param {id} id int
+ */
+
+export const merchantViewMerchants = apiBaseUrl + 'merchants'
+export const merchantCreateMerchant = apiBaseUrl + 'merchant/create'
+export const merchantDeleteMerchant = apiBaseUrl + 'merchant/delete'
+export const merchantRestoreMerchant = apiBaseUrl + 'merchant/restore'
+export const merchantSuspendMerchant = apiBaseUrl + 'merchant/suspend'
 
 /**
  * Card Routes

@@ -244,6 +244,16 @@ export const allRoutes = [
                     menuName: 'View Sales Representatives'
                 },
             },
+            {
+                path: '/users/merchants',
+                component: adminView( 'merchants/ManageMerchants' ),
+                name: 'admin.merchants.view',
+                meta: {
+                    title: APP_NAME + ' | View Merchants',
+                    iconClass: 'user',
+                    menuName: 'View Merchants'
+                },
+            },
         ]
     },
 

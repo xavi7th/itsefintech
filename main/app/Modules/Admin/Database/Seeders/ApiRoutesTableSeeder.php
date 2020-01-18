@@ -146,10 +146,20 @@ class ApiRoutesTableSeeder extends Seeder
 					'path' => '/sales-reps',
 					'name' => 'admin.sales-reps.view',
 					'meta' => '{title: APP_NAME + \' | View Sales Reps\',
-					iconClass: \'user\',
-					menuName: \'View Sales Reps\'
-				}',
+						iconClass: \'user\',
+						menuName: \'View Sales Reps\'
+					}',
 					'description' => 'View Sales Reps',
+				],
+
+				[
+					'path' => '/merchants',
+					'name' => 'admin.merchants.view',
+					'meta' => '{title: APP_NAME + \' | View Merchants\',
+						iconClass: \'user\',
+						menuName: \'View Merchants\'
+					}',
+					'description' => 'Manage Merchants',
 				],
 
 				[
