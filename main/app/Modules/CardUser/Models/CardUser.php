@@ -15,6 +15,7 @@ use App\Modules\CardUser\Models\DebitCardRequest;
 use App\Modules\Admin\Transformers\AdminUserTransformer;
 use App\Modules\Admin\Http\Requests\SetCardUserCreditLimitValidation;
 use App\Modules\Admin\Models\Voucher;
+use App\Modules\Admin\Models\VoucherRequest;
 
 class CardUser extends User
 {
@@ -82,6 +83,16 @@ class CardUser extends User
 	public function vouchers()
 	{
 		return $this->hasMany(Voucher::class);
+	}
+
+	public function voucher_request()
+	{
+		return $this->hasOne(VoucherRequest::class);
+	}
+
+	public function has_pending_voucher_request()
+	{
+		return $this->voucher_request()->where('approved_at', null)->exists();
 	}
 
 	public function debit_cards()

@@ -15,7 +15,7 @@ class CreateVouchersTable extends Migration
 	{
 		Schema::create('vouchers', function (Blueprint $table) {
 			$table->bigIncrements('id');
-			$table->string('card_user_id');
+			$table->bigInteger('card_user_id')->nullable()->unsigned();
 			$table->foreign('card_user_id')->references('id')->on('card_users')->onDelete('cascade');
 			$table->string('code')->unique();
 			$table->double('amount');

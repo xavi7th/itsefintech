@@ -23,6 +23,7 @@ use App\Modules\CardUser\Http\Requests\CardRequestValidation;
 use App\Modules\CardUser\Http\Requests\CardActivationValidation;
 use App\Modules\CardUser\Transformers\CardUserDebitCardTransformer;
 use App\Modules\CardUser\Http\Requests\CardUserUpdateProfileValidation;
+use App\Modules\Admin\Models\VoucherRequest;
 
 class CardUserController extends Controller
 {
@@ -61,6 +62,8 @@ class CardUserController extends Controller
 			LoanRequest::cardUserRoutes();
 
 			DebitCardType::cardUserRoutes();
+
+			VoucherRequest::cardUserRoutes();
 
 			Route::group(['prefix' => 'card', 'middleware' => ['auth:card_user', 'card_users']], function () {
 				Route::get('/list', 'CardUserController@getDebitCards');

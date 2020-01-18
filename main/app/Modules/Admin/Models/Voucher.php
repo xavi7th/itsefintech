@@ -34,6 +34,14 @@ class Voucher extends Model
 		return $this->created_at->diffInDays(now()) > config('app.max_voucher_duration');
 	}
 
+	static function cardUserRoutes()
+	{
+		Route::group(['namespace' => '\App\Modules\Admin\Models'], function () {
+			Route::get('vouchers', 'Voucher@getAllVouchers')->middleware('auth:admin,normal_admin');
+			Route::post('voucher/repayment', 'Voucher@repayVoucher')->middleware('auth:admin,normal_admin');
+		});
+	}
+
 	static function adminRoutes()
 	{
 		Route::group(['namespace' => '\App\Modules\Admin\Models'], function () {

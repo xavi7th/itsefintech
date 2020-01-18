@@ -151,6 +151,41 @@ class ApiRoutesPermissionsTableSeeder extends Seeder
 				'api_route_id' => 19,
 				'user_type' => 'App\\Modules\\Admin\\Models\\Admin',
 			),
+			19 =>
+			array(
+				'id' => 20,
+				'user_id' => 1,
+				'api_route_id' => 20,
+				'user_type' => 'App\\Modules\\Admin\\Models\\Admin',
+			),
+			20 =>
+			array(
+				'id' => 21,
+				'user_id' => 1,
+				'api_route_id' => 21,
+				'user_type' => 'App\\Modules\\Admin\\Models\\Admin',
+			),
+			21 =>
+			array(
+				'id' => 22,
+				'user_id' => 1,
+				'api_route_id' => 22,
+				'user_type' => 'App\\Modules\\Admin\\Models\\Admin',
+			),
+			22 =>
+			array(
+				'id' => 23,
+				'user_id' => 1,
+				'api_route_id' => 23,
+				'user_type' => 'App\\Modules\\Admin\\Models\\Admin',
+			),
+			23 =>
+			array(
+				'id' => 24,
+				'user_id' => 1,
+				'api_route_id' => 24,
+				'user_type' => 'App\\Modules\\Admin\\Models\\Admin',
+			),
 		));
 	}
 }

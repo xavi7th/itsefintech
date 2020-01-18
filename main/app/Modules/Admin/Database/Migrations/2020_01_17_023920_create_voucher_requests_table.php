@@ -26,6 +26,7 @@ class CreateVoucherRequestsTable extends Migration
 			$table->foreign('approved_by')->references('id')->on('admins')->onDelete('cascade');
 
 			$table->timestamps();
+			$table->softDeletes();
 		});
 	}
 
