@@ -61,7 +61,7 @@ class LoanRequest extends Model
 			'minimum_repayment_amount' => (float)$this->amount * ($this->monthly_interest / 100),
 			'total_interest_amount' => (float)$total_interest_amount = ($this->monthly_interest / 100) * $this->amount * $this->total_duration,
 			'total_repayment_amount' => (float)$total_repayment_amount = $total_interest_amount + $this->amount,
-			'scheduled_repayment_amount' => (float)$total_repayment_amount / $this->total_duration
+			'scheduled_repayment_amount' => (float)number_format($total_repayment_amount / $this->total_duration, 2, '.', '')
 		];
 	}
 
@@ -112,7 +112,7 @@ class LoanRequest extends Model
 			'total_duration' => $request->input('total_duration'),
 			'monthly_interest' => auth()->user()->credit_percentage,
 		]);
-		return (array)$loan_request->breakdownStatistics();
+		return response()->json((array)$loan_request->breakdownStatistics(), 201);
 	}
 
 
