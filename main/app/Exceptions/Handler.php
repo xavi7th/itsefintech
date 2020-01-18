@@ -57,6 +57,9 @@ class Handler extends ExceptionHandler
 			if ($exception instanceof NotFoundHttpException) {
 				return response()->json(['message' => 'No such endpoint'], 404);
 			} elseif ($exception instanceof ModelNotFoundException) {
+				if (getenv('APP_ENV') === 'local') {
+					return response()->json(['Error' => $exception->getMessage()], 500);
+				}
 				return response()->json(['message' => 'Item not found'], 404);
 			} elseif ($exception instanceof MethodNotAllowedHttpException) {
 				return response()->json(['message' => 'Invalid request'], 405);
