@@ -217,6 +217,8 @@ class CardUser extends User
 
 			Route::put('card-user/{card_user}/credit-limit', 'CardUser@setUserCreditLimit')->middleware('auth:admin');
 
+			Route::put('card-user/{card_user}/merchant-limit', 'CardUser@setUserMerchantLimit')->middleware('auth:admin');
+
 			Route::get('card-user/{card_user}/permissions', function (CardUser $card_user) {
 				$permitted_routes = $card_user->api_routes()->get(['api_routes.id'])->map(function ($item, $key) {
 					return $item->id;
@@ -235,9 +237,7 @@ class CardUser extends User
 			})->middleware('auth:admin');
 
 			Route::put('card-user/{card_user}/suspend', function (CardUser $card_user) {
-				if ($card_user->id === auth()->id()) {
-					return response()->json(['rsp' => false], 403);
-				}
+
 				$card_user->delete();
 				return response()->json(['rsp' => true], 204);
 			})->middleware('auth:admin');
@@ -277,6 +277,14 @@ class CardUser extends User
 	{
 		$card_user->credit_limit = $request->input('amount');
 		$card_user->credit_percentage = $request->input('interest');
+		$card_user->save();
+		return response()->json(['rsp' => true], 204);
+	}
+
+	public function setUserMerchantLimit(SetCardUserCreditLimitValidation $request, CardUser $card_user)
+	{
+		$card_user->merchant_limit = $request->input('amount');
+		$card_user->merchant_percentage = $request->input('interest');
 		$card_user->save();
 		return response()->json(['rsp' => true], 204);
 	}

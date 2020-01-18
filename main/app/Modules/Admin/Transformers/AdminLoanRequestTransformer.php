@@ -17,7 +17,8 @@ class AdminLoanRequestTransformer
 	}
 	public function transformForAdminViewLoanRequests(LoanRequest $loan_request)
 	{
-		return [
+		$breakdown_statistics = $loan_request->breakdownStatistics();
+		return collect([
 			'id' => (int)$loan_request->id,
 			'amount' => $loan_request->amount,
 			'total_duration' => (int)$loan_request->total_duration,
@@ -31,6 +32,6 @@ class AdminLoanRequestTransformer
 			'created_at' => $loan_request->created_at,
 			'updated_at' => $loan_request->updated_at,
 			'requester' => (new AdminUserTransformer)->transformForAdminViewCardUsers($loan_request->card_user)
-		];
+		])->merge($breakdown_statistics);
 	}
 }

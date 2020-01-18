@@ -61,6 +61,7 @@ export const adminSuspendCardUser = id => apiBaseUrl + 'card-user/' + id + '/sus
 export const adminDeleteCardUser = id => apiBaseUrl + 'card-user/' + id + '/delete'
 export const adminRestoreCardUser = id => apiBaseUrl + 'card-user/' + id + '/restore'
 export const adminSetCardUserCreditLimit = id => apiBaseUrl + 'card-user/' + id + '/credit-limit'
+export const adminSetCardUserMerchantLimit = id => apiBaseUrl + 'card-user/' + id + '/merchant-limit'
 export const adminShowFullBvnNumber = id => apiBaseUrl + 'card-user/' + id + '/bvn'
 
 

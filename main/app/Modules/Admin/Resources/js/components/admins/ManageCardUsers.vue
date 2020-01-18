@@ -35,6 +35,16 @@
                     data-target="#modal-cards"
                     @click="showCardsModal(user)"
                   >View Cards</div>
+                  <div
+                    class="badge btn-bold btn-warning pointer"
+                    @click="restoreCardUser(user)"
+                    v-if="user.is_suspended"
+                  >Restore User</div>
+                  <div
+                    class="badge btn-bold btn-danger pointer"
+                    @click="suspendCardUser(user)"
+                    v-else
+                  >Suspend User</div>
                 </td>
               </tr>
             </tbody>
@@ -60,18 +70,24 @@
                                 <div class="fs-16 fw-500 text-success">Card User</div>
                                 <span class="fs-12 text-light">User Role</span>
                               </div>
-                              <!-- <div class="flex-sh-0 ln-18">
-                                <div class="fs-16 fw-500 text-danger">3 Problem</div>
+                              <div class="flex-sh-0 ln-18">
+                                <div
+                                  class="fs-16 fw-500 text-danger"
+                                >{{ userDetails.merchant_limit | Naira }}</div>
                                 <span class="fs-12 text-light">
-                                  <i class="far fa-clock"></i> 24 hours
+                                  <!-- <i class="far fa-clock"></i> -->
+                                  Merchant Limit
                                 </span>
                               </div>
                               <div class="flex-sh-0 ln-18">
-                                <div class="fs-16 fw-500 text-warning">14 Waiting</div>
+                                <div
+                                  class="fs-16 fw-500 text-warning"
+                                >{{ userDetails.credit_limit | Naira }}</div>
                                 <span class="fs-12 text-light">
-                                  <i class="far fa-clock"></i> 24 hours
+                                  <!-- <i class="far fa-clock"></i> -->
+                                  Credit Limit
                                 </span>
-                              </div>-->
+                              </div>
                             </div>
                             <table class="table table-striped">
                               <thead>
@@ -112,25 +128,22 @@
                     class="btn btn-bold btn-pure btn-secondary"
                     data-dismiss="modal"
                   >Close</button>
-                  <button
-                    type="button"
-                    class="btn btn-bold btn-pure btn-warning"
-                    @click="restoreCardUser"
-                    v-if="userDetails.is_suspended"
-                  >Restore Account</button>
-                  <button
-                    type="button"
-                    class="btn btn-bold btn-pure btn-danger"
-                    @click="suspendCardUser"
-                    v-else
-                  >Suspend Account</button>
 
                   <button
                     type="button"
                     class="btn btn-bold btn-info btn-danger"
                     @click="adminSetCardUserCreditLimit(userDetails)"
                     data-dismiss="modal"
+                    v-if="!userDetails.is_suspended"
                   >Set User's Credit Limit</button>
+
+                  <button
+                    type="button"
+                    class="btn btn-bold btn-purple btn-danger"
+                    @click="adminSetCardUserMerchantLimit(userDetails)"
+                    data-dismiss="modal"
+                    v-if="!userDetails.is_suspended"
+                  >Set Merchant Limit</button>
                 </div>
               </div>
             </div>
@@ -202,6 +215,7 @@
     adminRestoreCardUser,
     adminSuspendCardUser,
     adminSetCardUserCreditLimit,
+    adminSetCardUserMerchantLimit,
     adminShowFullBvnNumber,
     adminShowFullPANNumber
   } from "@admin-assets/js/config";
@@ -289,7 +303,8 @@
               Toast.fire({
                 title: "Failed",
                 text: "Something wrong happend",
-                position: "center"
+                position: "center",
+                icon: "error"
               });
             }
 
@@ -300,62 +315,121 @@
             });
           });
       },
-      suspendCardUser() {
+      suspendCardUser(user) {
         this.sectionLoading = true;
         BlockToast.fire({
           text: "suspending account officer's account ..."
         });
-        axios
-          .put(adminSuspendCardUser(this.userDetails.id))
-          .then(({ status }) => {
-            if (status === 204) {
-              Toast.fire({
-                title: "Success",
-                text: "User account suspended",
-                position: "center"
-              });
-            } else {
-              Toast.fire({
-                title: "Failed",
-                text: "Something wrong happend",
-                position: "center"
-              });
-            }
+        axios.put(adminSuspendCardUser(user.id)).then(({ status }) => {
+          if (status === 204) {
+            user.is_suspended = true;
+            Toast.fire({
+              title: "Success",
+              text: "User account suspended",
+              position: "center"
+            });
+          } else {
+            Toast.fire({
+              title: "Failed",
+              text: "Something wrong happend",
+              position: "center",
+              icon: "error"
+            });
+          }
 
-            this.$nextTick(() => {
-              $(() => {
-                this.sectionLoading = false;
-              });
+          this.$nextTick(() => {
+            $(() => {
+              this.sectionLoading = false;
             });
           });
+        });
       },
-      restoreCardUser() {
+      restoreCardUser(user) {
         this.sectionLoading = true;
         BlockToast.fire({
           text: "restoring account officer's account ..."
         });
-        axios
-          .put(adminRestoreCardUser(this.userDetails.id))
-          .then(({ status }) => {
-            if (status === 204) {
-              Toast.fire({
+        axios.put(adminRestoreCardUser(user.id)).then(({ status }) => {
+          user.is_suspended = false;
+          if (status === 204) {
+            Toast.fire({
+              title: "Success",
+              text: "User account restored",
+              position: "center"
+            });
+          } else {
+            Toast.fire({
+              title: "Failed",
+              text: "Something wrong happend",
+              position: "center",
+              icon: "error"
+            });
+          }
+
+          this.$nextTick(() => {
+            $(() => {
+              this.sectionLoading = false;
+            });
+          });
+        });
+      },
+      adminSetCardUserMerchantLimit(card_user) {
+        this.sectionLoading = true;
+
+        swal
+          .fire({
+            title: "Enter an amount",
+            html: `<div class="d-flex">
+                      										<input id="merchant-amount-input" class="swal2-input" required placeholder="Enter merchant limit">
+                      										<input id="merchant-interest-input" class="swal2-input" required placeholder="Enter interest">
+                      									</div>`,
+            showCancelButton: true,
+            confirmButtonText: "Set Merchant Limit",
+            allowEscapeKey: false,
+            focusCancel: true,
+            cancelButtonColor: "#333",
+            confirmButtonColor: "#d33",
+            showLoaderOnConfirm: true,
+            allowOutsideClick: () => !swal.isLoading(),
+            preConfirm: () => {
+              return axios
+                .put(adminSetCardUserMerchantLimit(card_user.id), {
+                  amount: document.getElementById("merchant-amount-input").value,
+                  interest: document.getElementById("merchant-interest-input")
+                    .value
+                })
+                .then(response => {
+                  if (response.status !== 204) {
+                    throw new Error(response.statusText);
+                  }
+                  card_user.merchant_limit = document.getElementById(
+                    "merchant-amount-input"
+                  ).value;
+                  return { rsp: true };
+                })
+                .catch(error => {
+                  swal.showValidationMessage(`Request failed: ${error}`);
+                });
+            }
+          })
+          .then(result => {
+            if (result.value) {
+              swal.fire({
                 title: "Success",
-                text: "User account restored",
+                text: "Merchant Limit set",
                 position: "center"
               });
             } else {
               Toast.fire({
                 title: "Failed",
                 text: "Something wrong happend",
-                position: "center"
+                position: "center",
+                icon: "error"
               });
             }
-
-            this.$nextTick(() => {
-              $(() => {
-                this.sectionLoading = false;
-              });
-            });
+          })
+          .then(() => {
+            this.sectionLoading = false;
           });
       },
       adminSetCardUserCreditLimit(card_user) {
@@ -368,9 +442,9 @@
           .fire({
             title: "Enter an amount",
             html: `<div class="d-flex">
-                  										<input id="amount-input" class="swal2-input" required placeholder="Enter credit limit">
-                  										<input id="interest-input" class="swal2-input" required placeholder="Enter interest">
-                  									</div>`,
+                      										<input id="amount-input" class="swal2-input" required placeholder="Enter credit limit">
+                      										<input id="interest-input" class="swal2-input" required placeholder="Enter interest">
+                      									</div>`,
             showCancelButton: true,
             confirmButtonText: "Set Credit Limit",
             allowEscapeKey: false,
@@ -410,7 +484,8 @@
               Toast.fire({
                 title: "Failed",
                 text: "Something wrong happend",
-                position: "center"
+                position: "center",
+                icon: "error"
               });
             }
           })

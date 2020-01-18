@@ -248,10 +248,11 @@ class AdminUserTransformer
 			'bvn' => (string)$user->bvn,
 			'address' => (string)$user->address,
 			'date_of_birth' => (string)$user->dob,
-			// 'is_otp_verified' => (boolean)$user->is_otp_verified(),
 			'is_suspended' => (boolean)$user->deleted_at,
 			'credit_limit' => (float)$user->credit_limit,
 			'credit_percentage' => (float)$user->credit_percentage,
+			'merchant_limit' => (float)$user->merchant_limit,
+			'merchant_percentage' => (float)$user->merchant_percentage,
 			'cards' => ((new AdminDebitCardTransformer)->collectionTransformer($user->debit_cards, 'transformForBasicDebitCardDetails'))['debit_cards']
 		];
 	}
