@@ -78,10 +78,14 @@ class CardUser extends User
 		return $otp;
 	}
 
-
 	public function debit_cards()
 	{
 		return $this->hasMany(DebitCard::class);
+	}
+
+	public function first_debit_card()
+	{
+		return $this->hasOne(DebitCard::class)->oldest();
 	}
 
 	public function has_unactivated_card()
@@ -155,6 +159,10 @@ class CardUser extends User
 		return $this->loan_request()->exists();
 	}
 
+	public function activeDays(): int
+	{
+		return intval(optional(optional($this->first_debit_card)->activated_at)->diffInDays(now()));
+	}
 
 	public function getAssignedCreditLimitAttribute(): float
 	{
