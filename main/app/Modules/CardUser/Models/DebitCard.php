@@ -92,19 +92,19 @@ class DebitCard extends Model
 	{
 		Route::group(['namespace' => '\App\Modules\CardUser\Models'], function () {
 
-			Route::get('debit-cards/{rep?}', 'DebitCardRequest@getDebitCards')->middleware('auth:admin');
+			Route::get('debit-cards/{rep?}', 'DebitCard@getDebitCards')->middleware('auth:admin');
 
-			Route::post('debit-card/create', 'DebitCardRequest@createDebitCard')->middleware('auth:admin');
+			Route::post('debit-card/create', 'DebitCard@createDebitCard')->middleware('auth:admin');
 
-			Route::put('debit-card/{debit_card}/suspension', 'DebitCardRequest@toggleDebitCardSuspendStatus')->middleware('auth:admin');
+			Route::put('debit-card/{debit_card}/suspension', 'DebitCard@toggleDebitCardSuspendStatus')->middleware('auth:admin');
 
-			Route::put('debit-card/{debit_card}/activate', 'DebitCardRequest@activateDebitCard')->middleware('auth:admin');
+			Route::put('debit-card/{debit_card}/activate', 'DebitCard@activateDebitCard')->middleware('auth:admin');
 
-			Route::put('debit-card/{debit_card}/assign', 'DebitCardRequest@assignDebitCard')->middleware('auth:admin');
+			Route::put('debit-card/{debit_card}/assign', 'DebitCard@assignDebitCard')->middleware('auth:admin');
 
-			Route::put('debit-card/{debit_card}/allocate', 'DebitCardRequest@allocateDebitCard')->middleware('auth:admin');
+			Route::put('debit-card/{debit_card}/allocate', 'DebitCard@allocateDebitCard')->middleware('auth:admin');
 
-			Route::delete('debit-card/{debit_card}/delete', 'DebitCardRequest@deleteDebitCard')->middleware('auth:admin');
+			Route::delete('debit-card/{debit_card}/delete', 'DebitCard@deleteDebitCard')->middleware('auth:admin');
 		});
 	}
 
