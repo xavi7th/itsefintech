@@ -6,7 +6,6 @@ use App\User;
 use App\Modules\Admin\Models\Admin;
 use App\Modules\CardUser\Models\CardUser;
 use App\Modules\SalesRep\Models\SalesRep;
-use App\Modules\CardUser\Models\DebitCard;
 use App\Modules\CardAdmin\Models\CardAdmin;
 use App\Modules\Accountant\Models\Accountant;
 use App\Modules\NormalAdmin\Models\NormalAdmin;
@@ -247,7 +246,6 @@ class AdminUserTransformer
 			'phone' => (string)$user->phone,
 			'bvn' => (string)$user->bvn,
 			'address' => (string)$user->address,
-			'date_of_birth' => (string)$user->dob,
 			'is_suspended' => (boolean)$user->deleted_at,
 			'credit_limit' => (float)$user->credit_limit,
 			'credit_percentage' => (float)$user->credit_percentage,

@@ -6,6 +6,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Database\Eloquent\Model;
 use App\Modules\CardUser\Models\CardUser;
+use App\Modules\Admin\Models\VoucherRequest;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Modules\Admin\Models\MerchantTransaction;
 use App\Modules\Admin\Transformers\AdminVoucherTransformer;
@@ -19,9 +20,20 @@ class Voucher extends Model
 
 	const ROUTE_PREFIX = 'voucher';
 
+
+	static function exists(string $data): bool
+	{
+		return self::where('code', $data)->exists();
+	}
+
 	public function card_user()
 	{
 		return $this->belongsTo(CardUser::class);
+	}
+
+	public function voucher_request()
+	{
+		return $this->hasOne(VoucherRequest::class);
 	}
 
 	public function merchant_transactions()
@@ -29,10 +41,42 @@ class Voucher extends Model
 		return $this->hasMany(MerchantTransaction::class);
 	}
 
+
+	public function breakdownStatistics(): object
+	{
+
+		return (object)[
+			'amount' => (float)$this->amount,
+			'interest_rate' => (float)$interest_rate = $this->card_user->merchant_percentage,
+			'total_duration' => (string)($total_duration = 6) . ' months',
+			'minimum_repayment_amount' => (float)round($this->amount * ($interest_rate / 100), 2),
+			'total_interest_amount' => (float)round($total_interest_amount = ($interest_rate / 100) * $this->amount * $total_duration, 2),
+			'total_repayment_amount' => (float)round($total_repayment_amount = $total_interest_amount + $this->amount, 2),
+			'scheduled_repayment_amount' => (float)number_format($total_repayment_amount / $total_duration, 2, '.', '')
+		];
+	}
+
 	public function getIsExpiredAttribute()
 	{
 		return $this->created_at->diffInDays(now()) > config('app.max_voucher_duration');
 	}
+
+	public function getAmountSpentAttribute()
+	{
+		return $this->merchant_transactions()->where('trans_type', 'debit')->sum('amount');
+	}
+
+	public function getAmountLeftAttribute()
+	{
+		return $this->amount - $this->amount_spent;
+	}
+
+
+	public function getRepaymentBalanceAttribute(): float
+	{
+		return $this->breakdownStatistics()->total_repayment_amount - $this->merchant_transactions()->where('trans_type', 'repayment')->sum('amount');
+	}
+
 
 	static function cardUserRoutes()
 	{

@@ -29,7 +29,7 @@ class CreateVoucherRequestValidation extends FormRequest
 	 */
 	public function authorize()
 	{
-		return auth('card_user')->check();
+		return $this->user()->due_for_merchant_loan();
 	}
 
 
@@ -43,12 +43,6 @@ class CreateVoucherRequestValidation extends FormRequest
 	{
 		return [
 			'email.exists' => 'Invalid details provided',
-			// 'primary_contact_name.alpha_dash' => 'The name of the primary contact can only contain alphabets, numbers underscores and dashes',
-			// 'primary_contact_number.required' => 'The phone number of the primary contact is required',
-			// 'primary_contact_email.required' => 'The email provided for the primary contact is invalid',
-			// 'accommodation_name.required' => 'The name of the accommodation is required',
-			// 'price.required' => 'The price of the accommodation is required',
-			// 'space_type_id.exists' => 'Selected space type is invalid',
 		];
 	}
 
@@ -87,6 +81,6 @@ class CreateVoucherRequestValidation extends FormRequest
 
 	protected function failedAuthorization()
 	{
-		throw new AuthorizationException('You are not authorised to make voucher requests');
+		throw new AuthorizationException('You are not yet due for merchant credit facility');
 	}
 }

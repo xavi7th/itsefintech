@@ -90,9 +90,22 @@ class CardUser extends User
 		return $this->hasOne(VoucherRequest::class);
 	}
 
+	public function due_for_merchant_loan()
+	{
+		return (boolean)$this->merchant_limit;
+		return $this->debit_cards()->where('is_admin_activated', true)->where('is_suspended', false)->whereDate('activated_at', '<=', now()->subDays(30)->toDateString())->exists();
+	}
+
+
+	public function pending_voucher_request()
+	{
+		return $this->voucher_request()->where('approved_at', null);
+	}
+
+
 	public function has_pending_voucher_request()
 	{
-		return $this->voucher_request()->where('approved_at', null)->exists();
+		return $this->pending_voucher_request()->exists();
 	}
 
 	public function debit_cards()
