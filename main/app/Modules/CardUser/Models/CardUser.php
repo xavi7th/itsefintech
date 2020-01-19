@@ -16,6 +16,7 @@ use App\Modules\Admin\Transformers\AdminUserTransformer;
 use App\Modules\Admin\Http\Requests\SetCardUserCreditLimitValidation;
 use App\Modules\Admin\Models\Voucher;
 use App\Modules\Admin\Models\VoucherRequest;
+use App\Modules\Admin\Models\MerchantTransaction;
 
 class CardUser extends User
 {
@@ -90,18 +91,36 @@ class CardUser extends User
 		return $this->hasOne(VoucherRequest::class);
 	}
 
+	public function merchant_transactions()
+	{
+		return $this->hasMany(MerchantTransaction::class);
+	}
+
+	public function debit_merchant_transactions()
+	{
+		return $this->hasMany(MerchantTransaction::class)->where('trans_type', 'debit');
+	}
+
+	public function repayment_merchant_transactions()
+	{
+		return $this->hasMany(MerchantTransaction::class)->where('trans_type', 'repayment');
+	}
+
 	public function due_for_merchant_loan()
 	{
 		return (boolean)$this->merchant_limit;
 		return $this->debit_cards()->where('is_admin_activated', true)->where('is_suspended', false)->whereDate('activated_at', '<=', now()->subDays(30)->toDateString())->exists();
 	}
 
+	public function merchant_loan_balance()
+	{
+		return $this->vouchers()->sum('amount') - ($this->debit_merchant_transactions()->sum('amount') - $this->repayment_merchant_transactions()->sum('amount'));
+	}
 
 	public function pending_voucher_request()
 	{
 		return $this->voucher_request()->where('approved_at', null);
 	}
-
 
 	public function has_pending_voucher_request()
 	{

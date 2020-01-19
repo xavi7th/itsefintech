@@ -17,6 +17,8 @@ class CreateMerchantTransactionsTable extends Migration
 			$table->bigIncrements('id');
 			$table->bigInteger('voucher_id')->unsigned();
 			$table->foreign('voucher_id')->references('id')->on('vouchers')->onDelete('cascade');
+			$table->bigInteger('card_user_id')->unsigned();
+			$table->foreign('card_user_id')->references('id')->on('card_users')->onDelete('cascade');
 			$table->bigInteger('merchant_id')->unsigned();
 			$table->foreign('merchant_id')->references('id')->on('merchants')->onDelete('cascade');
 			$table->double('amount');

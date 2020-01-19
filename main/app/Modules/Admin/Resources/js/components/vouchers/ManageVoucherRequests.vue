@@ -263,7 +263,6 @@
             confirmButtonText: "Allocate voucher",
             showLoaderOnConfirm: true,
             preConfirm: voucher_code => {
-
               return axios
                 .put(adminAllocateVoucherToRequest(voucherRequestDetails.id), {
                   voucher_code
@@ -286,14 +285,12 @@
           })
           .then(result => {
             if (result.value) {
-							voucherRequestDetails.is_approved = true;
-              swal
-                .fire({
-                  title: `Allocated`,
-                  text:
-                    "User can now use voucher in allied stores",
-                  icon: "success"
-                });
+              voucherRequestDetails.voucher_id = true;
+              swal.fire({
+                title: `Allocated`,
+                text: "User can now use voucher in allied stores",
+                icon: "success"
+              });
             }
           });
       }
