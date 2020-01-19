@@ -11,15 +11,13 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Modules\Admin\Models\MerchantTransaction;
 use App\Modules\Admin\Transformers\AdminVoucherTransformer;
 use App\Modules\Admin\Http\Requests\CreateVoucherValidation;
+use App\Modules\CardUser\Transformers\CardUserVoucherTransformer;
 
 class Voucher extends Model
 {
 	use SoftDeletes;
 
 	protected $fillable = ['code', 'amount'];
-
-	const ROUTE_PREFIX = 'voucher';
-
 
 	static function exists(string $data): bool
 	{
@@ -41,10 +39,8 @@ class Voucher extends Model
 		return $this->hasMany(MerchantTransaction::class);
 	}
 
-
 	public function breakdownStatistics(): object
 	{
-
 		return (object)[
 			'amount' => (float)$this->amount,
 			'interest_rate' => (float)$interest_rate = $this->card_user->merchant_percentage,
@@ -56,33 +52,30 @@ class Voucher extends Model
 		];
 	}
 
-	public function getIsExpiredAttribute()
+	public function getIsExpiredAttribute(): bool
 	{
 		return $this->created_at->diffInDays(now()) > config('app.max_voucher_duration');
 	}
 
-	public function getAmountSpentAttribute()
+	public function getAmountSpentAttribute(): float
 	{
 		return $this->merchant_transactions()->where('trans_type', 'debit')->sum('amount');
 	}
 
-	public function getAmountLeftAttribute()
+	public function getAmountLeftAttribute(): float
 	{
 		return $this->amount - $this->amount_spent;
 	}
-
 
 	public function getRepaymentBalanceAttribute(): float
 	{
 		return $this->breakdownStatistics()->total_repayment_amount - $this->merchant_transactions()->where('trans_type', 'repayment')->sum('amount');
 	}
 
-
 	static function cardUserRoutes()
 	{
 		Route::group(['namespace' => '\App\Modules\Admin\Models'], function () {
-			Route::get('vouchers', 'Voucher@getAllVouchers')->middleware('auth:admin,normal_admin');
-			Route::post('voucher/repayment', 'Voucher@repayVoucher')->middleware('auth:admin,normal_admin');
+			Route::get('vouchers', 'Voucher@listAllVouchers')->middleware('auth:card_user');
 		});
 	}
 
@@ -95,12 +88,22 @@ class Voucher extends Model
 	}
 
 	/**
+	 * ! Card User routes
+	 */
+	public function listAllVouchers()
+	{
+		return (new CardUserVoucherTransformer)->collectionTransformer(self::all(), 'transformForCardUserListVouchers');
+	}
+
+
+	/**
 	 * ! Admin routes
 	 */
 	public function getAllVouchers()
 	{
 		return (new AdminVoucherTransformer)->collectionTransformer(self::all(), 'transformForAdminViewVouchers');
 	}
+
 	public function createVoucher(CreateVoucherValidation $request)
 	{
 

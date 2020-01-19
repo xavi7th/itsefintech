@@ -22,7 +22,7 @@ class CreateMerchantTransactionsTable extends Migration
 			$table->bigInteger('merchant_id')->unsigned();
 			$table->foreign('merchant_id')->references('id')->on('merchants')->onDelete('cascade');
 			$table->double('amount');
-			$table->enum('trans_type', ['repayment', 'debit']);
+			$table->enum('trans_type', ['repayment', 'debit', 'debit_request']);
 
 
 			$table->timestamps();

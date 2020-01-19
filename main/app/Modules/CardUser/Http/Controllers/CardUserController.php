@@ -24,6 +24,7 @@ use App\Modules\CardUser\Http\Requests\CardActivationValidation;
 use App\Modules\CardUser\Transformers\CardUserDebitCardTransformer;
 use App\Modules\CardUser\Http\Requests\CardUserUpdateProfileValidation;
 use App\Modules\Admin\Models\VoucherRequest;
+use App\Modules\Admin\Models\Voucher;
 
 class CardUserController extends Controller
 {
@@ -62,6 +63,8 @@ class CardUserController extends Controller
 			LoanRequest::cardUserRoutes();
 
 			DebitCardType::cardUserRoutes();
+
+			Voucher::cardUserRoutes();
 
 			VoucherRequest::cardUserRoutes();
 
