@@ -163,7 +163,7 @@ class CardUserController extends Controller
 		 */
 		if (Hash::check($request->csc, $debit_card->csc)) {
 			$debit_card->is_user_activated = true;
-			$debit_card->debit_card_request->debit_card_request_status_id = DebitCardRequest::orderByDesc('id')->first()->id;
+			$debit_card->debit_card_request->debit_card_request_status_id = DebitCardRequestStatus::orderByDesc('id')->first()->id;
 			$debit_card->debit_card_request->save();
 			$debit_card->save();
 			return response()->json(['message' => 'Card Activated'], 204);

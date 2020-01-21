@@ -10,6 +10,7 @@ use App\Modules\CardAdmin\Models\CardAdmin;
 use App\Modules\SalesRep\Models\SalesRep;
 use App\Modules\DispatchAdmin\Models\DispatchAdmin;
 use App\Modules\CustomerSupport\Models\CustomerSupport;
+use App\Modules\Admin\Models\Merchant;
 
 return [
 
@@ -83,6 +84,10 @@ return [
 			'driver' => 'session',
 			'provider' => 'sales_reps',
 		],
+		'merchant' => [
+			'driver' => 'session',
+			'provider' => 'merchants',
+		],
 		'card_user' => [
 			'driver' => 'jwt',
 			'provider' => 'card_users',
@@ -150,6 +155,10 @@ return [
 		'sales_reps' => [
 			'driver' => 'eloquent',
 			'model' => SalesRep::class,
+		],
+		'merchants' => [
+			'driver' => 'eloquent',
+			'model' => Merchant::class,
 		],
 	],
 

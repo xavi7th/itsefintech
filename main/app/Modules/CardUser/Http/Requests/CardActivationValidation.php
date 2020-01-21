@@ -31,7 +31,7 @@ class CardActivationValidation extends FormRequest
 	public function authorize(Request $request)
 	{
 		$debit_card = DebitCard::find($request->card_id);
-		return $debit_card->card_user == $request->user();
+		return optional($debit_card)->card_user == $request->user();
 	}
 
 

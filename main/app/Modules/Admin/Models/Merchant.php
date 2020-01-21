@@ -9,12 +9,17 @@ use Illuminate\Database\Eloquent\Model;
 use App\Modules\Admin\Models\ActivityLog;
 use App\Modules\Admin\Transformers\AdminMerchantTransformer;
 use App\Modules\Admin\Http\Requests\CreateMerchantValidation;
+use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
+use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
+use Illuminate\Auth\Authenticatable;
+use Illuminate\Foundation\Auth\Access\Authorizable;
 
-class Merchant extends Model
+class Merchant  extends Model implements AuthenticatableContract, AuthorizableContract
 {
+	use Authenticatable, Authorizable;
 
 	protected $fillable = [
-		'name', 'unique_code', 'email', 'phone'
+		'name', 'unique_code', 'email', 'phone', 'password'
 	];
 
 	const DASHBOARD_ROUTE_PREFIX = 'merchant-area';
@@ -33,6 +38,13 @@ class Merchant extends Model
 			Route::post('merchant/create', 'Merchant@createMerchant')->middleware('auth:admin,normal_admin');
 			Route::put('merchant/{merchant}/suspend', 'Merchant@suspendMerchant')->middleware('auth:admin,normal_admin');
 			Route::put('merchant/{merchant}/restore', 'Merchant@restoreMerchant')->middleware('auth:admin,normal_admin');
+		});
+	}
+
+	static function merchantRoutes()
+	{
+		Route::group(['namespace' => '\App\Modules\Admin\Models', 'prefix' => 'api/v1'], function () {
+			Route::post('merchant/charge', 'Merchant@createMerchantTransaction'); //->middleware('auth.basic:merchant');
 		});
 	}
 
@@ -67,5 +79,14 @@ class Merchant extends Model
 		$merchant->is_active = true;
 		$merchant->save();
 		return response()->json(['merchant' => $merchant], 204);
+	}
+
+	/**
+	 * ! Merchant Routes
+	 */
+
+	public function createMerchantTransaction()
+	{
+		return request()->all();
 	}
 }
