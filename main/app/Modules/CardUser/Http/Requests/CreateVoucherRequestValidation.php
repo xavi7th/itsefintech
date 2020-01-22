@@ -60,11 +60,8 @@ class CreateVoucherRequestValidation extends FormRequest
 				$validator->errors()->add('voucher_request', 'You already have a pending voucher request');
 			}
 
-			$requestable_voucher_amount = $this->user()->merchant_limit - $this->user()->merchant_loan_balance();
-			$requestable_voucher_amount =  $requestable_voucher_amount < 0 ? 0 : $requestable_voucher_amount;
-
-			if ($this->isMethod('post') && $this->amount > $requestable_voucher_amount) {
-				$validator->errors()->add('assigned_merchant_limit', 'You currently have an available merchant limit of ₦' . number_format($requestable_voucher_amount));
+			if ($this->user()->active_voucher()->exists()) {
+				$validator->errors()->add('existing_voucher', 'You currently have an existing voucher. You can only have one active voucher at a time');
 			}
 		});
 	}

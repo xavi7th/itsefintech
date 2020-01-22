@@ -3,20 +3,21 @@
 namespace App\Modules\CardUser\Models;
 
 use App\User;
+use Carbon\Carbon;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use App\Modules\CardUser\Models\OTP;
+use App\Modules\Admin\Models\Voucher;
 use Illuminate\Support\Facades\Route;
 use App\Modules\Admin\Models\ActivityLog;
+use App\Modules\Admin\Models\VoucherRequest;
 use App\Modules\CardUser\Models\LoanRequest;
 use App\Modules\Admin\Models\CardUserCategory;
 use App\Modules\CardUser\Models\LoanTransaction;
+use App\Modules\Admin\Models\MerchantTransaction;
 use App\Modules\CardUser\Models\DebitCardRequest;
 use App\Modules\Admin\Transformers\AdminUserTransformer;
 use App\Modules\Admin\Http\Requests\SetCardUserCreditLimitValidation;
-use App\Modules\Admin\Models\Voucher;
-use App\Modules\Admin\Models\VoucherRequest;
-use App\Modules\Admin\Models\MerchantTransaction;
 
 class CardUser extends User
 {
@@ -71,7 +72,7 @@ class CardUser extends User
 	 * Deletes all previous OTP codes, creates a new unique one and then returns it
 	 * @return int
 	 **/
-	public function createOTP(): int
+	public function createOTP()
 	{
 		$otp = unique_random('otps', 'code');
 		$this->otp()->create([
@@ -84,6 +85,16 @@ class CardUser extends User
 	public function vouchers()
 	{
 		return $this->hasMany(Voucher::class);
+	}
+
+	public function active_voucher()
+	{
+		return $this->hasOne(Voucher::class)->whereDate('created_at', '>', Carbon::today()->subDays(config('app.voucher_validity_days'))->toDateString());;
+	}
+
+	public function expired_vouchers()
+	{
+		return $this->hasMany(Voucher::class)->whereDate('created_at', '<', Carbon::today()->subDays(config('app.voucher_validity_days'))->toDateString());
 	}
 
 	public function voucher_request()
@@ -114,7 +125,6 @@ class CardUser extends User
 	public function due_for_merchant_loan()
 	{
 		return (boolean)$this->merchant_limit;
-		return $this->debit_cards()->where('is_admin_activated', true)->where('is_suspended', false)->whereDate('activated_at', '<=', now()->subDays(30)->toDateString())->exists();
 	}
 
 	public function merchant_loan_balance()

@@ -16,7 +16,7 @@ return [
 	'name' => env('APP_NAME', 'Laravel'),
 	'migration_key' => env('MIGRATION_KEY', '9999'),
 	'card_cost' => env('CARD_COST', '1000'),
-	'max_voucher_duration' => env('MAXIMUM_VOUCHER_DURATION', '30'),
+	'voucher_validity_days' => env('VOUCHER_VALIDITY_DAYS', 30),
 	'maximum_repayment_duration' => env('MAXIMUM_REPAYMENT_DURATION', '30'),
 	'minimum_repayment_percentage' => env('MINIMUM_REPAYMENT_PERCENTAGE', '20'),
 
