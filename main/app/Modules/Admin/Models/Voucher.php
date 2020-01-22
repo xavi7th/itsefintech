@@ -39,19 +39,6 @@ class Voucher extends Model
 		return $this->hasMany(MerchantTransaction::class);
 	}
 
-	public function breakdownStatistics(): object
-	{
-		return (object)[
-			'amount' => (float)$this->amount,
-			'interest_rate' => (float)$interest_rate = $this->card_user->merchant_percentage,
-			'total_duration' => (string)($total_duration = 6) . ' months',
-			'minimum_repayment_amount' => (float)round($this->amount * ($interest_rate / 100), 2),
-			'total_interest_amount' => (float)round($total_interest_amount = ($interest_rate / 100) * $this->amount * $total_duration, 2),
-			'total_repayment_amount' => (float)round($total_repayment_amount = $total_interest_amount + $this->amount, 2),
-			'scheduled_repayment_amount' => (float)number_format($total_repayment_amount / $total_duration, 2, '.', '')
-		];
-	}
-
 	public function getIsExpiredAttribute(): bool
 	{
 		return $this->created_at->diffInDays(now()) > config('app.max_voucher_duration');
@@ -62,9 +49,17 @@ class Voucher extends Model
 		return $this->merchant_transactions()->where('trans_type', 'debit')->sum('amount');
 	}
 
+	public function getAmountPaidAttribute(): float
+	{
+		return $this->merchant_transactions()->where('trans_type', 'repayment')->sum('amount');
+	}
+
+	/**
+	 * ? The balance left to be repayed or the amount left on the voucher to spend
+	 */
 	public function getAmountLeftAttribute(): float
 	{
-		return $this->amount - $this->amount_spent;
+		return $this->breakdownStatistics()->total_repayment_amount - $this->amount_spent;
 	}
 
 	public function getRepaymentBalanceAttribute(): float
@@ -72,10 +67,26 @@ class Voucher extends Model
 		return $this->breakdownStatistics()->total_repayment_amount - $this->merchant_transactions()->where('trans_type', 'repayment')->sum('amount');
 	}
 
+	public function breakdownStatistics(): object
+	{
+		return (object)[
+			'amount' => (float)$this->amount,
+			'voucher_balance' => $this->amount - $this->amount_spent,
+			'amount_spent' => $this->amount_spent,
+			'amount_paid' => $this->amount_paid,
+			'interest_rate' => (float)$interest_rate = $this->card_user->merchant_percentage,
+			'total_interest_amount' => (float)round($total_interest_amount = ($interest_rate / 100) * $this->amount, 2),
+			'total_repayment_amount' => (float)$total_repayment_amount = round($total_interest_amount + $this->amount, 2),
+			'current_repayment_amount' => (float)round((((($interest_rate / 100) * $this->amount_spent) + $this->amount_spent) - $this->amount_paid), 2),
+			'is_expired' => (boolean)$this->is_expired,
+		];
+	}
+
 	static function cardUserRoutes()
 	{
 		Route::group(['namespace' => '\App\Modules\Admin\Models'], function () {
-			Route::get('vouchers', 'Voucher@listAllVouchers')->middleware('auth:card_user');
+			Route::get('vouchers', 'Voucher@getCardUserVouchers')->middleware('auth:card_user');
+			Route::get('voucher/active', 'Voucher@getCardUserActiveVoucher')->middleware('auth:card_user');
 		});
 	}
 
@@ -90,11 +101,15 @@ class Voucher extends Model
 	/**
 	 * ! Card User routes
 	 */
-	public function listAllVouchers()
+	public function getCardUserVouchers()
 	{
-		return (new CardUserVoucherTransformer)->collectionTransformer(self::all(), 'transformForCardUserListVouchers');
+		return (new CardUserVoucherTransformer)->collectionTransformer(auth()->user()->vouchers, 'transformForCardUserListVouchers');
 	}
 
+	public function getCardUserActiveVoucher()
+	{
+		return (new CardUserVoucherTransformer)->transformForCardUserListVouchers(auth()->user()->active_voucher, 'transformForCardUserListVouchers');
+	}
 
 	/**
 	 * ! Admin routes

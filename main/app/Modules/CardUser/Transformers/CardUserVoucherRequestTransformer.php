@@ -20,7 +20,7 @@ class CardUserVoucherRequestTransformer
 		return [
 			'id' => $voucher_request->id,
 			'amount' => (string)$voucher_request->amount,
-			'is_appoved' => (boolean)$voucher_request->approved_at,
+			'is_approved' => (boolean)$voucher_request->approved_at,
 		];
 	}
 

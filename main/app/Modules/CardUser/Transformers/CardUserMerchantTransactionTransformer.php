@@ -21,7 +21,7 @@ class CardUserMerchantTransactionTransformer
 		return [
 			'id' => (int)$merchant_transaction->id,
 			'voucher_code' => (string)$merchant_transaction->voucher->code,
-			'merchant' => (string)$merchant_transaction->merchant->name,
+			'merchant' => (string)$merchant_transaction->merchant ? $merchant_transaction->merchant->name : 'Repayment',
 			'amount' => (string)$merchant_transaction->amount,
 			'trans_date' => (string)$merchant_transaction->created_at->diffForHumans(),
 

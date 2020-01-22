@@ -8,15 +8,20 @@ use App\Modules\Admin\Models\Merchant;
 use Illuminate\Database\Eloquent\Model;
 use App\Modules\CardUser\Models\CardUser;
 use App\Modules\Admin\Http\Requests\MerchantDebitVoucherValidation;
+use App\Modules\CardUser\Http\Requests\MakeVoucherRepaymentValidation;
 use App\Modules\CardUser\Transformers\CardUserMerchantTransactionTransformer;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class MerchantTransaction extends Model
 {
+	use SoftDeletes;
+
 	protected $fillable = [
 		'amount',
 		'card_user_id',
 		'merchant_id',
 		'trans_type',
+		'voucher_id',
 	];
 
 	public function merchant()
@@ -42,6 +47,7 @@ class MerchantTransaction extends Model
 			Route::get('merchant-transactions', 'MerchantTransaction@merchantViewTransactions'); //->middleware('auth.basic:merchant');
 			Route::get('merchant-transactions/pending', 'MerchantTransaction@viewPendingVoucherDebitTransaction')->middleware('auth:card_user');
 			Route::put('merchant-transaction/{merchant_transaction}/approve', 'MerchantTransaction@approveVoucherDebitTransaction')->middleware('auth:card_user');
+			Route::post('merchant-loan/repay', 'MerchantTransaction@repayVoucherLoan')->middleware('auth:card_user');
 		});
 	}
 
@@ -96,9 +102,23 @@ class MerchantTransaction extends Model
 	{
 		$mer = MerchantTransaction::find($merchant_transaction);
 
+		if ($mer->trans_type == 'debit') {
+			abort(403, 'Already approved');
+		}
+
 		$mer->trans_type = 'debit';
 		$mer->save();
 
 		return response()->json([], 204);
+	}
+
+	public function repayVoucherLoan(MakeVoucherRepaymentValidation $request)
+	{
+		auth()->user()->merchant_transactions()->create([
+			'amount' => $request->amount,
+			'voucher_id' => auth()->user()->active_voucher->id,
+			'trans_type' => 'repayment'
+		]);
+		return response()->json(['rsp' => true], 201);
 	}
 }
