@@ -45,10 +45,10 @@ class CardUserTransformer
 			'email' => $user->email,
 			'phone' => $user->phone,
 			'bvn' => $user->bvn,
-			'card_user_category' => $user->card_user_category->category_name,
-			'assigned_credit_limit' => $user->assigned_credit_limit,
-			'assigned_merchant_limit' => $user->merchant_limit,
-			'due_for_credit' => $due_for_credit = $user->due_for_credit(),
+			'card_user_category' => (string)$user->card_user_category->category_name,
+			'assigned_credit_limit' => (float)$user->assigned_credit_limit,
+			'assigned_merchant_limit' => (float)$user->merchant_limit,
+			'due_for_credit' => (boolean)$due_for_credit = $user->due_for_credit(),
 			'num_of_days_active' => (int)$user->activeDays()
 
 		];

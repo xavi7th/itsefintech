@@ -109,7 +109,7 @@ class Voucher extends Model
 
 		if ($request->auto_generate) {
 
-			$voucher_code = unique_random('vouchers', 'code', null, 8);
+			$voucher_code = unique_random('vouchers', 'code', null, 10);
 			$voucher = Voucher::create(Arr::add($request->except('code'), 'code', $voucher_code));
 		} else {
 			$voucher = Voucher::create($request->all());

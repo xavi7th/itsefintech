@@ -101,6 +101,11 @@ class CardUser extends User
 		return $this->hasMany(MerchantTransaction::class)->where('trans_type', 'debit');
 	}
 
+	public function unapproved_merchant_transactions()
+	{
+		return $this->hasMany(MerchantTransaction::class)->where('trans_type', 'debit request');
+	}
+
 	public function repayment_merchant_transactions()
 	{
 		return $this->hasMany(MerchantTransaction::class)->where('trans_type', 'repayment');
@@ -227,6 +232,10 @@ class CardUser extends User
 	public function getFullBvnAttribute(): string
 	{
 		return $this->attributes['bvn'] ? decrypt($this->attributes['bvn']) : 'Not provided';
+	}
+	public function getFullNameAttribute(): string
+	{
+		return $this->first_name . ' ' . $this->last_name;
 	}
 
 	public function setBvnAttribute($value)

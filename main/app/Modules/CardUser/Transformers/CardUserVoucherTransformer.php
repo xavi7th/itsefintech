@@ -23,7 +23,7 @@ class CardUserVoucherTransformer
 			'code' => (string)$voucher->code,
 			'amount' => (string)$voucher->amount,
 			'is_expired' => $voucher->is_expired,
-			'transactions' => $voucher->merchant_transactions,
+			'transactions' => (new CardUserMerchantTransactionTransformer)->collectionTransformer($voucher->merchant_transactions, 'transform')['voucher_transactions'],
 			'amount_left' => $voucher->amount_left,
 			'amount_spent' => $voucher->amount_spent,
 			'repayment_balance' => $voucher->repayment_balance,

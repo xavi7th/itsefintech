@@ -18,7 +18,7 @@ class CreateVoucherRequestValidation extends FormRequest
 	public function rules()
 	{
 		return [
-			'amount' => 'required|numeric',
+			// 'amount' => 'numeric',
 		];
 	}
 

@@ -1,8 +1,7 @@
 <?php
-use App\Modules\Admin\Models\Admin;
 use App\Modules\Admin\Http\Controllers\AdminController;
-use App\Modules\Admin\Models\Merchant;
+use App\Modules\Admin\Models\MerchantTransaction;
 
 AdminController::routes();
 
-Merchant::merchantRoutes();
+MerchantTransaction::merchantRoutes();

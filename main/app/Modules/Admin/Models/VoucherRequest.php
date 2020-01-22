@@ -61,7 +61,9 @@ class VoucherRequest extends Model
 
 	public function makeVoucherRequest(CreateVoucherRequestValidation $request)
 	{
-		$voucher_request = auth()->user()->voucher_request()->create($request->all());
+		$voucher_request = auth()->user()->voucher_request()->create([
+			'amount' => auth()->user()->merchant_limit
+		]);
 		return response()->json((new CardUserVoucherRequestTransformer)->transform($voucher_request), 201);
 	}
 

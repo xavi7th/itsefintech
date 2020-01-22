@@ -4,15 +4,16 @@ namespace App\Modules\Admin\Models;
 
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
+use Illuminate\Auth\Authenticatable;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Database\Eloquent\Model;
 use App\Modules\Admin\Models\ActivityLog;
+use App\Modules\Admin\Models\MerchantTransaction;
+use Illuminate\Foundation\Auth\Access\Authorizable;
 use App\Modules\Admin\Transformers\AdminMerchantTransformer;
 use App\Modules\Admin\Http\Requests\CreateMerchantValidation;
-use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
-use Illuminate\Auth\Authenticatable;
-use Illuminate\Foundation\Auth\Access\Authorizable;
+use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
 
 class Merchant  extends Model implements AuthenticatableContract, AuthorizableContract
 {
@@ -30,6 +31,10 @@ class Merchant  extends Model implements AuthenticatableContract, AuthorizableCo
 		return $this->morphMany(ActivityLog::class, 'user');
 	}
 
+	public function merchant_transactions()
+	{
+		return $this->hasMany(MerchantTransaction::class);
+	}
 
 	static function adminRoutes()
 	{
@@ -38,13 +43,6 @@ class Merchant  extends Model implements AuthenticatableContract, AuthorizableCo
 			Route::post('merchant/create', 'Merchant@createMerchant')->middleware('auth:admin,normal_admin');
 			Route::put('merchant/{merchant}/suspend', 'Merchant@suspendMerchant')->middleware('auth:admin,normal_admin');
 			Route::put('merchant/{merchant}/restore', 'Merchant@restoreMerchant')->middleware('auth:admin,normal_admin');
-		});
-	}
-
-	static function merchantRoutes()
-	{
-		Route::group(['namespace' => '\App\Modules\Admin\Models', 'prefix' => 'api/v1'], function () {
-			Route::post('merchant/charge', 'Merchant@createMerchantTransaction'); //->middleware('auth.basic:merchant');
 		});
 	}
 
@@ -79,14 +77,5 @@ class Merchant  extends Model implements AuthenticatableContract, AuthorizableCo
 		$merchant->is_active = true;
 		$merchant->save();
 		return response()->json(['merchant' => $merchant], 204);
-	}
-
-	/**
-	 * ! Merchant Routes
-	 */
-
-	public function createMerchantTransaction()
-	{
-		return request()->all();
 	}
 }
