@@ -48,7 +48,21 @@ class CardUser extends User
 		'is_active' => 'boolean',
 		'card_user_category_id' => 'integer',
 	];
+
 	protected $table = "card_users";
+
+	protected static $editableProperties = [
+		'first_name',
+		'last_name',
+		'password',
+		'bvn',
+		'school',
+		'department',
+		'level',
+		'address',
+		'city'
+	];
+
 	const DASHBOARD_ROUTE_PREFIX = "user";
 
 	static function canAccess()
@@ -173,6 +187,11 @@ class CardUser extends User
 		return $this->belongsTo(CardUserCategory::class);
 	}
 
+	public function due_for_school_fees_loan()
+	{
+		return $this->card_user_category->is_student() && !is_null($this->school)  && !is_null($this->department)  && !is_null($this->level);
+	}
+
 	public function debit_card_requests()
 	{
 		return $this->hasMany(DebitCardRequest::class);
@@ -221,7 +240,12 @@ class CardUser extends User
 
 	public function has_loan_request()
 	{
-		return $this->loan_request()->exists();
+		return $this->loan_request()->where('is_school_fees', false)->exists();
+	}
+
+	public function has_school_fees_request()
+	{
+		return $this->loan_request()->where('is_school_fees', true)->exists();
 	}
 
 	public function activeDays(): int
@@ -256,30 +280,9 @@ class CardUser extends User
 	static function adminRoutes()
 	{
 		Route::group(['namespace' => '\App\Modules\CardUser\Models'], function () {
-			Route::get('card-users', function () {
-				return (new AdminUserTransformer)->collectionTransformer(CardUser::withTrashed()->get(), 'transformForAdminViewCardUsers');
-			})->middleware('auth:admin');
+			Route::get('card-users', 'CardUser@getAllCardUsers')->middleware('auth:admin');
 
-			Route::post('card-user/create', function () {
-				// return request()->all();
-				try {
-					DB::beginTransaction();
-					$admin = CardUser::create(Arr::collapse([
-						request()->all(),
-						[
-							'password' => bcrypt('itsefintech@admin'),
-						]
-					]));
-
-					DB::commit();
-					return response()->json(['rsp' => $admin], 201);
-				} catch (\Throwable $e) {
-					if (app()->environment() == 'local') {
-						return response()->json(['error' => $e->getMessage()], 500);
-					}
-					return response()->json(['rsp' => 'error occurred'], 500);
-				}
-			})->middleware('auth:admin');
+			Route::post('card-user/create', 'CardUser@createCardUser')->middleware('auth:admin');
 
 			Route::get('card-user/{card_user}/bvn', 'CardUser@getFullBvnNumber')->middleware('auth:admin');
 
@@ -287,55 +290,119 @@ class CardUser extends User
 
 			Route::put('card-user/{card_user}/merchant-limit', 'CardUser@setUserMerchantLimit')->middleware('auth:admin');
 
-			Route::get('card-user/{card_user}/permissions', function (CardUser $card_user) {
-				$permitted_routes = $card_user->api_routes()->get(['api_routes.id'])->map(function ($item, $key) {
-					return $item->id;
-				});
+			Route::get('card-user/{card_user}/permissions', 'CardUser@getPermittedRoutes')->middleware('auth:admin');
 
-				$all_routes = ApiRoute::get(['id', 'description'])->map(function ($item, $key) {
-					return ['id' => $item->id, 'description' => $item->description];
-				});
+			Route::put('card-user/{card_user}/permissions', 'CardUser@setCardUserPermittedRoutes')->middleware('auth:admin');
 
-				return ['permitted_routes' => $permitted_routes, 'all_routes' => $all_routes];
-			})->middleware('auth:admin');
+			Route::put('card-user/{card_user}/suspend', 'CardUser@suspendCardUser')->middleware('auth:admin');
 
-			Route::put('card-user/{card_user}/permissions', function (CardUser $card_user) {
-				$card_user->api_routes()->sync(request('permitted_routes'));
-				return response()->json(['rsp' => true], 204);
-			})->middleware('auth:admin');
+			Route::put('card-user/{id}/restore', 'CardUser@unsuspendCardUser')->middleware('auth:admin');
 
-			Route::put('card-user/{card_user}/suspend', function (CardUser $card_user) {
-
-				$card_user->delete();
-				return response()->json(['rsp' => true], 204);
-			})->middleware('auth:admin');
-
-			Route::put('card-user/{id}/restore', function ($id) {
-				CardUser::withTrashed()->find($id)->restore();
-				return response()->json(['rsp' => true], 204);
-			})->middleware('auth:admin');
-
-			Route::delete('card-user/{card_user}/delete', function (CardUser $card_user) {
-				if ($card_user->id === auth()->id()) {
-					return response()->json(['rsp' => false], 403);
-				}
-				$card_user->forceDelete();
-				return response()->json(['rsp' => true], 204);
-			})->middleware('auth:admin');
+			Route::delete('card-user/{card_user}/delete', 'CardUser@deleteCardUserAccount')->middleware('auth:admin');
 		});
 	}
 
 	static function cardUserRoutes()
 	{
-
-		Route::get('card-users/categories', function () {
-			return CardUserCategory::get(['category_name', 'id']);
+		Route::group(['namespace' => '\App\Modules\CardUser\Models'], function () {
+			Route::get('card-users/profile-details', 'CardUser@getCardUserProfileDetails');
+			Route::put('card-user/profile', 'CardUser@editCardUserProfileDetails')->middleware('auth:card_user');
+			Route::get('card-users/categories', 'CardUser@getCardUserCategories');
 		});
+	}
+
+
+	/**
+	 * ! Card User Route mesthods
+	 */
+	public function getCardUserCategories()
+	{
+		return CardUserCategory::get(['category_name', 'id']);
+	}
+
+	public function getCardUserProfileDetails()
+	{
+		return self::$editableProperties;
+	}
+
+	public function editCardUserProfileDetails()
+	{
+		$keys = [];
+		foreach (request()->all() as $key => $value) {
+			auth()->user()->$key = $value;
+			auth()->user()->save();
+		}
+		return response()->json([], 204);
 	}
 
 	/**
 	 * ! Admin route methods
 	 */
+
+	public function getAllCardUsers()
+	{
+		return (new AdminUserTransformer)->collectionTransformer(CardUser::withTrashed()->get(), 'transformForAdminViewCardUsers');
+	}
+
+	public function createCardUser()
+	{
+		// return request()->all();
+		try {
+			DB::beginTransaction();
+			$admin = CardUser::create(Arr::collapse([
+				request()->all(),
+				[
+					'password' => bcrypt('itsefintech@admin'),
+				]
+			]));
+
+			DB::commit();
+			return response()->json(['rsp' => $admin], 201);
+		} catch (\Throwable $e) {
+			if (app()->environment() == 'local') {
+				return response()->json(['error' => $e->getMessage()], 500);
+			}
+			return response()->json(['rsp' => 'error occurred'], 500);
+		}
+	}
+
+	public function getPermittedRoutes(CardUser $card_user)
+	{
+		$permitted_routes = $card_user->api_routes()->get(['api_routes.id'])->map(function ($item, $key) {
+			return $item->id;
+		});
+
+		$all_routes = ApiRoute::get(['id', 'description'])->map(function ($item, $key) {
+			return ['id' => $item->id, 'description' => $item->description];
+		});
+
+		return ['permitted_routes' => $permitted_routes, 'all_routes' => $all_routes];
+	}
+
+	public function setCardUserPermittedRoutes(CardUser $card_user)
+	{
+		$card_user->api_routes()->sync(request('permitted_routes'));
+		return response()->json(['rsp' => true], 204);
+	}
+
+	public function suspendCardUser(CardUser $card_user)
+	{
+		$card_user->delete();
+		return response()->json(['rsp' => true], 204);
+	}
+
+	public function unsuspendCardUser($id)
+	{
+		CardUser::withTrashed()->find($id)->restore();
+		return response()->json(['rsp' => true], 204);
+	}
+
+	public function deleteCardUserAccount(CardUser $card_user)
+	{
+		$card_user->forceDelete();
+		return response()->json(['rsp' => true], 204);
+	}
+
 	public function getFullBvnNumber(CardUser $card_user)
 	{
 		return response()->json(['full_bvn' => $card_user->full_bvn], 200);

@@ -19,6 +19,7 @@ class CreateLoanRequestsTable extends Migration
 			$table->double('amount');
 			$table->double('monthly_interest');
 			$table->integer('total_duration');
+			$table->boolean('is_school_fees')->default(false);
 			$table->timestamp('approved_at')->nullable();
 			$table->bigInteger('approved_by')->unsigned()->nullable()->default(null);
 			$table->foreign('approved_by')->references('id')->on('admins')->onDelete('no action');

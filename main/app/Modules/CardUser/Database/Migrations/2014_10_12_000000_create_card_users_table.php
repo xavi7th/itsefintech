@@ -26,7 +26,9 @@ class CreateCardUsersTable extends Migration
 			$table->string('phone')->nullable();
 			$table->string('address')->default('not supplied');
 			$table->string('city')->default('not supplied');
-			$table->string('zip')->default(00000);
+			$table->string('school')->nullable();
+			$table->string('department')->nullable();
+			$table->string('level')->nullable();
 			$table->string('user_passport')->nullable();
 			$table->string('bvn')->nullable();
 			$table->double('merchant_limit')->nullable();

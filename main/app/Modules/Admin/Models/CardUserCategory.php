@@ -18,4 +18,9 @@ class CardUserCategory extends Model
 	{
 		return $this->hasMany(CardUser::class);
 	}
+
+	public function is_student()
+	{
+		return $this->category_name == 'students';
+	}
 }

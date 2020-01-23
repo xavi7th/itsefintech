@@ -35,6 +35,11 @@ class LoanTransaction extends Model
 		return $this->belongsTo(LoanRequest::class);
 	}
 
+	public function is_school_fees(): boolean
+	{
+		return $this->loan_request->is_school_fees;
+	}
+
 	public function card_user()
 	{
 		return $this->belongsTo(CardUser::class);

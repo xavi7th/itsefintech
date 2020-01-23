@@ -15,7 +15,6 @@
                 <th>Phone</th>
                 <th>Amount</th>
                 <th>Loan Duration</th>
-                <th>Loan Due Date</th>
                 <th>Approval Status</th>
                 <th>Actions</th>
               </tr>
@@ -29,9 +28,8 @@
                   <td colspan="4" class="text-center text-bold text-uppercase">Loan paid</td>
                 </template>
                 <template v-else>
-                  <td>{{ loan_request.amount | Naira }}</td>
-                  <td>{{ loan_request.total_duration + ' months' }}</td>
-                  <td>{{ loan_request.due_date }}</td>
+                  <td>{{ loan_request.amount | Naira }} <span v-if="loan_request.is_school_fees"> school fees</span></td>
+                  <td>{{ loan_request.total_duration }}</td>
                   <td>{{ loan_request.is_paid ? 'Payment made' : loan_request.is_approved ? 'Approved without payment' : 'Not Approved' }}</td>
                 </template>
                 <td>

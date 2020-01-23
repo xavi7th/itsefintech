@@ -68,12 +68,53 @@ class CreateLoanRequestValidation extends FormRequest
 	{
 		$validator->after(function ($validator) {
 			/**
+			 * FILTER VALIDATE BOOLEAN because the value is sent as string instead of boolean.
+			 * Returns true for 'yes', 'on', '1' and 'true'. Returns false otherwise
+			 *
+			 * If the FILTER_NULL_ON_FAILURE flag is set, it returns null, instead of false, if the
+			 * value is not 'false', '0', 'off' or 'no'
+			 *
+			 * $is_school_fees_loan = filter_var($this->is_school_fees, FILTER_VALIDATE_BOOLEAN);
+			 */
+			$is_school_fees_loan = filter_var($this->is_school_fees, FILTER_VALIDATE_BOOLEAN);
+
+			/**
+			 * Check is a boolean value was set for is_school_fees
+			 */
+			// if (is_null($is_school_fees_loan)) {
+			// 	$validator->errors()->add('school_fees_loan', 'Specify if this is a school fees loan or not');
+			// 	return;
+			// }
+
+
+			/**
+			 * Check if it's a school fees loan and then check the user's profile
+			 */
+
+			if ($is_school_fees_loan) {
+
+
+				if ($this->user()->has_school_fees_request()) {
+					$validator->errors()->add('school_fees_loan', 'You already have a school pending school fees request');
+					return;
+				}
+
+				if (!$this->user()->card_user_category->is_student()) {
+					$validator->errors()->add('school_fees_loan', 'School fees loan is only available to students');
+					return;
+				}
+
+				if (!$this->user()->due_for_school_fees_loan()) {
+					$validator->errors()->add('school_fees_loan', 'Incomplete student profile');
+					return;
+				}
+			}
+
+			/**
 			 * Check if user has an unprocessed loan request already
 			 */
 
-
-
-			if ($this->isMethod('post') && $this->user()->has_loan_request()) {
+			if ($this->isMethod('post') && $this->user()->has_loan_request() && !$is_school_fees_loan) {
 				$validator->errors()->add('existing_loan_request', 'You have a pending loan request');
 				return;
 			}
@@ -81,26 +122,9 @@ class CreateLoanRequestValidation extends FormRequest
 			$requestable_loan_amount = $this->user()->assigned_credit_limit - $this->user()->total_loan_balance();
 			$requestable_loan_amount =  $requestable_loan_amount < 0 ? 0 : $requestable_loan_amount;
 
-			if ($this->isMethod('post') && $this->amount > $requestable_loan_amount) {
+			if ($this->isMethod('post') && $this->amount > $requestable_loan_amount && !$is_school_fees_loan) {
 				$validator->errors()->add('assigned_credit_limit', 'You currently have an available loan limit of ₦' . number_format($requestable_loan_amount));
 			}
-
-			// /**
-			//  * Check if the selected repayment duration IN DAYS is less than the minimum allowed
-			//  */
-			// if ($this->repayment_duration > config('app.maximum_repayment_duration')) {
-			// 	$validator->errors()->add('repayment_duration', 'Maximum repayment duration is ' . config('app.maximum_repayment_duration') . ' days');
-			// 	return;
-			// }
-
-			// /**
-			//  * Check if the selected repayment amount is less than the minimum allowed
-			//  */
-			// $min_repayment_amount = LoanRequest::minimumRepaymentAmount($this->amount, $this->total_duration, $this->repayment_duration);
-
-			// if ($this->repayment_amount < $min_repayment_amount) {
-			// 	$validator->errors()->add('repayment_amount', 'Minimum repayment amount is ₦' . number_format($min_repayment_amount));
-			// }
 		});
 	}
 

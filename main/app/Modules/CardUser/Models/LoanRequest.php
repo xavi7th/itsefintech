@@ -19,9 +19,11 @@ class LoanRequest extends Model
 {
 	use SoftDeletes, Rememberable;
 
-	protected $fillable = ['amount', 'total_duration', 'monthly_interest',];
+	protected $fillable = ['amount', 'total_duration', 'monthly_interest', 'is_school_fees'];
 
 	protected $appends = ['due_date'];
+
+	protected $casts = ['is_school_fees' => 'boolean'];
 
 	/**
 	 * The attributes that should be mutated to dates.
@@ -56,6 +58,7 @@ class LoanRequest extends Model
 	{
 		return (object)[
 			'amount' => (float)$this->amount,
+			'is_school_fees' => (boolean)$this->is_school_fees,
 			'interest_rate' => (float)$this->monthly_interest,
 			'total_duration' => (string)$this->total_duration . ' months',
 			'minimum_repayment_amount' => (float)round($this->amount * ($this->monthly_interest / 100), 2),
@@ -107,11 +110,14 @@ class LoanRequest extends Model
 
 	public function makeLoanRequest(CreateLoanRequestValidation $request)
 	{
+
 		$loan_request = $request->user()->loan_request()->create([
 			'amount' => $request->input('amount'),
 			'total_duration' => $request->input('total_duration'),
 			'monthly_interest' => auth()->user()->credit_percentage,
+			'is_school_fees' => filter_var($request->is_school_fees, FILTER_VALIDATE_BOOLEAN)
 		]);
+
 		return response()->json((array)$loan_request->breakdownStatistics(), 201);
 	}
 
@@ -155,7 +161,7 @@ class LoanRequest extends Model
 			[
 				'card_user_id' => $loan_request->card_user_id,
 				'amount' => ((object)$loan_request->breakdownStatistics())->total_repayment_amount,
-				'transaction_type' => 'loan',
+				'transaction_type' => $loan_request->is_school_fees ? 'school fees loan' : 'loan',
 				'next_installment_due_date' => now()->addMonth(),
 			]
 		);
