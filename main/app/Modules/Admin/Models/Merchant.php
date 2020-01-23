@@ -63,6 +63,7 @@ class Merchant  extends Model implements AuthenticatableContract, AuthorizableCo
 		} else {
 			$merchant = Merchant::create($request->all());
 		}
+		$merchant->is_active = true;
 		return response()->json(['merchant' => $merchant], 201);
 	}
 	public function suspendMerchant(Merchant $merchant)
