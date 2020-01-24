@@ -248,6 +248,11 @@ class CardUser extends User
 		return $this->loan_request()->where('is_school_fees', true)->exists();
 	}
 
+	public function has_active_school_fees_loan()
+	{
+		return $this->loan_request()->where('is_school_fees', true)->where('is_approved', true)->exists();
+	}
+
 	public function activeDays(): int
 	{
 		return intval(optional(optional($this->first_debit_card)->activated_at)->diffInDays(now()));
@@ -331,7 +336,7 @@ class CardUser extends User
 		foreach (request()->except('token') as $key => $value) {
 			auth()->user()->$key = $value;
 		}
-			auth()->user()->save();
+		auth()->user()->save();
 		return response()->json([], 204);
 	}
 

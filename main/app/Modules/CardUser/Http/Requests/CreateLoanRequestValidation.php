@@ -108,6 +108,11 @@ class CreateLoanRequestValidation extends FormRequest
 					$validator->errors()->add('school_fees_loan', 'Incomplete student profile');
 					return;
 				}
+
+				if ($this->user()->has_active_school_fees_loan()) {
+					$validator->errors()->add('school_fees_loan', 'You already have an active unpaid school fees loan');
+					return;
+				}
 			}
 
 			/**
