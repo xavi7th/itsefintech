@@ -176,6 +176,16 @@ export const allRoutes = [
                 },
             },
             {
+                path: '/cards/funding/request',
+                component: adminView( 'cards/ManageDebitCardFundingRequests' ),
+                name: 'admin.cards.funding.request',
+                meta: {
+                    title: APP_NAME + ' | All Debit Card Funding Requests',
+                    iconClass: 'cc-visa',
+                    menuName: 'All Debit Card Funding Requests'
+                },
+            },
+            {
                 path: '/cards/stock/request',
                 component: adminView( 'cards/ManageDebitCardStockRequests' ),
                 name: 'admin.cards.stock.request',

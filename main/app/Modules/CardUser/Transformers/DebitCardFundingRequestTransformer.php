@@ -21,7 +21,7 @@ class DebitCardFundingRequestTransformer
 			// 'id' => (int)$funding_request->id,
 			'amount' => (double)$funding_request->amount,
 			'card' => (int)$funding_request->debit_card->card_number,
-			'is_processed' => (boolean)$funding_request->approved_at,
+			'is_processed' => (boolean)$funding_request->is_funded,
 		];
 	}
 

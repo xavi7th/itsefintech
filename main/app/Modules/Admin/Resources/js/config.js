@@ -113,6 +113,11 @@ export const adminMarkDebitCardStockRequestAsProcessed = id => apiBaseUrl + 'sto
 export const getSalesRepStatistics = apiBaseUrl + 'statistics'
 export const requestCardStock = apiBaseUrl + 'debit-card/request'
 
+
+/** Card Funding routes */
+export const adminViewDebitCardFundingRequests = apiBaseUrl + 'debit-card-funding-requests'
+export const adminMarkDebitCardFundingRequestAsProcessed = id => apiBaseUrl + 'debit-card-funding-request/' + id + '/process'
+
 /** Loans */
 export const adminViewLoanRequests = apiBaseUrl + 'loan-requests'
 export const adminApproveLoanRequest = id => apiBaseUrl + 'loan-request/' + id + '/approve'

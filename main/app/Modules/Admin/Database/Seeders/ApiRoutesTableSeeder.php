@@ -203,6 +203,16 @@ class ApiRoutesTableSeeder extends Seeder
 				],
 
 				[
+					'path' => '/cards/funding/request',
+					'name' => 'admin.cards.funding.request',
+					'meta' => '{title: APP_NAME + \' | View Debit Card Funding Requests\',
+					iconClass: \'cc-visa\',
+					menuName: \'View Debit Card Funding Requests\'
+				}',
+					'description' => 'View Funding Requests',
+				],
+
+				[
 					'path' => '/loans/request',
 					'name' => 'admin.loans.requests',
 					'meta' => '{title: APP_NAME + \' | View Loan Requests\',
