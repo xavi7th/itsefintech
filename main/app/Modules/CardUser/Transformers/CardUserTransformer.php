@@ -40,15 +40,20 @@ class CardUserTransformer
 	public function transform(CardUser $user)
 	{
 		return [
-			'first_name' => $user->first_name,
-			'last_name' => $user->last_name,
-			'email' => $user->email,
-			'phone' => $user->phone,
-			'bvn' => $user->bvn,
+			'first_name' => (string)$user->first_name,
+			'last_name' => (string)$user->last_name,
+			'email' => (string)$user->email,
+			'phone' => (string)$user->phone,
+			'address' => (string)$user->address,
+			'city' => (string)$user->city,
+			'school' => (string)$user->school,
+			'department' => (string)$user->department,
+			'level' => (string)$user->level,
+			'bvn' => (float)$user->bvn,
 			'card_user_category' => (string)$user->card_user_category->category_name,
 			'assigned_credit_limit' => (float)$user->assigned_credit_limit,
 			'assigned_merchant_limit' => (float)$user->merchant_limit,
-			'due_for_credit' => (boolean)$due_for_credit = $user->due_for_credit(),
+			'due_for_credit' => (boolean)$user->due_for_credit(),
 			'num_of_days_active' => (int)$user->activeDays()
 
 		];
