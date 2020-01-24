@@ -328,10 +328,10 @@ class CardUser extends User
 	public function editCardUserProfileDetails()
 	{
 		$keys = [];
-		foreach (request()->all() as $key => $value) {
+		foreach (request()->except('token') as $key => $value) {
 			auth()->user()->$key = $value;
-			auth()->user()->save();
 		}
+			auth()->user()->save();
 		return response()->json([], 204);
 	}
 
