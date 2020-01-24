@@ -21,7 +21,7 @@ class DebitCardTypesTableSeeder extends Seeder
 			0 =>
 			array(
 				'id' => 1,
-				'card_type_name' => 'Platinum',
+				'card_type_name' => 'Titanium Black',
 				'amount' => 1000,
 				'created_at' => '2020-01-16 04:51:47',
 				'updated_at' => '2020-01-16 04:51:47',
@@ -30,7 +30,7 @@ class DebitCardTypesTableSeeder extends Seeder
 			1 =>
 			array(
 				'id' => 2,
-				'card_type_name' => 'Platinum Black',
+				'card_type_name' => 'Titanium Platinum',
 				'amount' => 1500,
 				'created_at' => '2020-01-16 04:55:06',
 				'updated_at' => '2020-01-16 04:55:06',

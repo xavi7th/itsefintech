@@ -18,18 +18,10 @@ class CardUserCategoriesTableSeeder extends Seeder
 		\DB::table('card_user_categories')->delete();
 
 		\DB::table('card_user_categories')->insert(array(
-			0 =>
-			array(
-				'id' => 1,
-				'category_name' => 'others',
-				'credit_limit' => 0.0,
-				'created_at' => NULL,
-				'updated_at' => NULL,
-				'last_updated_by' => 1,
-			),
+
 			1 =>
 			array(
-				'id' => 2,
+				'id' => 1,
 				'category_name' => 'students',
 				'credit_limit' => 0.0,
 				'created_at' => '2020-01-02 17:23:15',
@@ -38,7 +30,7 @@ class CardUserCategoriesTableSeeder extends Seeder
 			),
 			2 =>
 			array(
-				'id' => 3,
+				'id' => 2,
 				'category_name' => 'salary earners',
 				'credit_limit' => 0.0,
 				'created_at' => NULL,
@@ -47,7 +39,7 @@ class CardUserCategoriesTableSeeder extends Seeder
 			),
 			3 =>
 			array(
-				'id' => 4,
+				'id' => 3,
 				'category_name' => 'business owners',
 				'credit_limit' => 0.0,
 				'created_at' => NULL,
