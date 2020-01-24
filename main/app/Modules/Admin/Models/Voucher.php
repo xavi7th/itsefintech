@@ -79,6 +79,7 @@ class Voucher extends Model
 			'total_repayment_amount' => (float)$total_repayment_amount = round($total_interest_amount + $this->amount, 2),
 			'current_repayment_amount' => (float)round((((($interest_rate / 100) * $this->amount_spent) + $this->amount_spent) - $this->amount_paid), 2),
 			'is_expired' => (boolean)$this->is_expired,
+			'amount_in_kobo' => (float)round((((($interest_rate / 100) * $this->amount_spent) + $this->amount_spent) - $this->amount_paid), 2) * 100
 		];
 	}
 
