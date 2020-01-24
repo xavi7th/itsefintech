@@ -3,7 +3,9 @@
 namespace App\Modules\CardUser\Models;
 
 use Carbon\Carbon;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Database\Eloquent\Model;
 use App\Modules\Admin\Models\ActivityLog;
@@ -11,19 +13,29 @@ use App\Modules\CardUser\Models\CardUser;
 use App\Modules\SalesRep\Models\SalesRep;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Modules\CardUser\Models\DebitCardType;
-use App\Modules\NormalAdmin\Models\StockRequest;
 use App\Modules\CardUser\Models\DebitCardRequest;
+use App\Modules\CardUser\Models\DebitCardTransaction;
+use App\Modules\CardUser\Models\DebitCardRequestStatus;
+use App\Modules\CardUser\Models\DebitCardFundingRequest;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Modules\Admin\Transformers\AdminDebitCardTransformer;
+use App\Modules\CardUser\Http\Requests\CardRequestValidation;
 use App\Modules\Admin\Http\Requests\DebitCardCreationValidation;
+use App\Modules\CardUser\Http\Requests\CardActivationValidation;
+use App\Modules\CardUser\Transformers\CardUserDebitCardTransformer;
+use Watson\Rememberable\Rememberable;
 
 class DebitCard extends Model
 {
-	use SoftDeletes;
+	use SoftDeletes, Rememberable;
 
 	protected $fillable = [
 		'card_number', 'month', 'year', 'csc', 'sales_rep_id', 'card_user_id', 'debit_card_type_id'
 	];
+
+	protected $rememberFor = 10;
+	protected $rememberCachePrefix = 'debit-cards';
+
 	protected $appends = ['exp_date'];
 
 	protected static function getHashingAlgorithm()
@@ -61,6 +73,16 @@ class DebitCard extends Model
 		return $this->hasOne(DebitCardRequest::class);
 	}
 
+	public function debit_card_funding_request()
+	{
+		return $this->hasMany(DebitCardFundingRequest::class);
+	}
+
+	public function debit_card_transactions()
+	{
+		return $this->hasMany(DebitCardTransaction::class);
+	}
+
 	public function debit_card_type()
 	{
 		return $this->belongsTo(DebitCardType::class);
@@ -95,6 +117,20 @@ class DebitCard extends Model
 		$this->attributes['csc'] = bcrypt($value);
 	}
 
+	static function cardUserRoutes()
+	{
+
+		Route::group(['prefix' => 'card', 'middleware' => ['auth:card_user', 'card_users']], function () {
+			Route::group(['namespace' => '\App\Modules\CardUser\Models'], function () {
+				Route::get('/list', 'DebitCard@getCardUserDebitCards');
+				Route::post('/new', 'DebitCard@requestDebitCard');
+				Route::put('/activate', 'DebitCard@activateCardUserDebitCard');
+				Route::get('/status', 'DebitCard@trackCardUserDebitCard');
+				Route::get('/{debit_card}', 'DebitCard@getCardUserCardDetails');
+			});
+		});
+	}
+
 	static function adminRoutes()
 	{
 		Route::group(['namespace' => '\App\Modules\CardUser\Models'], function () {
@@ -117,7 +153,73 @@ class DebitCard extends Model
 		});
 	}
 
+	/**
+	 * ! Card User route methods
+	 */
+	public function getCardUserDebitCards()
+	{
+		return response()->json((new CardUserDebitCardTransformer)->collectionTransformer(auth('card_user')->user()->debit_cards, 'transformForCardList'), 200);
+	}
 
+	public function getCardUserCardDetails(DebitCard $debit_card)
+	{
+		return response()->json((new CardUserDebitCardTransformer)->transformForCardDetails($debit_card), 200);
+	}
+
+	public function requestDebitCard(CardRequestValidation $request)
+	{
+		$card_request = $request->user()->pending_debit_card_requests()->updateOrCreate(
+			[
+				'payment_method' => request('payment_method'),
+				'address' => request('address'),
+			],
+			Arr::collapse(
+				[
+					$request->all(),
+					[
+						'debit_card_request_status_id' => 1,
+					]
+				]
+			)
+		);
+
+		return response()->json($card_request, 201);
+	}
+
+	public function activateCardUserDebitCard(CardActivationValidation $request)
+	{
+
+		$debit_card = DebitCard::find($request->card_id);
+		if ($debit_card->is_card_activated) {
+			return generate_422_error(['card_activation' => 'Card already activated']);
+		}
+		/**
+		 * Test csc
+		 */
+		if (Hash::check($request->csc, $debit_card->csc)) {
+			$debit_card->is_user_activated = true;
+			$debit_card->debit_card_request->debit_card_request_status_id = DebitCardRequestStatus::orderByDesc('id')->first()->id;
+			$debit_card->debit_card_request->save();
+			$debit_card->save();
+			return response()->json(['message' => 'Card Activated'], 204);
+		} else {
+			return response()->json(['message' => 'Invalid CSC'], 403);
+		}
+	}
+
+	public function trackCardUserDebitCard()
+	{
+		$current_request_id = optional(auth()->user()->last_debit_card_request)->debit_card_request_status_id;
+		$status = collect(DebitCardRequestStatus::all())->reject(function ($status) use ($current_request_id) {
+			return $status->id > $current_request_id;
+		});
+		// $status = collect(DebitCardRequestStatus::all())->merge(['current' => $card_request->debit_card_request_status->id]);
+		return response()->json(['status' => $status], 200);
+	}
+
+	/**
+	 * ! Admin Route Methods
+	 */
 	public function getDebitCards($rep = null)
 	{
 		if (is_null($rep)) {

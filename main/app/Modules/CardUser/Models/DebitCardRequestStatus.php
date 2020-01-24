@@ -13,4 +13,9 @@ class DebitCardRequestStatus extends Model
 	{
 		return $this->hasMany(DebitCardRequest::class);
 	}
+
+	static function delivered_id()
+	{
+		return self::where('name', 'Delivered to customer')->first()->id;
+	}
 }

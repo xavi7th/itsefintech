@@ -5,6 +5,7 @@ namespace App\Modules\CardUser\Models;
 use App\User;
 use Carbon\Carbon;
 use Illuminate\Support\Arr;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Modules\CardUser\Models\OTP;
 use App\Modules\Admin\Models\Voucher;
@@ -16,8 +17,13 @@ use App\Modules\Admin\Models\CardUserCategory;
 use App\Modules\CardUser\Models\LoanTransaction;
 use App\Modules\Admin\Models\MerchantTransaction;
 use App\Modules\CardUser\Models\DebitCardRequest;
+use App\Modules\CardUser\Models\DebitCardTransaction;
+use App\Modules\CardUser\Models\DebitCardRequestStatus;
 use App\Modules\Admin\Transformers\AdminUserTransformer;
+use App\Modules\CardUser\Models\DebitCardFundingRequest;
+use App\Modules\CardUser\Transformers\CardUserTransformer;
 use App\Modules\Admin\Http\Requests\SetCardUserCreditLimitValidation;
+use App\Modules\CardUser\Http\Requests\CardUserUpdateProfileValidation;
 
 class CardUser extends User
 {
@@ -171,6 +177,16 @@ class CardUser extends User
 		return $this->debit_cards()->exists() ? $this->debit_cards()->where('is_user_activated', false)->exists() : true;
 	}
 
+	public function debit_card_funding_request()
+	{
+		return $this->hasMany(DebitCardFundingRequest::class);
+	}
+
+	public function debit_card_transactions()
+	{
+		return $this->hasMany(DebitCardTransaction::class);
+	}
+
 	public function due_for_credit()
 	{
 		return (boolean)$this->credit_limit;
@@ -195,6 +211,11 @@ class CardUser extends User
 	public function debit_card_requests()
 	{
 		return $this->hasMany(DebitCardRequest::class);
+	}
+
+	public function pending_debit_card_requests()
+	{
+		return $this->hasOne(DebitCardRequest::class)->where('debit_card_request_status_id', '<>', DebitCardRequestStatus::delivered_id())->orWhere('debit_card_id', null);
 	}
 
 	public function last_debit_card_request()
@@ -314,12 +335,66 @@ class CardUser extends User
 			Route::put('card-user/profile', 'CardUser@editCardUserProfileDetails')->middleware('auth:card_user');
 			Route::get('card-users/categories', 'CardUser@getCardUserCategories');
 		});
+
+
+		Route::group(['prefix' => 'auth', 'middleware' => ['auth:card_user', 'card_users']], function () {
+
+			Route::group(['middleware' => ['unverified_card_users']], function () {
+				Route::get('/user/request-otp', 'CardUserController@requestOTP');
+
+				Route::put('/user/verify-otp', 'CardUserController@verifyOTP');
+			});
+
+			// Route::group(['middleware' => ['verified_card_users']], function () {
+			Route::get('/user', 'CardUserController@user');
+			Route::put('/user', 'CardUserController@updateUserProfile');
+			// });
+		});
 	}
 
 
 	/**
 	 * ! Card User Route mesthods
 	 */
+
+
+	public function requestOTP(Request $request)
+	{
+		/** Delete Previous OTP **/
+		$request->user()->otp()->delete();
+
+		$otp = $request->user()->createOTP();
+
+		// Send otp
+		return response()->json(['message' => 'OTP sent'], 201);
+	}
+
+	public function verifyOTP(Request $request)
+	{
+		if ($request->user()->otp->code !== intval($request->otp)) {
+			return response()->json(['message' => 'Invalid OTP code'], 422);
+		}
+		/** Verify the user **/
+		$request->user()->otp_verified_at = now();
+		$request->user()->save();
+
+		return response()->json(['message' => 'Account verified'], 205);
+	}
+
+
+	public function user(Request $request)
+	{
+		return response()->json((new CardUserTransformer)->transform(auth('card_user')->user()));
+	}
+
+	public function updateUserProfile(CardUserUpdateProfileValidation $request)
+	{
+		auth('card_user')->user()->update($request->except(['email', 'bvn']));
+		return response()->json(['updated' => true], 204);
+	}
+
+
+
 	public function getCardUserCategories()
 	{
 		return CardUserCategory::get(['category_name', 'id']);
