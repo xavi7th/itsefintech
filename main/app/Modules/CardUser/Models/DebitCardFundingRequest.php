@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Modules\CardUser\Models\CardUser;
 use App\Modules\CardUser\Models\DebitCard;
 use App\Modules\CardUser\Http\Requests\RequestDebitCardFundingValidation;
+use App\Modules\CardUser\Transformers\DebitCardFundingRequestTransformer;
 
 class DebitCardFundingRequest extends Model
 {
@@ -29,6 +30,7 @@ class DebitCardFundingRequest extends Model
 	{
 		Route::group(['namespace' => '\App\Modules\CardUser\Models'], function () {
 			Route::post('debit-card-funding-request/create', 'DebitCardFundingRequest@requestDebitCardFunding')->middleware('auth:card_user');
+			Route::get('debit-card-funding-request/status', 'DebitCardFundingRequest@checkDebitCardFundingStatus')->middleware('auth:card_user');
 		});
 	}
 
@@ -39,6 +41,11 @@ class DebitCardFundingRequest extends Model
 			'amount' => $request->amount
 		]);
 
-		return response()->json(['rsp' => $fund_request], 201);
+		return response()->json((new DebitCardFundingRequestTransformer)->transform($fund_request), 201);
+	}
+
+	public function checkDebitCardFundingStatus()
+	{
+		return (new DebitCardFundingRequestTransformer)->transform(auth()->user()->debit_card_funding_request);
 	}
 }

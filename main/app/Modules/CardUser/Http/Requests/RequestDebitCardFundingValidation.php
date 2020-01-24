@@ -67,8 +67,8 @@ class RequestDebitCardFundingValidation extends FormRequest
 			 */
 			$debit_card = DebitCard::find($this->debit_card_id);
 
-			if ($this->user()->id !== $debit_card->card_user->id) {
-				$validator->errors()->add('Unauthorised', 'This card does not beling to you');
+			if ($this->user()->id !== optional($debit_card->card_user)->id) {
+				$validator->errors()->add('Unauthorised', 'This card does not belong to you');
 				return;
 			}
 

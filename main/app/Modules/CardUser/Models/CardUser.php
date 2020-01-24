@@ -179,7 +179,7 @@ class CardUser extends User
 
 	public function debit_card_funding_request()
 	{
-		return $this->hasMany(DebitCardFundingRequest::class);
+		return $this->hasOne(DebitCardFundingRequest::class);
 	}
 
 	public function debit_card_transactions()
