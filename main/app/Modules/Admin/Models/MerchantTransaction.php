@@ -95,7 +95,12 @@ class MerchantTransaction extends Model
 
 	public function viewPendingVoucherDebitTransaction()
 	{
-		return (new CardUserMerchantTransactionTransformer)->collectionTransformer(auth()->user()->unapproved_merchant_transactions, 'transform');
+		$trans = auth()->user()->unapproved_merchant_transactions;
+		if ($trans) {
+			return (new CardUserMerchantTransactionTransformer)->transform($trans);
+		} else {
+			return [];
+		}
 	}
 
 	public function approveVoucherDebitTransaction($merchant_transaction)

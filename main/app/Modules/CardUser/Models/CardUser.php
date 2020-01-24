@@ -128,7 +128,7 @@ class CardUser extends User
 
 	public function unapproved_merchant_transactions()
 	{
-		return $this->hasMany(MerchantTransaction::class)->where('trans_type', 'debit request');
+		return $this->hasOne(MerchantTransaction::class)->where('trans_type', 'debit request');
 	}
 
 	public function repayment_merchant_transactions()
