@@ -55,7 +55,7 @@ class VoucherRequest extends Model
 		try {
 			return (new CardUserVoucherRequestTransformer)->transform(auth()->user()->pending_voucher_request);
 		} catch (\Throwable $th) {
-			return response()->json(['mesage' => 'User has no existing voucher request'], 404);
+			return response()->json(['message' => 'User has no existing voucher request'], 404);
 		}
 	}
 
