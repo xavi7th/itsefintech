@@ -109,7 +109,12 @@ class Voucher extends Model
 
 	public function getCardUserActiveVoucher()
 	{
-		return (new CardUserVoucherTransformer)->transformForCardUserListVouchers(auth()->user()->active_voucher, 'transformForCardUserListVouchers');
+		$active_voucher = auth()->user()->active_voucher;
+		if ($active_voucher) {
+			return (new CardUserVoucherTransformer)->transformForCardUserListVouchers($active_voucher, 'transformForCardUserListVouchers');
+		} else {
+			return response()->json(['message' => 'No active voucher at the moment'], 404);
+		}
 	}
 
 	/**
