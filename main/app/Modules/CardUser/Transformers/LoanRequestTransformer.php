@@ -61,7 +61,8 @@ class LoanRequestTransformer
 			'total_paid' => (float)$total_paid = $transactions->where('transaction_type', 'repayment')->sum('amount'),
 			'total_balance' => (float)$total_balance = ((object)$breakdown_statistics)->total_repayment_amount - $total_paid,
 			'next_repayment_due_date' => $due_date = ($transactions->sortByDesc('id')->values()->first())->next_installment_due_date->toDateString(),
-			'loan_defaulter' => (boolean)$total_balance == 0 ? false : now()->gte($due_date)
+			'loan_defaulter' => (boolean)$total_balance == 0 ? false : now()->gte($due_date),
+			'payment_complete' => (boolean)$total_balance
 		])->merge($breakdown_statistics)->merge((new LoanTransactionTransformer)->collectionTransformer($transactions, 'transformForUserViewLoanTransactions'));
 	}
 }
