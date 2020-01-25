@@ -337,17 +337,17 @@ class CardUser extends User
 		});
 
 
-		Route::group(['prefix' => 'auth', 'middleware' => ['auth:card_user', 'card_users']], function () {
+		Route::group(['prefix' => 'auth', 'middleware' => ['auth:card_user', 'card_users'], 'namespace' =>  '\App\Modules\CardUser\Models'], function () {
 
 			Route::group(['middleware' => ['unverified_card_users']], function () {
-				Route::get('/user/request-otp', 'CardUserController@requestOTP');
+				Route::get('/user/request-otp', 'CardUser@requestOTP');
 
-				Route::put('/user/verify-otp', 'CardUserController@verifyOTP');
+				Route::put('/user/verify-otp', 'CardUser@verifyOTP');
 			});
 
 			// Route::group(['middleware' => ['verified_card_users']], function () {
-			Route::get('/user', 'CardUserController@user');
-			Route::put('/user', 'CardUserController@updateUserProfile');
+			Route::get('/user', 'CardUser@user');
+			Route::put('/user', 'CardUser@updateUserProfile');
 			// });
 		});
 	}
