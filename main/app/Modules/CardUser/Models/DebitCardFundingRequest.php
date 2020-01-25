@@ -66,7 +66,12 @@ class DebitCardFundingRequest extends Model
 
 	public function checkDebitCardFundingStatus()
 	{
-		return (new DebitCardFundingRequestTransformer)->transform(auth()->user()->debit_card_funding_request);
+		$funding_request = auth()->user()->debit_card_funding_request;
+		if ($funding_request) {
+			return (new DebitCardFundingRequestTransformer)->transform($funding_request);
+		} else {
+			return response()->json(['message' => 'User has no funding request'], 404);
+		}
 	}
 
 	/**
