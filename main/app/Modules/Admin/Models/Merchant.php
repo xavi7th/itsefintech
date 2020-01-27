@@ -14,6 +14,7 @@ use Illuminate\Foundation\Auth\Access\Authorizable;
 use App\Modules\Admin\Transformers\AdminMerchantTransformer;
 use App\Modules\Admin\Http\Requests\CreateMerchantValidation;
 use App\Modules\CardUser\Transformers\CardIUserMerchantTransformer;
+use App\Modules\Admin\Transformers\AdminMerchantCategoryTransformer;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
 
@@ -22,7 +23,7 @@ class Merchant  extends Model implements AuthenticatableContract, AuthorizableCo
 	use Authenticatable, Authorizable;
 
 	protected $fillable = [
-		'name', 'unique_code', 'email', 'phone', 'password'
+		'name', 'unique_code', 'email', 'phone', 'password', 'merchant_category_id', 'address'
 	];
 
 	const DASHBOARD_ROUTE_PREFIX = 'merchant-area';
@@ -74,7 +75,8 @@ class Merchant  extends Model implements AuthenticatableContract, AuthorizableCo
 	 */
 	public function getAllMerchants()
 	{
-		return (new AdminMerchantTransformer)->collectionTransformer(self::all(), 'transformForAdminViewMerchants');
+		return collect((new AdminMerchantTransformer)->collectionTransformer(self::all(), 'transformForAdminViewMerchants'))
+			->merge((new AdminMerchantCategoryTransformer)->collectionTransformer(MerchantCategory::all(), 'transformForAdminViewMerchantCategories'));
 	}
 
 	public function createMerchant(CreateMerchantValidation $request)

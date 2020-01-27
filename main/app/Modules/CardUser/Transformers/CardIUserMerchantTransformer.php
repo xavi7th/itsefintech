@@ -22,7 +22,8 @@ class CardIUserMerchantTransformer
 			'id' => (int)$merchant->id,
 			'name' => (string)$merchant->name,
 			'address' => (string)$merchant->address,
-			'address' => (string)optional($merchant->merchant_category)->name,
+			'category' => (string)optional($merchant->merchant_category)->name,
+
 		];
 	}
 }

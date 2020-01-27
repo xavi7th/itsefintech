@@ -21,6 +21,8 @@ class AdminMerchantTransformer
 		return [
 			'id' => (int)$merchant->id,
 			'name' => (string)$merchant->name,
+			'address' => (string)$merchant->address,
+			'category' => (string)$merchant->merchant_category->name,
 			'unique_code' => (string)$merchant->unique_code,
 			'email' => (string)$merchant->email,
 			'phone' => (string)$merchant->phone,

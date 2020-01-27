@@ -19,28 +19,19 @@
               <tr>
                 <th>ID</th>
                 <th>Name</th>
+                <th>Category</th>
                 <th>Email</th>
                 <th>Phone</th>
+                <th>Address</th>
                 <th>Merchant Code</th>
                 <th>Status</th>
-                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
               <tr v-for="merchant in merchants" :key="merchant.id">
                 <td>{{ merchant.id }}</td>
-                <td>{{ merchant.name }}</td>
-                <td>{{ merchant.email }}</td>
-                <td>{{ merchant.phone }}</td>
-                <td>{{ merchant.unique_code }}</td>
-                <td>{{ merchant.is_active ? 'Active' : 'Suspended' }}</td>
                 <td>
-                  <div
-                    class="badge badge-success badge-shadow pointer"
-                    data-toggle="modal"
-                    data-target="#modal-details"
-                    @click="showModal(merchant)"
-                  >Transactions</div>
+                  {{ merchant.name }}
                   <button
                     class="btn btn-pure btn-danger btn-xs btn-bold"
                     @click="suspendMerchant(merchant)"
@@ -52,6 +43,20 @@
                     v-else
                   >Restore</button>
                 </td>
+                <td>{{ merchant.category }}</td>
+                <td>{{ merchant.email }}</td>
+                <td>{{ merchant.phone }}</td>
+                <td>{{ merchant.address }}</td>
+                <td>
+                  {{ merchant.unique_code }}
+                  <div
+                    class="badge badge-success badge-shadow pointer"
+                    data-toggle="modal"
+                    data-target="#modal-details"
+                    @click="showModal(merchant)"
+                  >Transactions</div>
+                </td>
+                <td>{{ merchant.is_active ? 'Active' : 'Suspended' }}</td>
               </tr>
             </tbody>
           </table>
@@ -152,6 +157,32 @@
                       />
                       <span>{{ errors.first('full_name') }}</span>
                     </div>
+
+                    <div
+                      class="form-group mb-5"
+                      :class="{'has-error': errors.has('merchant_category')}"
+                    >
+                      <label for="form-year">
+                        <strong>Category</strong>
+                      </label>
+                      <select
+                        class="form-control"
+                        id="form-year"
+                        name="merchant_category"
+                        v-validate="'required'"
+                        data-vv-as="merchant category"
+                        v-model="details.merchant_category_id"
+                      >
+                        <option :value="null">Merchant Category</option>
+                        <option
+                          v-for="cat in merchant_categories"
+                          :key="cat.id"
+                          :value="cat.id"
+                        >{{ cat.name }}</option>
+                      </select>
+                      <span class="text-danger">{{ errors.first('merchant_category') }}</span>
+                    </div>
+
                     <div class="form-group mb-5" :class="{'has-error': errors.has('email')}">
                       <label for="form-mail">
                         <strong>E-Mail</strong>
@@ -182,6 +213,21 @@
                         name="phone"
                       />
                       <span>{{ errors.first('phone') }}</span>
+                    </div>
+
+                    <div class="form-group mb-5" :class="{'has-error': errors.has('address')}">
+                      <label for="form-address">
+                        <strong>Address</strong>
+                      </label>
+                      <textarea
+                        class="form-control form-control-pill"
+                        name="address"
+                        id="form-address"
+                        v-model="details.address"
+                        data-vv-as="merchant's address"
+                        v-validate="'required'"
+                      ></textarea>
+                      <span>{{ errors.first('address') }}</span>
                     </div>
 
                     <div class="form-group mb-5 mt-20">
@@ -258,9 +304,12 @@
     name: "ManageMerchants",
     data: () => ({
       merchants: [],
+      merchant_categories: [],
       merchantDetails: {},
       sectionLoading: false,
-      details: {}
+      details: {
+        merchant_category_id: null
+      }
     }),
     components: {
       PreLoader
@@ -289,39 +338,42 @@
           text: "Retrieving merchants ..."
         });
         this.sectionLoading = true;
-        axios.get(adminViewMerchants).then(({ data: { merchants } }) => {
-          this.merchants = merchants;
+        axios
+          .get(adminViewMerchants)
+          .then(({ data: { merchants, merchant_categories } }) => {
+            this.merchants = merchants;
+            this.merchant_categories = merchant_categories;
 
-          if (this.$isDesktop) {
-            this.$nextTick(() => {
-              $(function() {
-                $("#merchants-table").DataTable({
-                  responsive: true,
-                  scrollX: false,
-                  language: {
-                    searchPlaceholder: "Search...",
-                    sSearch: ""
-                  }
+            if (this.$isDesktop) {
+              this.$nextTick(() => {
+                $(function() {
+                  $("#merchants-table").DataTable({
+                    responsive: true,
+                    scrollX: false,
+                    language: {
+                      searchPlaceholder: "Search...",
+                      sSearch: ""
+                    }
+                  });
                 });
               });
-            });
-          } else {
-            this.$nextTick(() => {
-              $(function() {
-                $("#merchants-table").DataTable({
-                  responsive: false,
-                  scrollX: true,
-                  language: {
-                    searchPlaceholder: "Search...",
-                    sSearch: ""
-                  }
+            } else {
+              this.$nextTick(() => {
+                $(function() {
+                  $("#merchants-table").DataTable({
+                    responsive: false,
+                    scrollX: true,
+                    language: {
+                      searchPlaceholder: "Search...",
+                      sSearch: ""
+                    }
+                  });
                 });
               });
-            });
-          }
-          this.sectionLoading = false;
-          swal.close();
-        });
+            }
+            this.sectionLoading = false;
+            swal.close();
+          });
       },
 
       deleteMerchant() {
