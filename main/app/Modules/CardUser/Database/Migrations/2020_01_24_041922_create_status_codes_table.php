@@ -15,7 +15,7 @@ class CreateStatusCodesTable extends Migration
 	{
 		Schema::create('status_codes', function (Blueprint $table) {
 			$table->bigIncrements('id');
-			$table->string('vendor_name')->default('PAYSTACK');
+			$table->string('vendor_name')->default('QUICKTELLER');
 			$table->string('code');
 			$table->string('status_message')->nullable();
 			$table->text('description')->nullable();

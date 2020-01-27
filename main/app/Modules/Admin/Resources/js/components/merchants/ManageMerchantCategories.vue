@@ -1,6 +1,6 @@
 <template>
   <main>
-    <page-header pageTitle="Manage Debit Card Types"></page-header>
+    <page-header pageTitle="Manage Merchant Categories"></page-header>
     <div class="content">
       <!-- table basic -->
       <div class="card">
@@ -9,50 +9,40 @@
             type="button"
             class="btn btn-bold btn-pure btn-twitter btn-shadow"
             data-toggle="modal"
-            data-target="#modal-card"
+            data-target="#modal-merchant-category"
             @click="details = {}"
-          >Create Debit Card Type</button>
+          >Create Merchant Category</button>
         </div>
         <div class="card-body">
-          <table class="table table-bordered table-hover" id="debit-card-types">
+          <table class="table table-bordered table-hover" id="merchant-categories">
             <thead>
               <tr>
                 <th>ID</th>
-                <th>Card Type</th>
-                <th>Amount</th>
-                <th>Max Amount</th>
+                <th>Merchant Category</th>
                 <th>Actions</th>
               </tr>
             </thead>
             <tbody>
-              <tr v-for="debitCardType in debitCardTypes" :key="debitCardType.id">
-                <td>{{ debitCardType.id }}</td>
-                <td>{{ debitCardType.card_type_name }}</td>
-                <td>{{ debitCardType.amount | Naira }}</td>
-                <td>{{ debitCardType.max_amount | Naira }}</td>
+              <tr v-for="merchantCategory in merchantCategories" :key="merchantCategory.id">
+                <td>{{ merchantCategory.id }}</td>
+                <td>{{ merchantCategory.name }}</td>
                 <td>
                   <div
                     class="fs-11 btn btn-bold badge badge-success badge-shadow pointer"
                     data-toggle="modal"
-                    data-target="#modal-card"
-                    @click="showEditDebitCardTypeModal(debitCardType)"
-                  >Edit Card Type</div>
-                  <div
-                    class="badge badge-info badge-shadow pointer"
-                    data-toggle="modal"
-                    data-target="#modal-statistics"
-                    @click="showDetailsModal(debitCardType)"
-                  >Statistics</div>
+                    data-target="#modal-merchant-category"
+                    @click="showEditMerchantCategoryModal(merchantCategory)"
+                  >Edit Merchant Category</div>
                 </td>
               </tr>
             </tbody>
           </table>
         </div>
-        <div class="modal modal-right fade" id="modal-card" tabindex="-1">
+        <div class="modal modal-right fade" id="modal-merchant-category" tabindex="-1">
           <div class="modal-dialog">
             <div class="modal-content">
               <div class="modal-header">
-                <!-- <h4 class="modal-title">Add Debit Card</h4> -->
+                <!-- <h4 class="modal-title">Add Merchant Category</h4> -->
                 <button type="button" class="close" data-dismiss="modal">
                   <span aria-hidden="true">&times;</span>
                 </button>
@@ -62,63 +52,29 @@
                 <div class="col-md-12">
                   <div class="card">
                     <div class="card-title flex j-c-between">
-                      <h3>Add New card</h3>
+                      <h3>Add New Merchant Category</h3>
                     </div>
 
                     <div class="card-body py-0">
                       <div class="card-row">
-                        <form class="m-25" @submit.prevent="createDebitCardType">
+                        <form class="m-25" @submit.prevent="createMerchantCategory">
                           <div
                             class="form-group mb-5"
-                            :class="{'has-error': errors.has('card_name')}"
+                            :class="{'has-error': errors.has('merchant_category_name')}"
                           >
                             <label for="form-full-name">
-                              <strong>Card Type Name</strong>
+                              <strong>Merchant Category Name</strong>
                             </label>
                             <input
                               type="text"
                               class="form-control form-control-pill"
                               id="form-full-name"
-                              v-model="details.card_type_name"
+                              v-model="details.name"
                               v-validate="'required'"
-                              data-vv-as="debit card type name"
-                              name="card_name"
+                              data-vv-as="merchant category name"
+                              name="merchant_category_name"
                             />
-                            <span>{{ errors.first('card_name') }}</span>
-                          </div>
-                          <div class="form-group mb-5" :class="{'has-error': errors.has('amount')}">
-                            <label for="form-full-name">
-                              <strong>Amount</strong>
-                            </label>
-                            <input
-                              type="text"
-                              class="form-control form-control-pill"
-                              id="form-full-name"
-                              v-model="details.amount"
-                              v-validate="'required|numeric'"
-                              data-vv-as="debit card amount"
-                              name="amount"
-                            />
-                            <span>{{ errors.first('amount') }}</span>
-                          </div>
-
-                          <div
-                            class="form-group mb-5"
-                            :class="{'has-error': errors.has('max_amount')}"
-                          >
-                            <label for="form-full-name">
-                              <strong>Max Amount</strong>
-                            </label>
-                            <input
-                              type="text"
-                              class="form-control form-control-pill"
-                              id="form-full-name"
-                              v-model="details.max_amount"
-                              v-validate="'required|numeric'"
-                              data-vv-as="maximum debit card funding amount"
-                              name="max_amount"
-                            />
-                            <span>{{ errors.first('max_amount') }}</span>
+                            <span>{{ errors.first('merchant_category_name') }}</span>
                           </div>
 
                           <div class="form-group mt-20">
@@ -130,62 +86,12 @@
                             <button
                               type="button"
                               class="btn btn-rss btn-round btn-block btn-bold"
-                              @click="editDebitCardType"
+                              @click="editMerchantCategory"
                               data-dismiss="modal"
                               v-else
                             >Edit</button>
                           </div>
                         </form>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="modal-footer">
-                <button
-                  type="button"
-                  class="btn btn-bold btn-pure btn-secondary"
-                  data-dismiss="modal"
-                >Close</button>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="modal modal-left fade" id="modal-statistics" tabindex="-1">
-          <div class="modal-dialog">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h4 class="modal-title">{{ debitCardTypeStatistics.card_type_name }}' statistics</h4>
-                <button type="button" class="close" data-dismiss="modal">
-                  <span aria-hidden="true">&times;</span>
-                </button>
-              </div>
-              <div class="modal-body">
-                <div class="col-md-12">
-                  <div class="card overflow-hidden">
-                    <div class="card-body py-0">
-                      <div class="card-row">
-                        <div class="table-responsive">
-                          <table class="table table-striped">
-                            <thead>
-                              <tr>
-                                <th>Field</th>
-                                <th>Value</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              <tr
-                                v-for="(value, property, idx) in debitCardTypeStatistics"
-                                :key="idx"
-                              >
-                                <td v-if="property != 'requester'">{{ slugToString(property) }}</td>
-                                <td>
-                                  <span v-if="property != 'requester'">{{ value }}</span>
-                                </td>
-                              </tr>
-                            </tbody>
-                          </table>
-                        </div>
                       </div>
                     </div>
                   </div>
@@ -208,16 +114,15 @@
 
 <script>
   import {
-    adminViewDebitCardTypes,
-    adminEditDebitCardType,
-    adminCreateDebitCardType
+    adminViewMerchantCategories,
+    adminEditMerchantCategory,
+    adminCreateMerchantCategory
   } from "@admin-assets/js/config";
   import PreLoader from "@admin-components/misc/PageLoader";
   export default {
-    name: "ManageDebitCardTypes",
+    name: "ManageMerchantCategories",
     data: () => ({
-      debitCardTypes: {},
-      debitCardTypeStatistics: {},
+      merchantCategories: [],
       sectionLoading: false,
       details: {}
     }),
@@ -225,7 +130,7 @@
       PreLoader
     },
     created() {
-      this.getDebitCardTypes();
+      this.getMerchantCategories();
     },
     mounted() {
       this.$emit("page-loaded");
@@ -233,32 +138,28 @@
     methods: {
       slugToString(slug) {
         let words = slug.split("_");
-
         for (let i = 0; i < words.length; i++) {
           let word = words[i];
           words[i] = word.charAt(0).toUpperCase() + word.slice(1);
         }
         return words.join(" ");
       },
-      showDetailsModal(debitCardTypeStatistics) {
-        this.debitCardTypeStatistics = debitCardTypeStatistics;
+      showEditMerchantCategoryModal(merchantCategoryDetails) {
+        this.details = merchantCategoryDetails;
       },
-      showEditDebitCardTypeModal(debitCardTypeDetails) {
-        this.details = debitCardTypeDetails;
-      },
-      getDebitCardTypes() {
+      getMerchantCategories() {
         BlockToast.fire({
-          text: "loading debit cards..."
+          text: "loading merchant categories..."
         });
         axios
-          .get(adminViewDebitCardTypes)
-          .then(({ data: { debit_card_types } }) => {
-            this.debitCardTypes = debit_card_types;
+          .get(adminViewMerchantCategories)
+          .then(({ data: { merchant_categories } }) => {
+            this.merchantCategories = merchant_categories;
 
             if (this.$isDesktop) {
               this.$nextTick(() => {
                 $(function() {
-                  $("#debit-card-types").DataTable({
+                  $("#merchant-categories").DataTable({
                     responsive: true,
                     scrollX: false,
                     language: {
@@ -271,7 +172,7 @@
             } else {
               this.$nextTick(() => {
                 $(function() {
-                  $("#debit-card-types").DataTable({
+                  $("#merchant-categories").DataTable({
                     responsive: false,
                     scrollX: true,
                     language: {
@@ -286,7 +187,7 @@
             swal.close();
           });
       },
-      createDebitCardType() {
+      createMerchantCategory() {
         this.$validator.validateAll().then(result => {
           if (!result) {
             Toast.fire({
@@ -296,21 +197,22 @@
             });
           } else {
             BlockToast.fire({
-              text: "creating card type..."
+              text: "creating merchant category..."
             });
             this.sectionLoading = true;
 
             axios
-              .post(adminCreateDebitCardType, {
+              .post(adminCreateMerchantCategory, {
                 ...this.details
               })
-              .then(({ status, data: { rsp } }) => {
+              .then(({ status, data: { merchant_category } }) => {
                 if (undefined !== status && status == 201) {
                   this.details = {};
+                  this.merchantCategories.push(merchant_category);
                   this.sectionLoading = false;
                   Toast.fire({
                     title: "Created",
-                    text: `Debit Cards of this type can now be created`,
+                    text: `Merchants of this category can now be created`,
                     icon: "success",
                     position: "center"
                   });
@@ -330,7 +232,7 @@
         });
       },
 
-      editDebitCardType(debit_card_type) {
+      editMerchantCategory(merchant_category) {
         this.$validator.validateAll().then(result => {
           if (!result) {
             Toast.fire({
@@ -340,22 +242,22 @@
             });
           } else {
             BlockToast.fire({
-              text: "creating card type..."
+              text: "creating merchant category..."
             });
 
             this.sectionLoading = true;
             axios
-              .put(adminEditDebitCardType(this.details.id), {
+              .put(adminEditMerchantCategory(this.details.id), {
                 ...this.details
               })
               .then(({ status, data: { rsp } }) => {
                 if (undefined !== status && status == 204) {
-                  // debit_card_type = this.details;
+                  // merchant_category = this.details;
                   this.sectionLoading = false;
                   this.details = {};
                   Toast.fire({
                     title: "Edited",
-                    text: `The card type has been edited`,
+                    text: `The merchant category has been edited`,
                     icon: "info",
                     position: "center"
                   });
@@ -365,7 +267,7 @@
                 if (err.response.status == 500) {
                   swal.fire({
                     title: "Error",
-                    text: `Something went wrong on server. Creation not successful.`,
+                    text: `Something went wrong on server. Editing not successful.`,
                     icon: "error"
                   });
                 }

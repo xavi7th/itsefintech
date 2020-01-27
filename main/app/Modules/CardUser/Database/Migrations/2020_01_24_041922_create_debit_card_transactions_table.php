@@ -22,13 +22,13 @@ class CreateDebitCardTransactionsTable extends Migration
 			$table->double('amount');
 			$table->string('trans_description');
 			$table->string('trans_category');
+			$table->enum('trans_type', ['debit', 'credit'])->default('debit');
 			$table->string('paystack_id')->nullable();
 			$table->string('paystack_ref')->nullable();
 			$table->string('paystack_message')->nullable();
 			$table->string('quickteller_req_ref')->nullable();
 			$table->string('quickteller_trans_ref')->nullable();
 			$table->string('quickteller_res_code')->nullable();
-			$table->enum('trans_type', ['debit', 'credit'])->default('debit');
 			$table->boolean('is_unresolved')->default(false);
 
 			$table->timestamps();

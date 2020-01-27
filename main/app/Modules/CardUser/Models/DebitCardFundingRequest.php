@@ -45,6 +45,7 @@ class DebitCardFundingRequest extends Model
 	static function cardUserRoutes()
 	{
 		Route::group(['namespace' => '\App\Modules\CardUser\Models'], function () {
+			Route::post('debit-card-funding-request/validate', 'DebitCardFundingRequest@validateDebitCardFunding')->middleware('auth:card_user');
 			Route::post('debit-card-funding-request/create', 'DebitCardFundingRequest@requestDebitCardFunding')->middleware('auth:card_user');
 			Route::get('debit-card-funding-request/status', 'DebitCardFundingRequest@checkDebitCardFundingStatus')->middleware('auth:card_user');
 		});
@@ -53,6 +54,11 @@ class DebitCardFundingRequest extends Model
 	/**
 	 * ! Card User routes
 	 */
+
+	public function validateDebitCardFunding(RequestDebitCardFundingValidation $request)
+	{
+		return response()->json(['message' => true], 202);
+	}
 
 	public function requestDebitCardFunding(RequestDebitCardFundingValidation $request)
 	{

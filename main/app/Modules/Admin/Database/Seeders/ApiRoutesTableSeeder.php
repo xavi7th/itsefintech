@@ -151,6 +151,15 @@ class ApiRoutesTableSeeder extends Seeder
 					}',
 					'description' => 'View Sales Reps',
 				],
+				[
+					'path' => '/merchant-categories',
+					'name' => 'admin.merchant-categories.view',
+					'meta' => '{title: APP_NAME + \' | View Merchant Categories\',
+						iconClass: \'user\',
+						menuName: \'View Merchant Categories\'
+					}',
+					'description' => 'View Merchant Categories',
+				],
 
 				[
 					'path' => '/merchants',

@@ -24,7 +24,9 @@ class DebitCardTransactionsTransformer
 			'trans_description' => (string)$card_transaction->trans_description,
 			'trans_category' => (string)$card_transaction->trans_category,
 			'trans_type' => (string)$card_transaction->trans_type,
-			'trans_date' => (string)$card_transaction->created_at->toDateString(),
+			'trans_date' => (string)$card_transaction->created_at->toFormattedDateString(),
+			// 'trans_date' => (string)$card_transaction->created_at->format('l jS \\of F Y h:i:s A')  // Thursday 25th of December 1975 02:15:16 PM,
+
 		];
 	}
 

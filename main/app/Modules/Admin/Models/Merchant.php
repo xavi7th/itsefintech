@@ -8,10 +8,12 @@ use Illuminate\Auth\Authenticatable;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Database\Eloquent\Model;
 use App\Modules\Admin\Models\ActivityLog;
+use App\Modules\Admin\Models\MerchantCategory;
 use App\Modules\Admin\Models\MerchantTransaction;
 use Illuminate\Foundation\Auth\Access\Authorizable;
 use App\Modules\Admin\Transformers\AdminMerchantTransformer;
 use App\Modules\Admin\Http\Requests\CreateMerchantValidation;
+use App\Modules\CardUser\Transformers\CardIUserMerchantTransformer;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
 
@@ -36,6 +38,18 @@ class Merchant  extends Model implements AuthenticatableContract, AuthorizableCo
 		return $this->hasMany(MerchantTransaction::class);
 	}
 
+	public function merchant_category()
+	{
+		return $this->belongsTo(MerchantCategory::class);
+	}
+
+	static function cardUserRoutes()
+	{
+		Route::group(['namespace' => '\App\Modules\Admin\Models'], function () {
+			Route::get('merchant-list', 'Merchant@viewAllMerchants');
+		});
+	}
+
 	static function adminRoutes()
 	{
 		Route::group(['namespace' => '\App\Modules\Admin\Models'], function () {
@@ -47,12 +61,22 @@ class Merchant  extends Model implements AuthenticatableContract, AuthorizableCo
 	}
 
 	/**
+	 * ! Card User Routes
+	 */
+
+	public function viewAllMerchants()
+	{
+		return (new CardIUserMerchantTransformer)->collectionTransformer(self::all(), 'transform');
+	}
+
+	/**
 	 * ! Admin routes
 	 */
 	public function getAllMerchants()
 	{
 		return (new AdminMerchantTransformer)->collectionTransformer(self::all(), 'transformForAdminViewMerchants');
 	}
+
 	public function createMerchant(CreateMerchantValidation $request)
 	{
 
@@ -66,6 +90,7 @@ class Merchant  extends Model implements AuthenticatableContract, AuthorizableCo
 		$merchant->is_active = true;
 		return response()->json(['merchant' => $merchant], 201);
 	}
+
 	public function suspendMerchant(Merchant $merchant)
 	{
 		$merchant->is_active = false;

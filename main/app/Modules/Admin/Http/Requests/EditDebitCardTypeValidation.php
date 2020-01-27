@@ -7,7 +7,7 @@ use \Illuminate\Contracts\Validation\Validator;
 use App\Modules\CardUser\Exceptions\AxiosValidationExceptionBuilder;
 
 
-class DebitCardTypeCreationValidation extends FormRequest
+class EditDebitCardTypeValidation extends FormRequest
 {
 	/**
 	 * Get the validation rules that apply to the request.
@@ -18,7 +18,7 @@ class DebitCardTypeCreationValidation extends FormRequest
 	{
 		return [
 
-			'card_type_name' => 'required|string|unique:debit_card_types,card_type_name',
+			'card_type_name' => 'required|string',
 			'amount' => 'required|numeric',
 			'max_amount' => 'required|numeric',
 		];

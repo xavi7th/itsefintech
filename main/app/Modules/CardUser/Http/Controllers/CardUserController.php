@@ -16,6 +16,7 @@ use App\Modules\Admin\Models\VoucherRequest;
 use App\Modules\Admin\Models\Voucher;
 use App\Modules\CardUser\Models\DebitCardFundingRequest;
 use App\Modules\CardUser\Models\DebitCardTransaction;
+use App\Modules\Admin\Models\Merchant;
 
 class CardUserController extends Controller
 {
@@ -51,6 +52,8 @@ class CardUserController extends Controller
 			DebitCardTransaction::cardUserRoutes();
 
 			DebitCardFundingRequest::cardUserRoutes();
+
+			Merchant::cardUserRoutes();
 		});
 	}
 

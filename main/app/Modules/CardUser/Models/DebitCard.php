@@ -80,7 +80,7 @@ class DebitCard extends Model
 
 	public function debit_card_transactions()
 	{
-		return $this->hasMany(DebitCardTransaction::class);
+		return $this->hasMany(DebitCardTransaction::class)->latest();
 	}
 
 	public function debit_card_type()

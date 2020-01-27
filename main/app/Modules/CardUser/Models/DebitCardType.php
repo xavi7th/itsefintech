@@ -9,6 +9,7 @@ use App\Modules\Admin\Models\ActivityLog;
 use App\Modules\CardUser\Models\DebitCard;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Modules\CardUser\Models\DebitCardRequest;
+use App\Modules\Admin\Http\Requests\EditDebitCardTypeValidation;
 use App\Modules\Admin\Transformers\AdminDebitCardTypeTransformer;
 use App\Modules\Admin\Http\Requests\DebitCardTypeCreationValidation;
 
@@ -17,7 +18,7 @@ class DebitCardType extends Model
 	use SoftDeletes;
 
 	protected $fillable = [
-		'card_type_name', 'amount'
+		'card_type_name', 'amount', 'max_amount'
 	];
 
 	public function debit_cards()
@@ -87,7 +88,7 @@ class DebitCardType extends Model
 		}
 	}
 
-	public function editDebitCardType(DebitCardTypeCreationValidation $request, DebitCardType $debit_card_type)
+	public function editDebitCardType(EditDebitCardTypeValidation $request, DebitCardType $debit_card_type)
 	{
 
 		try {
@@ -95,7 +96,7 @@ class DebitCardType extends Model
 
 			$debit_card_type->update($request->all());
 
-			ActivityLog::logAdminActivity('Created edited Debit card type: ' . $debit_card_type->card_type_name);
+			ActivityLog::logAdminActivity('Edited Debit card type details: ' . $debit_card_type->card_type_name);
 
 			DB::commit();
 			return response()->json(['rsp' => true], 204);

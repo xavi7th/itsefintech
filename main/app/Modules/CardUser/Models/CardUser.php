@@ -184,7 +184,7 @@ class CardUser extends User
 
 	public function debit_card_transactions()
 	{
-		return $this->hasMany(DebitCardTransaction::class);
+		return $this->hasMany(DebitCardTransaction::class)->latest();
 	}
 
 	public function due_for_credit()

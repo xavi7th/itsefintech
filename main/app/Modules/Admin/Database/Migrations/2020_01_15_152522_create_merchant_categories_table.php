@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateDebitCardTypesTable extends Migration
+class CreateMerchantCategoriesTable extends Migration
 {
 	/**
 	 * Run the migrations.
@@ -13,14 +13,11 @@ class CreateDebitCardTypesTable extends Migration
 	 */
 	public function up()
 	{
-		Schema::create('debit_card_types', function (Blueprint $table) {
+		Schema::create('merchant_categories', function (Blueprint $table) {
 			$table->bigIncrements('id');
-			$table->string('card_type_name');
-			$table->double('amount'); //titanium black & titanium platinum
-			$table->double('max_amount')->nullable();
+			$table->string('name');
 
 			$table->timestamps();
-			$table->softDeletes();
 		});
 	}
 
@@ -31,6 +28,6 @@ class CreateDebitCardTypesTable extends Migration
 	 */
 	public function down()
 	{
-		Schema::dropIfExists('debit_cards');
+		Schema::dropIfExists('merchant_categories');
 	}
 }

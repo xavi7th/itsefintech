@@ -70,6 +70,9 @@ export const adminShowFullBvnNumber = id => apiBaseUrl + 'card-user/' + id + '/b
  * @param {id} id int
  */
 
+export const adminViewMerchantCategories = apiBaseUrl + 'merchant-categories'
+export const adminEditMerchantCategory = id => apiBaseUrl + 'merchant-category/' + id
+export const adminCreateMerchantCategory = apiBaseUrl + 'merchant-category'
 export const adminViewMerchants = apiBaseUrl + 'merchants'
 export const adminCreateMerchant = apiBaseUrl + 'merchant/create'
 export const adminSuspendMerchant = id => apiBaseUrl + 'merchant/' + id + '/suspend'

@@ -20,7 +20,8 @@ class AdminDebitCardTypeTransformer
 		return [
 			'id' => (int)$debit_card_type->id,
 			'card_type_name' => (string)$debit_card_type->card_type_name,
-			'amount' => (float)$debit_card_type->amount
+			'amount' => (float)$debit_card_type->amount,
+			'max_amount' => (float)$debit_card_type->max_amount,
 		];
 	}
 }

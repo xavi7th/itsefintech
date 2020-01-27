@@ -26,6 +26,7 @@ use App\Modules\SalesRep\Transformers\SalesRepDebitCardRequestTransformer;
 use App\Modules\Admin\Models\Voucher;
 use App\Modules\Admin\Models\VoucherRequest;
 use App\Modules\CardUser\Models\DebitCardFundingRequest;
+use App\Modules\Admin\Models\MerchantCategory;
 
 class AdminController extends Controller
 {
@@ -114,6 +115,8 @@ class AdminController extends Controller
 				VoucherRequest::adminRoutes();
 
 				DebitCardFundingRequest::adminRoutes();
+
+				MerchantCategory::adminRoutes();
 			});
 
 			Route::group(['middleware' => ['auth:admin', 'admins']], function () {

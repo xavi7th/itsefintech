@@ -21,7 +21,7 @@ class RequestDebitCardFundingValidation extends FormRequest
 	public function rules()
 	{
 		return [
-			'amount' => 'required|numeric|min:1000|max:200000',
+			'amount' => 'required|numeric',
 			'debit_card_id' => 'required|exists:debit_cards,id',
 		];
 	}
@@ -46,8 +46,6 @@ class RequestDebitCardFundingValidation extends FormRequest
 	public function messages()
 	{
 		return [
-			'amount.min' => 'The minimum amount that can be funded in your credit card is ₦1,000',
-			'amount.max' => 'The maximum amount that can be funded in your credit card is ₦200,000',
 			'debit_card_id.exists' => 'This Credit Card does not exist in our records',
 		];
 	}
@@ -66,24 +64,29 @@ class RequestDebitCardFundingValidation extends FormRequest
 			 * Check if the card belongs to the user
 			 */
 			$debit_card = DebitCard::find($this->debit_card_id);
+			if (!$debit_card) {
+				return;
+			}
 
 			if ($this->user()->id !== optional($debit_card->card_user)->id) {
-				$validator->errors()->add('Unauthorised', 'This card does not belong to you');
+				$validator->errors()->add('unauthorised', 'This card does not belong to you');
+				return;
+			}
+
+			if ($this->amount > optional($debit_card->debit_card_type)->max_amount) {
+				$validator->errors()->add('unauthorised', 'Maximum card funding amount exceeded');
 				return;
 			}
 
 			/**
 			 * Check if there is a pending funding request for this card
 			 */
-
 			if ($debit_card->debit_card_funding_request()->exists()) {
-				$validator->errors()->add('Unauthorised', 'You already have a pending funding request for this card.');
+				$validator->errors()->add('unauthorised', 'You already have a pending funding request for this card.');
 				return;
 			}
 		});
 	}
-
-
 
 	/**
 	 * Overwrite the validator response so we can customise it per the structure requested from the fronend

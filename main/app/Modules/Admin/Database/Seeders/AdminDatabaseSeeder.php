@@ -20,6 +20,7 @@ class AdminDatabaseSeeder extends Seeder
 
 		$this->call(ApiRoutesTableSeeder::class);
 		$this->call(AdminsTableSeeder::class);
+		$this->call(MerchantCategoriesTableSeeder::class);
 		$this->call(CardUserCategoriesTableSeeder::class);
 		$this->call(ApiRoutesPermissionsTableSeeder::class);
 		$this->call(DebitCardTypesTableSeeder::class);

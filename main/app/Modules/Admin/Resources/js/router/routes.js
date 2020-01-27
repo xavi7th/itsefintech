@@ -285,6 +285,16 @@ export const allRoutes = [
                 },
             },
             {
+                path: '/users/merchant-categories',
+                component: adminView( 'merchants/ManageMerchantCategories' ),
+                name: 'admin.merchant-categories.view',
+                meta: {
+                    title: APP_NAME + ' | View MerchantCategories',
+                    iconClass: 'user',
+                    menuName: 'View Merchant Categories'
+                },
+            },
+            {
                 path: '/users/merchants',
                 component: adminView( 'merchants/ManageMerchants' ),
                 name: 'admin.merchants.view',
