@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Route;
 use App\Modules\CardUser\Models\CardUser;
 use App\Modules\CardUser\Http\Requests\LoginValidation;
 use App\Modules\CardUser\Transformers\CardUserTransformer;
+use App\Modules\CardUser\Notifications\LoginAttempt;
 
 /**
  *
@@ -49,6 +50,8 @@ class LoginController extends Controller
 		if (!$token = auth()->guard('card_user')->attempt($credentials)) {
 			return response()->json(['error' => true, 'rsp' => 'Invalid details supplied'], 401);
 		}
+
+		auth('card_user')->user()->notify(new LoginAttempt);
 
 		return $this->respondWithToken($token);
 	}

@@ -62,6 +62,17 @@ class User extends Authenticatable implements JWTSubject
 		}
 	}
 
+	/**
+	 * Route notifications for the Nexmo channel.
+	 *
+	 * @param  \Illuminate\Notifications\Notification  $notification
+	 * @return string
+	 */
+	public function routeNotificationForNexmo($notification)
+	{
+		return $this->phone;
+	}
+
 	public function toFlare(): array
 	{
 		// Only `id` will be sent to Flare.

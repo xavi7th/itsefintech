@@ -11,7 +11,7 @@ use App\Modules\CardUser\Models\CardUser;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use App\Modules\CardUser\Transformers\CardUserTransformer;
 use App\Modules\CardUser\Http\Requests\RegistrationValidation;
-
+use App\Modules\CardUser\Notifications\AccountCreated;
 
 class RegisterController extends Controller
 {
@@ -63,7 +63,7 @@ class RegisterController extends Controller
 		event(new Registered($card_user = $this->create($request->all())));
 
 		/** Create OTP */
-		$otp = $card_user->createOTP();
+		// $otp = $card_user->createOTP();
 
 		/** Send OTP code */
 
@@ -102,6 +102,8 @@ class RegisterController extends Controller
 		]);
 
 		Log::critical($card_user->email . ' registered an account on the site.');
+
+		$card_user->notify(new AccountCreated);
 
 		return $card_user;
 	}

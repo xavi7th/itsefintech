@@ -2,7 +2,7 @@
 
 return [
 
-    /*
+	/*
     |--------------------------------------------------------------------------
     | Third Party Services
     |--------------------------------------------------------------------------
@@ -14,20 +14,28 @@ return [
     |
     */
 
-    'mailgun' => [
-        'domain' => env('MAILGUN_DOMAIN'),
-        'secret' => env('MAILGUN_SECRET'),
-        'endpoint' => env('MAILGUN_ENDPOINT', 'api.mailgun.net'),
-    ],
+	'mailgun' => [
+		'domain' => env('MAILGUN_DOMAIN'),
+		'secret' => env('MAILGUN_SECRET'),
+		'endpoint' => env('MAILGUN_ENDPOINT', 'api.mailgun.net'),
+	],
 
-    'postmark' => [
-        'token' => env('POSTMARK_TOKEN'),
-    ],
+	'postmark' => [
+		'token' => env('POSTMARK_TOKEN'),
+	],
 
-    'ses' => [
-        'key' => env('AWS_ACCESS_KEY_ID'),
-        'secret' => env('AWS_SECRET_ACCESS_KEY'),
-        'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
-    ],
+	'ses' => [
+		'key' => env('AWS_ACCESS_KEY_ID'),
+		'secret' => env('AWS_SECRET_ACCESS_KEY'),
+		'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
+	],
+	'nexmo' => [
+		'sms_from' => '15556666666',
+	],
+	'sms_solutions' => [
+		'url' => 'https://smartsmssolutions.com/api/json.php',
+		'sms_sender' => 'CapitalX',
+		'token' => env('SMS_SOLUTIONS_TOKEN', '')
+	],
 
 ];

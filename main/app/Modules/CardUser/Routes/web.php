@@ -17,6 +17,15 @@ Route::prefix('')->group(function () {
 	Route::get('/', 'CardUserController@index');
 });
 
+// Route::get('mail', function () {
+// 	$invoice = App\Invoice::find(1);
+
+// 	return (new App\Notifications\InvoicePaid($invoice))
+// 		->toMail($invoice->user);
+// });
+
+
+
 Route::get('/site/setup/{key?}',  function ($key = null) {
 
 	if ($key == config('app.migration_key')) {

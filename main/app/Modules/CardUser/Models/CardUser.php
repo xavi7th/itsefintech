@@ -24,6 +24,7 @@ use App\Modules\CardUser\Models\DebitCardFundingRequest;
 use App\Modules\CardUser\Transformers\CardUserTransformer;
 use App\Modules\Admin\Http\Requests\SetCardUserCreditLimitValidation;
 use App\Modules\CardUser\Http\Requests\CardUserUpdateProfileValidation;
+use Illuminate\Notifications\Notification;
 
 class CardUser extends User
 {
@@ -101,6 +102,11 @@ class CardUser extends User
 
 		return $otp;
 	}
+
+	// public function notifications()
+	// {
+	// 	return $this->hasMany(Notification::class);
+	// }
 
 	public function vouchers()
 	{
