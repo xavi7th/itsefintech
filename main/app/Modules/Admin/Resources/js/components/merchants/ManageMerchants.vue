@@ -18,6 +18,7 @@
             <thead>
               <tr>
                 <th>ID</th>
+                <th>Image</th>
                 <th>Name</th>
                 <th>Category</th>
                 <th>Email</th>
@@ -30,6 +31,11 @@
             <tbody>
               <tr v-for="merchant in merchants" :key="merchant.id">
                 <td>{{ merchant.id }}</td>
+                <td>
+                  <a :href="merchant.merchant_img" target="_blank" rel="noopener noreferrer">
+                    <img :src="merchant.merchant_img" class="img-responsive" />
+                  </a>
+                </td>
                 <td>
                   {{ merchant.name }}
                   <button
@@ -142,6 +148,24 @@
                 <div class="modal-body">
                   <pre-loader v-if="sectionLoading" class="section-loader"></pre-loader>
                   <form class="m-25">
+                    <div class="form-group mb-5" :class="{'has-error': errors.has('merchant_img')}">
+                      <input
+                        type="file"
+                        class="form-control form-control-pill"
+                        id="form-id-card"
+                        v-validate="'required'"
+                        data-vv-as="merchant image"
+                        name="merchant_img"
+                        ref="merchant_img"
+                        @change="attachFile"
+                        accept="image/*, application/pdf"
+                      />
+                      <label for="form-id-card">
+                        <strong>{{ details.fileUploadName }}</strong>
+                      </label>
+                      <span>{{ errors.first('merchant_img') }}</span>
+                    </div>
+
                     <div class="form-group mb-5" :class="{'has-error': errors.has('full_name')}">
                       <label for="form-full-name">
                         <strong>Merchant Name</strong>
@@ -304,6 +328,7 @@
     name: "ManageMerchants",
     data: () => ({
       merchants: [],
+      fileUploadName: "upload ID card",
       merchant_categories: [],
       merchantDetails: {},
       sectionLoading: false,
@@ -321,6 +346,11 @@
       this.$emit("page-loaded");
     },
     methods: {
+      attachFile() {
+        this.fileUploadName = this.$refs.merchant_img.files[0].name;
+
+        this.details.merchant_img = this.$refs.merchant_img.files[0];
+      },
       showModal(merchantDetails) {
         this.merchantDetails = merchantDetails;
       },
@@ -474,8 +504,18 @@
               text: "Creating merchant..."
             });
 
+            let formData = new FormData();
+
+            _.forEach(this.details, (val, key) => {
+              formData.append(key, val);
+            });
+
             axios
-              .post(adminCreateMerchant, { ...this.details })
+              .post(adminCreateMerchant, formData, {
+                headers: {
+                  "Content-Type": "multipart/form-data"
+                }
+              })
               .then(({ status, data: { merchant } }) => {
                 if (undefined !== status && status == 201) {
                   this.details = {};

@@ -27,6 +27,7 @@ class AdminMerchantTransformer
 			'email' => (string)$merchant->email,
 			'phone' => (string)$merchant->phone,
 			'is_active' => (boolean)$merchant->is_active,
+			'merchant_img' => (string)$merchant->merchant_img
 
 		];
 	}

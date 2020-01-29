@@ -7,6 +7,7 @@ use Illuminate\Support\Str;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 use App\Modules\Admin\Models\ActivityLog;
 use App\Modules\Admin\Models\MerchantCategory;
 use App\Modules\Admin\Models\MerchantTransaction;
@@ -23,7 +24,7 @@ class Merchant  extends Model implements AuthenticatableContract, AuthorizableCo
 	use Authenticatable, Authorizable;
 
 	protected $fillable = [
-		'name', 'unique_code', 'email', 'phone', 'password', 'merchant_category_id', 'address'
+		'name', 'unique_code', 'email', 'phone', 'password', 'merchant_category_id', 'address', 'merchant_img'
 	];
 
 	const DASHBOARD_ROUTE_PREFIX = 'merchant-area';
@@ -85,11 +86,20 @@ class Merchant  extends Model implements AuthenticatableContract, AuthorizableCo
 		if ($request->auto_generate) {
 			$prefix = strtoupper(Str::slug(substr($request->name, 0, 4))) . '-';
 			$merchant_id = unique_random('merchants', 'unique_code', $prefix, 8);
-			$merchant = Merchant::create(Arr::add($request->except('unique_code'), 'unique_code', $merchant_id));
+
+			$url = request()->file('merchant_img')->store('public/merchant_img');
+			// Storage::setVisibility($url, 'public');
+
+			/** Replace the public part of the url with storage to make it accessible on the frontend */
+			$url = Str::replaceFirst('public', '/storage', $url);
+
+			$merchant = Merchant::create(Arr::add(Arr::add($request->except('unique_code'), 'unique_code', $merchant_id), 'merchant_img', $url));
 		} else {
-			$merchant = Merchant::create($request->all());
+			$merchant = Merchant::create(Arr::add($request->all(), 'merchant_img', $url));
 		}
 		$merchant->is_active = true;
+		$merchant->merchant_img = $url;
+		$merchant->save();
 		return response()->json(['merchant' => $merchant], 201);
 	}
 

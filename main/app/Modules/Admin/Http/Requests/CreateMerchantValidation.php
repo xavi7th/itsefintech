@@ -2,6 +2,7 @@
 
 namespace App\Modules\Admin\Http\Requests;
 
+use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
 use \Illuminate\Contracts\Validation\Validator;
 use App\Modules\CardUser\Exceptions\AxiosValidationExceptionBuilder;
@@ -21,7 +22,11 @@ class CreateMerchantValidation extends FormRequest
 			'email' => 'required|email|unique:merchants,email',
 			'name' => 'required|string|unique:merchants,name',
 			'phone' => 'required|string|unique:merchants,phone',
-			'auto_generate' => 'required|boolean',
+			'merchant_img' => 'required|mimes:jpeg,bmp,png',
+			'auto_generate' => [
+				'required',
+				Rule::in([true, false, 'true', 'false']),
+			],
 			'unique_code' => 'required_if:auto_generate,false|nullable|alpha_dash|unique:merchants,unique_code',
 		];
 	}
@@ -46,6 +51,7 @@ class CreateMerchantValidation extends FormRequest
 	public function messages()
 	{
 		return [
+			'email.exists' => 'Invalid details provided',
 			'email.exists' => 'Invalid details provided',
 			// 'primary_contact_name.alpha_dash' => 'The name of the primary contact can only contain alphabets, numbers underscores and dashes',
 			// 'primary_contact_number.required' => 'The phone number of the primary contact is required',

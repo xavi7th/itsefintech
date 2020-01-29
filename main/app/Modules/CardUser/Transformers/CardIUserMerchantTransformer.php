@@ -23,6 +23,7 @@ class CardIUserMerchantTransformer
 			'name' => (string)$merchant->name,
 			'address' => (string)$merchant->address,
 			'category' => (string)optional($merchant->merchant_category)->name,
+			'img' => (string)asset($merchant->merchant_img)
 
 		];
 	}
