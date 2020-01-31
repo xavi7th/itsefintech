@@ -99,7 +99,6 @@ class CardUser extends User
 	public function createOTP()
 	{
 		$otp = unique_random('otps', 'code', null, 4);
-		dd($otp);
 		$this->otp()->create([
 			'code' => $otp
 		]);

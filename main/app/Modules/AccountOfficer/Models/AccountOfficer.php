@@ -71,6 +71,30 @@ class AccountOfficer extends User
 		});
 	}
 
+	static function accountOfficerRoutes()
+	{
+		Route::group(['middleware' => ['auth:account_officer', 'account_officers'], 'namespace' => '\App\Modules\AccountOfficer\Models'], function () {
+
+			Route::post('test-route-permission', 'AccountOfficer@testRoutePermission')->prefix('api');
+
+			Route::get('/{subcat?}', 'AccountOfficer@loadAccountOfficerApplication')->name('accountofficer.dashboard')->where('subcat', '^((?!(api)).)*');
+		});
+	}
+
+	public function loadAccountOfficerApplication()
+	{
+		return view('accountofficer::index');
+	}
+
+	public function testRoutePermission()
+	{
+		$api_route = ApiRoute::where('name', request('route'))->first();
+		if ($api_route) {
+			return ['rsp'  => $api_route->account_officers()->where('user_id', auth('account_officer')->id())->exists()];
+		} else {
+			return response()->json(['rsp' => false], 410);
+		}
+	}
 
 	public function getAllAccountOfficers()
 	{

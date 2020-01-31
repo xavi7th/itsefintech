@@ -71,6 +71,29 @@ class CardAdmin extends User
 		});
 	}
 
+	static function cardAdminRoutes()
+	{
+		Route::group(['namespace' => '\App\Modules\CardAdmin\Models'], function () {
+			Route::post('test-route-permission', 'CardAdmin@testRoutePermission')->prefix('api');
+
+			Route::get('/{subcat?}', 'CardAdmin@loadCardAdminApplication')->name('cardadmin.dashboard')->where('subcat', '^((?!(api)).)*');
+		});
+	}
+
+	public function testRoutePermission()
+	{
+		$api_route = ApiRoute::where('name', request('route'))->first();
+		if ($api_route) {
+			return ['rsp'  => $api_route->card_admins()->where('user_id', auth('card_admin')->id())->exists()];
+		} else {
+			return response()->json(['rsp' => false], 410);
+		}
+	}
+
+	public function loadCardAdminApplication()
+	{
+		return view('cardadmin::index');
+	}
 
 	public function getAllCardAdmins()
 	{

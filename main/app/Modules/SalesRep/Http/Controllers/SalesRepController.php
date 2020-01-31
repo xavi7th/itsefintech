@@ -20,23 +20,7 @@ class SalesRepController extends Controller
 		Route::group(['middleware' => 'web', 'prefix' => SalesRep::DASHBOARD_ROUTE_PREFIX], function () {
 			LoginController::routes();
 
-			Route::group(['middleware' => ['auth:sales_rep', 'sales_reps']], function () {
-
-				Route::group(['prefix' => 'api'], function () {
-					Route::post('test-route-permission', function () {
-						$api_route = ApiRoute::where('name', request('route'))->first();
-						if ($api_route) {
-							return ['rsp'  => $api_route->sales_reps()->where('user_id', auth('sales_rep')->id())->exists()];
-						} else {
-							return response()->json(['rsp' => false], 410);
-						}
-					});
-				});
-
-				Route::get('/{subcat?}', function () {
-					return view('salesrep::index');
-				})->name('salesrep.dashboard')->where('subcat', '^((?!(api)).)*');
-			});
+			SalesRep::salesRepRoutes();
 		});
 	}
 }

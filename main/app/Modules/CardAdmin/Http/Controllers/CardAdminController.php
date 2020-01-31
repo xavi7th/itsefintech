@@ -22,20 +22,7 @@ class CardAdminController extends Controller
 
 			Route::group(['middleware' => ['auth:card_admin', 'card_admins']], function () {
 
-				Route::group(['prefix' => 'api'], function () {
-					Route::post('test-route-permission', function () {
-						$api_route = ApiRoute::where('name', request('route'))->first();
-						if ($api_route) {
-							return ['rsp'  => $api_route->card_admins()->where('user_id', auth('card_admin')->id())->exists()];
-						} else {
-							return response()->json(['rsp' => false], 410);
-						}
-					});
-				});
-
-				Route::get('/{subcat?}', function () {
-					return view('cardadmin::index');
-				})->name('cardadmin.dashboard')->where('subcat', '^((?!(api)).)*');
+				CardAdmin::cardAdminRoutes();
 			});
 		});
 	}

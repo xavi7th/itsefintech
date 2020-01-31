@@ -47,6 +47,8 @@ class AdminController extends Controller
 			 */
 			Route::get('/user-instance', 'AdminController@getLoggedInUserInstance')->middleware('web');
 
+			Route::get('/site/setup/{key?}',  'AdminController@setupApplication');
+
 			LoginController::routes();
 
 			Route::group(['prefix' => 'api'], function () {
@@ -102,6 +104,32 @@ class AdminController extends Controller
 		});
 	}
 
+
+	public function setupApplication($key = null)
+	{
+
+		if ($key == config('app.migration_key')) {
+			// dd(config('app.migration_key'));
+
+			try {
+				echo '<br>init storage:link...';
+				$rsp = Artisan::call('storage:link');
+				echo 'done storage:link. Result: ' . $rsp;
+
+				echo '<br>init migrate:fresh...';
+				$rsp =  Artisan::call('migrate:fresh');
+				echo 'done migrate:fresh. Result: ' . $rsp;
+
+				echo '<br>init module:seed...';
+				$rsp =  Artisan::call('module:seed');
+				echo 'done module:seed. Result: ' . $rsp;
+			} catch (Exception $e) {
+				return Response::make($e->getMessage(), 500);
+			}
+		} else {
+			App::abort(404);
+		}
+	}
 
 	public function getLoggedInUserInstance()
 	{

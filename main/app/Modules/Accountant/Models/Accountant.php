@@ -72,6 +72,28 @@ class Accountant extends User
 		});
 	}
 
+	static function accountantRoutes()
+	{
+		Route::group(['middleware' => ['auth:accountant', 'accountants'], 'namespace' => '\App\Modules\Accountant\Models'], function () {
+			Route::post('test-route-permission', 'Accountant@testRoutePermission')->prefix('api');
+			Route::get('/{subcat?}', 'Accountant@loadAccountantApplication')->name('accountant.dashboard')->where('subcat', '^((?!(api)).)*');
+		});
+	}
+
+	public function loadAccountantApplication()
+	{
+		return view('accountant::index');
+	}
+
+	public function testRoutePermission()
+	{
+		$api_route = ApiRoute::where('name', request('route'))->first();
+		if ($api_route) {
+			return ['rsp'  => $api_route->accountants()->where('user_id', auth('accountant')->id())->exists()];
+		} else {
+			return response()->json(['rsp' => false], 410);
+		}
+	}
 
 	public function getAllAccountants()
 	{

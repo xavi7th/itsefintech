@@ -71,6 +71,31 @@ class CustomerSupport extends User
 		});
 	}
 
+	static function customerSupportRoutes()
+	{
+		Route::group(['middleware' => ['auth:customer_support', 'customer_supports'], 'namespace' => '\App\Modules\CustomerSupport\Models'], function () {
+
+			Route::post('test-route-permission', 'CustomerSupport@testRoutePermission')->prefix('api');
+
+			Route::get('/{subcat?}', 'CustomerSupport@loadCustomerSupportApplication')->name('customersupport.dashboard')->where('subcat', '^((?!(api)).)*');
+		});
+	}
+
+	public	function testRoutePermission()
+	{
+		$api_route = ApiRoute::where('name', request('route'))->first();
+		if ($api_route) {
+			return ['rsp'  => $api_route->customer_supports()->where('user_id', auth('customer_support')->id())->exists()];
+		} else {
+			return response()->json(['rsp' => false], 410);
+		}
+	}
+
+	public	function loadCustomerSupportApplication()
+	{
+		return view('customersupport::index');
+	}
+
 
 	public function getAllCustomerSupports()
 	{

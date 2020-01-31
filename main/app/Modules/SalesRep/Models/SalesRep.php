@@ -83,6 +83,32 @@ class SalesRep extends User
 		});
 	}
 
+	static function salesRepRoutes()
+	{
+		Route::group(['middleware' => ['auth:sales_rep', 'sales_reps'], 'namespace' => '\App\Modules\SalesRep\Models'], function () {
+
+			Route::group(['prefix' => 'api'], function () {
+				Route::post('test-route-permission', 'SalesRep@testRoutePermission');
+			});
+
+			Route::get('/{subcat?}', 'SalesRep@loadSalesRepApplication')->name('salesrep.dashboard')->where('subcat', '^((?!(api)).)*');
+		});
+	}
+
+	public function loadSalesRepApplication()
+	{
+		return view('salesrep::index');
+	}
+
+	public function testRoutePermission()
+	{
+		$api_route = ApiRoute::where('name', request('route'))->first();
+		if ($api_route) {
+			return ['rsp'  => $api_route->sales_reps()->where('user_id', auth('sales_rep')->id())->exists()];
+		} else {
+			return response()->json(['rsp' => false], 410);
+		}
+	}
 
 	public function getAllSalesReps()
 	{

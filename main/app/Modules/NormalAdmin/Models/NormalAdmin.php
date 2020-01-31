@@ -75,6 +75,34 @@ class NormalAdmin extends User
 		});
 	}
 
+	static function normalAdminRoutes()
+	{
+		Route::group(['namespace' => '\App\Modules\NormalAdmin\Models'], function () {
+
+			Route::group(['prefix' => 'api'], function () {
+				Route::post('test-route-permission', 'NormalAdmin@testRoutePermissions');
+			});
+
+			Route::get('/{subcat?}', 'NormalAdmin@loadNormalAdminApplication')->name('normaladmin.dashboard')->where('subcat', '^((?!(api)).)*');
+		});
+	}
+
+
+	public function testRoutePermissions()
+	{
+		$api_route = ApiRoute::where('name', request('route'))->first();
+		if ($api_route) {
+			return ['rsp'  => $api_route->normal_admins()->where('user_id', auth()->id())->exists()];
+		} else {
+			return response()->json(['rsp' => false], 410);
+		}
+	}
+
+	public function loadNormalAdminApplication()
+	{
+		return view('normaladmin::index');
+	}
+
 	public function getAllNormalAdmins()
 	{
 		return (new AdminUserTransformer)->collectionTransformer(NormalAdmin::withTrashed()->get(), 'transformForAdminViewNormalAdmins');
