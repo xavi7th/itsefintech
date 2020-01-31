@@ -95,7 +95,7 @@ class CreateLoanRequestValidation extends FormRequest
 
 
 				if ($this->user()->has_school_fees_request()) {
-					$validator->errors()->add('school_fees_loan', 'You already have a school pending school fees request');
+					$validator->errors()->add('school_fees_loan', 'You already have a pending school fees request');
 					return;
 				}
 

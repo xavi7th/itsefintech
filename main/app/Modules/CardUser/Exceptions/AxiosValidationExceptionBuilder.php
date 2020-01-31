@@ -23,10 +23,11 @@ class AxiosValidationExceptionBuilder extends Exception
 	 */
 	public function render()
 	{
-		return response()->json([
-			"error" => "form validation error",
-			"message" => $this->validator->errors()
+		return response()->json(
+			// implode(',', $this->validator->errors()->all()),
+			$this->validator->errors()->first(),
 			// "message" => implode('<br>', $this->validator->errors()->all())
-		], $this->code);
+			$this->code
+		);
 	}
 }

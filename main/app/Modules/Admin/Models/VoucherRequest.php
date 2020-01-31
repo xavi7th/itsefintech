@@ -12,6 +12,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Modules\Admin\Transformers\AdminVoucherRequestTransformer;
 use App\Modules\CardUser\Http\Requests\CreateVoucherRequestValidation;
 use App\Modules\CardUser\Transformers\CardUserVoucherRequestTransformer;
+use App\Modules\CardUser\Notifications\VoucherRequested;
+use App\Modules\Admin\Notifications\MerchantCreditApproved;
 
 class VoucherRequest extends Model
 {
@@ -41,7 +43,6 @@ class VoucherRequest extends Model
 	{
 		Route::group(['namespace' => '\App\Modules\Admin\Models'], function () {
 			Route::get('voucher-requests', 'VoucherRequest@getAllVoucherRequests')->middleware('auth:admin,normal_admin');
-			Route::post('voucher-request/create', 'VoucherRequest@createVoucherRequest')->middleware('auth:admin,normal_admin');
 			Route::put('voucher-request/{voucher_request}/approve', 'VoucherRequest@approveVoucherRequest')->middleware('auth:admin,normal_admin');
 			Route::put('voucher-request/{voucher_request}/allocate', 'VoucherRequest@allocateVoucherRequest')->middleware('auth:admin,normal_admin');
 		});
@@ -64,6 +65,11 @@ class VoucherRequest extends Model
 		$voucher_request = auth()->user()->voucher_request()->create([
 			'amount' => auth()->user()->merchant_limit
 		]);
+
+		ActivityLog::logUserActivity(auth()->user()->email . ' requested for a merchant credit');
+
+		auth()->user()->notify(new VoucherRequested);
+
 		return response()->json((new CardUserVoucherRequestTransformer)->transform($voucher_request), 201);
 	}
 
@@ -74,27 +80,22 @@ class VoucherRequest extends Model
 	{
 		return (new AdminVoucherRequestTransformer)->collectionTransformer(self::all(), 'transformForAdminViewVoucherRequests');
 	}
-	public function createVoucherRequest(CreateVoucherRequestValidation $request)
-	{
-
-		if ($request->auto_generate) {
-
-			$voucher_request_code = unique_random('voucher_requests', 'code', null, 8);
-			$voucher_request = VoucherRequest::create(Arr::add($request->except('code'), 'code', $voucher_request_code));
-		} else {
-			$voucher_request = VoucherRequest::create($request->all());
-		}
-		return response()->json(['voucher_request' => $voucher_request], 201);
-	}
 
 	public function approveVoucherRequest(VoucherRequest $voucher_request)
 	{
 		if (!intval($voucher_request->voucher_id)) {
 			return generate_422_error(['voucher' => ['No voucher assigned to this request yet']]);
 		} else {
+
+			$card_user = $voucher_request->card_user;
+
 			$voucher_request->approved_at = now();
 			$voucher_request->approved_by = auth()->id();
 			$voucher_request->save();
+
+			ActivityLog::logAdminActivity(auth()->user()->email . ' approved ' . to_naira($voucher_request->amount) . ' merchant credit for ' . $card_user->email);
+
+			$card_user->notify(new MerchantCreditApproved);
 
 			return response()->json(['rsp' => []], 204);
 		}
@@ -136,7 +137,7 @@ class VoucherRequest extends Model
 		$voucher->save();
 
 		/** Create activity */
-		ActivityLog::logAdminActivity('Attached voucher ' . $voucher->code . ' to request: ' . $voucher_request->id);
+		ActivityLog::logAdminActivity(auth()->user()->email . ' allocated voucher ' . $voucher->code . ' to request: ' . $voucher_request->id);
 
 		DB::commit();
 		return response()->json([], 204);

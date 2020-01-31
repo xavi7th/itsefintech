@@ -81,7 +81,7 @@ class RequestDebitCardFundingValidation extends FormRequest
 			/**
 			 * Check if there is a pending funding request for this card
 			 */
-			if ($debit_card->debit_card_funding_request()->exists()) {
+			if ($debit_card->new_debit_card_funding_request()->exists()) {
 				$validator->errors()->add('unauthorised', 'You already have a pending funding request for this card.');
 				return;
 			}

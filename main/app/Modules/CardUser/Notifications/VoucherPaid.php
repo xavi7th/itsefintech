@@ -6,20 +6,22 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
-use Illuminate\Notifications\Messages\NexmoMessage;
+use App\Modules\CardUser\Notifications\Channels\SMSSolutionsMessage;
 
-class AccountCreated extends Notification implements ShouldQueue
+class VoucherPaid extends Notification
 {
 	use Queueable;
+
+	protected $amount;
 
 	/**
 	 * Create a new notification instance.
 	 *
 	 * @return void
 	 */
-	public function __construct()
+	public function __construct($amount)
 	{
-		//
+		$this->amount = $amount;
 	}
 
 	/**
@@ -30,7 +32,7 @@ class AccountCreated extends Notification implements ShouldQueue
 	 */
 	public function via($notifiable)
 	{
-		return ['database', 'nexmo', 'mail'];
+		return ['mail', 'database', SMSSolutionsMessage::class];
 	}
 
 	/**
@@ -41,32 +43,23 @@ class AccountCreated extends Notification implements ShouldQueue
 	 */
 	public function toMail($notifiable)
 	{
-
 		return (new MailMessage)
-			// ->error() // btn goes red
-			->subject('Account Created!')
-			->greeting('Welcome, ' . $notifiable->first_name . '!')
-			->line('The introduction to the notification.')
-			->action('Notification Action', config('app.url'))
+			->subject('Voucher Paid!')
+			->greeting('Hurray, ' . $notifiable->first_name . '!')
+			->line('You just cleared your pending merchant credit loan of ' . $this->amount)
 			->line('Thank you for using our application!');
-
-
-		// return (new MailMessage)->view(
-		// 	'emails.name',
-		// 	['invoice' => $this->invoice]
-		// );
 	}
+
 
 	/**
 	 * Get the database representation of the notification.
 	 *
 	 * @param mixed $notifiable
-	 * @return \Illuminate\Notifications\Messages\MailMessage
 	 */
 	public function toDatabase($notifiable)
 	{
 		return [
-			'action' => 'Acccount Created',
+			'action' => 'Outstanding merchant loan cleared. Amount: ' . $this->amount,
 
 		];
 	}
@@ -75,12 +68,12 @@ class AccountCreated extends Notification implements ShouldQueue
 	 * Get the SMS representation of the notification.
 	 *
 	 * @param mixed $notifiable
-	 * @return \Illuminate\Notifications\Messages\MailMessage
 	 */
-	public function toNexmo($notifiable)
+	public function toSMSSolutions($notifiable)
 	{
-		return (new NexmoMessage)
-			->content('Welcome to CapitalX ' . $notifiable->first_name . '. Your account has been verified. We will notify you of any updates in your account via SMS. Be good, make money.');
+		return (new SMSSolutionsMessage)
+			->sms_message('You just cleared your pending merchant credit loan of ' . $this->amount)
+			->to($notifiable->phone);
 	}
 
 	/**

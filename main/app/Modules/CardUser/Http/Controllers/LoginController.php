@@ -70,9 +70,6 @@ class LoginController extends Controller
 	public function logout(Request $request)
 	{
 		$this->guard()->logout();
-
-		// auth()->logout();
-
 		return response()->json(['message' => 'Successfully logged out']);
 	}
 
@@ -91,9 +88,10 @@ class LoginController extends Controller
 			'token_type' => 'bearer',
 			'expires_in' => auth('card_user')->factory()->getTTL() * 60,
 			'user' => (new CardUserTransformer)->transform($user = auth('card_user')->user()),
-			'is_card_activated' => !$user->has_unactivated_card(),
-			'is_card_requested' => $user->debit_card_requests()->exists(),
-			'success' => true
+			'is_card_activated' => (boolean)!$user->has_unactivated_card(),
+			'is_card_requested' => (boolean)$user->debit_card_requests()->exists(),
+			'is_otp_verified' => (boolean)$user->is_otp_verified(),
+			'success' => (boolean)true
 		]);
 	}
 

@@ -118,7 +118,7 @@ class DebitCardRequest extends Model
 		$debit_card->save();
 
 		/** Create activity */
-		ActivityLog::logAdminActivity('Attached debit card ' . $debit_card->card_number . ' to request: ' . $debit_card_request->id);
+		ActivityLog::logAdminActivity(auth()->user()->email . ' allocated debit card ' . $debit_card->card_number . ' to ' . $debit_card_request->card_user->email . '\'s card request');
 
 		DB::commit();
 		return response()->json([], 204);
@@ -128,6 +128,9 @@ class DebitCardRequest extends Model
 	{
 		$debit_card_request->is_paid = true;
 		$debit_card_request->save();
+
+		ActivityLog::logAdminActivity(auth()->user()->email . ' marked ' . $debit_card_request->card_user->email . '\'s card request as paid.');
+
 		return response()->json([], 204);
 	}
 
@@ -138,6 +141,9 @@ class DebitCardRequest extends Model
 		$debit_card_request->last_updated_by = auth()->id();
 		// $debit_card_request->last_updater_user_type = get_class(auth()->user());
 		$debit_card_request->save();
+
+		ActivityLog::logAdminActivity(auth()->user()->email . ' marked ' . $debit_card_request->card_user->email . '\'s card request payment as confirmed.');
+
 		return response()->json([], 204);
 	}
 
@@ -148,10 +154,10 @@ class DebitCardRequest extends Model
 			return generate_422_error(['invalid' => ['No debit card has been assigned to this debit card request']]);
 		}
 		$debit_card_request->debit_card_request_status_id = request('details.debit_card_request_status_id');
-		if (request('details.debit_card_request_status_id') == 7) {
-			$debit_card_request->debit_card_request_status_id = now();
-		}
 		$debit_card_request->save();
+
+		ActivityLog::logAdminActivity(auth()->user()->email . ' updated the delivery status ' . $debit_card_request->card_user->email . '\'s card request.');
+
 		return response()->json(['new_status' => DebitCardRequestStatus::find(request('details.debit_card_request_status_id'))->name], 203);
 	}
 

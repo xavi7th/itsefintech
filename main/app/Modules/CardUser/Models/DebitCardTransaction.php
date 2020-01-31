@@ -8,6 +8,7 @@ use App\Modules\CardUser\Models\CardUser;
 use App\Modules\CardUser\Models\DebitCard;
 use App\Modules\CardUser\Http\Requests\CreateCardTransactionValidation;
 use App\Modules\CardUser\Transformers\DebitCardTransactionsTransformer;
+use App\Modules\Admin\Models\ActivityLog;
 
 class DebitCardTransaction extends Model
 {
@@ -62,6 +63,9 @@ class DebitCardTransaction extends Model
 	public function createCardTransaction(CreateCardTransactionValidation $request)
 	{
 		$card_trans = auth()->user()->debit_card_transactions()->create($request->all());
+
+		ActivityLog::logUserActivity(auth()->user()->email . ' carried out a transaction on his card');
+
 		return response()->json((new DebitCardTransactionsTransformer)->transform($card_trans), 201);
 	}
 }

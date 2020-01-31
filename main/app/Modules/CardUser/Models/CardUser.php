@@ -11,20 +11,23 @@ use App\Modules\CardUser\Models\OTP;
 use App\Modules\Admin\Models\Voucher;
 use Illuminate\Support\Facades\Route;
 use App\Modules\Admin\Models\ActivityLog;
+use Illuminate\Notifications\Notification;
 use App\Modules\Admin\Models\VoucherRequest;
 use App\Modules\CardUser\Models\LoanRequest;
 use App\Modules\Admin\Models\CardUserCategory;
+use App\Modules\CardUser\Notifications\SendOTP;
 use App\Modules\CardUser\Models\LoanTransaction;
 use App\Modules\Admin\Models\MerchantTransaction;
 use App\Modules\CardUser\Models\DebitCardRequest;
 use App\Modules\CardUser\Models\DebitCardTransaction;
+use App\Modules\CardUser\Notifications\AccountCreated;
 use App\Modules\CardUser\Models\DebitCardRequestStatus;
 use App\Modules\Admin\Transformers\AdminUserTransformer;
 use App\Modules\CardUser\Models\DebitCardFundingRequest;
 use App\Modules\CardUser\Transformers\CardUserTransformer;
 use App\Modules\Admin\Http\Requests\SetCardUserCreditLimitValidation;
 use App\Modules\CardUser\Http\Requests\CardUserUpdateProfileValidation;
-use Illuminate\Notifications\Notification;
+use App\Modules\CardUser\Notifications\ProfileEdited;
 
 class CardUser extends User
 {
@@ -95,7 +98,8 @@ class CardUser extends User
 	 **/
 	public function createOTP()
 	{
-		$otp = unique_random('otps', 'code');
+		$otp = unique_random('otps', 'code', null, 4);
+		dd($otp);
 		$this->otp()->create([
 			'code' => $otp
 		]);
@@ -115,7 +119,7 @@ class CardUser extends User
 
 	public function active_voucher()
 	{
-		return $this->hasOne(Voucher::class)->whereDate('created_at', '>', Carbon::today()->subDays(config('app.voucher_validity_days'))->toDateString());;
+		return $this->hasOne(Voucher::class)->whereDate('created_at', '>', Carbon::today()->subDays(config('app.voucher_validity_days'))->toDateString());
 	}
 
 	public function expired_vouchers()
@@ -236,7 +240,7 @@ class CardUser extends User
 
 	public function loan_transactions()
 	{
-		return $this->hasMany(LoanTransaction::class);
+		return $this->hasMany(LoanTransaction::class)->latest();
 	}
 
 	public function total_loan_amount()
@@ -277,7 +281,7 @@ class CardUser extends User
 
 	public function has_active_school_fees_loan()
 	{
-		return $this->loan_request()->where('is_school_fees', true)->where('is_approved', true)->exists();
+		return $this->loan_request()->where('is_school_fees', true)->where('approved_at', '<>', null)->exists();
 	}
 
 	public function activeDays(): int
@@ -336,31 +340,29 @@ class CardUser extends User
 
 	static function cardUserRoutes()
 	{
-		Route::group(['namespace' => '\App\Modules\CardUser\Models'], function () {
+		Route::group(['namespace' =>  '\App\Modules\CardUser\Models'], function () {
 			Route::get('card-users/profile-details', 'CardUser@getCardUserProfileDetails');
 			Route::put('card-user/profile', 'CardUser@editCardUserProfileDetails')->middleware('auth:card_user');
 			Route::get('card-users/categories', 'CardUser@getCardUserCategories');
 		});
 
-
 		Route::group(['prefix' => 'auth', 'middleware' => ['auth:card_user', 'card_users'], 'namespace' =>  '\App\Modules\CardUser\Models'], function () {
 
 			Route::group(['middleware' => ['unverified_card_users']], function () {
 				Route::get('/user/request-otp', 'CardUser@requestOTP');
-
 				Route::put('/user/verify-otp', 'CardUser@verifyOTP');
 			});
 
-			// Route::group(['middleware' => ['verified_card_users']], function () {
-			Route::get('/user', 'CardUser@user');
-			Route::put('/user', 'CardUser@updateUserProfile');
-			// });
+			Route::group(['middleware' => ['verified_card_users']], function () {
+				Route::get('/user', 'CardUser@user');
+				Route::put('/user', 'CardUser@updateUserProfile');
+			});
 		});
 	}
 
 
 	/**
-	 * ! Card User Route mesthods
+	 * ! Card User Route methods
 	 */
 
 
@@ -369,9 +371,14 @@ class CardUser extends User
 		/** Delete Previous OTP **/
 		$request->user()->otp()->delete();
 
+		/** Create new OTP */
 		$otp = $request->user()->createOTP();
 
-		// Send otp
+		/** Send the OTP notification */
+		$request->user()->notify(new SendOTP($otp));
+
+		ActivityLog::logUserActivity($request->user()->email . ' successfully requested a new OTP.');
+
 		return response()->json(['message' => 'OTP sent'], 201);
 	}
 
@@ -380,9 +387,19 @@ class CardUser extends User
 		if ($request->user()->otp->code !== intval($request->otp)) {
 			return response()->json(['message' => 'Invalid OTP code'], 422);
 		}
+		DB::beginTransaction();
 		/** Verify the user **/
 		$request->user()->otp_verified_at = now();
 		$request->user()->save();
+
+		/** Delete the otp code */
+		$request->user()->otp()->delete();
+
+		/** Send welcome message */
+		ActivityLog::logUserActivity($request->user()->email . ' OTP successfully verified.');
+		$request->user()->notify(new AccountCreated);
+
+		DB::commit();
 
 		return response()->json(['message' => 'Account verified'], 205);
 	}
@@ -418,6 +435,12 @@ class CardUser extends User
 			auth()->user()->$key = $value;
 		}
 		auth()->user()->save();
+
+		ActivityLog::logUserActivity(auth()->user()->email . ' edited his profile.');
+
+		auth()->user()->notify(new ProfileEdited);
+
+
 		return response()->json([], 204);
 	}
 
@@ -432,7 +455,6 @@ class CardUser extends User
 
 	public function createCardUser()
 	{
-		// return request()->all();
 		try {
 			DB::beginTransaction();
 			$admin = CardUser::create(Arr::collapse([
@@ -441,6 +463,8 @@ class CardUser extends User
 					'password' => bcrypt('itsefintech@admin'),
 				]
 			]));
+
+			ActivityLog::logAdminActivity('New Card User account created. Details: ' . $admin->email);
 
 			DB::commit();
 			return response()->json(['rsp' => $admin], 201);
@@ -468,29 +492,44 @@ class CardUser extends User
 	public function setCardUserPermittedRoutes(CardUser $card_user)
 	{
 		$card_user->api_routes()->sync(request('permitted_routes'));
+
+		ActivityLog::logAdminActivity('Card User permitted routes updated. Card user details: ' . $card_user->email);
+
 		return response()->json(['rsp' => true], 204);
 	}
 
 	public function suspendCardUser(CardUser $card_user)
 	{
 		$card_user->delete();
+
+		ActivityLog::logAdminActivity('Card User account suspended. Card user details: ' . $card_user->email);
+
 		return response()->json(['rsp' => true], 204);
 	}
 
 	public function unsuspendCardUser($id)
 	{
-		CardUser::withTrashed()->find($id)->restore();
+		$card_user = CardUser::withTrashed()->find($id);
+		$card_user->restore();
+
+		ActivityLog::logAdminActivity('Card User account restored. Card user details: ' . $card_user->email);
+
 		return response()->json(['rsp' => true], 204);
 	}
 
 	public function deleteCardUserAccount(CardUser $card_user)
 	{
 		$card_user->forceDelete();
+
+		ActivityLog::logAdminActivity('Card User account deleted permanently. Card user details: ' . $card_user->email);
+
 		return response()->json(['rsp' => true], 204);
 	}
 
 	public function getFullBvnNumber(CardUser $card_user)
 	{
+		ActivityLog::logAdminActivity('Card User\'s full BVN details accessed. Card user details: ' . $card_user->email);
+
 		return response()->json(['full_bvn' => $card_user->full_bvn], 200);
 	}
 
@@ -499,6 +538,9 @@ class CardUser extends User
 		$card_user->credit_limit = $request->input('amount');
 		$card_user->credit_percentage = $request->input('interest');
 		$card_user->save();
+
+		ActivityLog::logAdminActivity('Card User\'s credit limit updated. Card user details: ' . $card_user->email);
+
 		return response()->json(['rsp' => true], 204);
 	}
 
@@ -507,6 +549,9 @@ class CardUser extends User
 		$card_user->merchant_limit = $request->input('amount');
 		$card_user->merchant_percentage = $request->input('interest');
 		$card_user->save();
+
+		ActivityLog::logAdminActivity('Card User\'s merchant limit updated. Card user details: ' . $card_user->email);
+
 		return response()->json(['rsp' => true], 204);
 	}
 }

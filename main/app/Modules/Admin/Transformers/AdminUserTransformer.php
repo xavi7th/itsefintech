@@ -54,10 +54,12 @@ class AdminUserTransformer
 		];
 	}
 
-	public function transform(AppUser $user)
+	public function transform($user)
 	{
 		return [
-			'name' => $user->name,
+			'id' => $user->id,
+			'name' => $user->full_name,
+			'email' => $user->email,
 		];
 	}
 

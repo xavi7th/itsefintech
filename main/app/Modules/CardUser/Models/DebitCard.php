@@ -24,6 +24,8 @@ use App\Modules\Admin\Http\Requests\DebitCardCreationValidation;
 use App\Modules\CardUser\Http\Requests\CardActivationValidation;
 use App\Modules\CardUser\Transformers\CardUserDebitCardTransformer;
 use Watson\Rememberable\Rememberable;
+use App\Modules\CardUser\Notifications\DebitCardRequested;
+use App\Modules\CardUser\Notifications\DebitCardActivated;
 
 class DebitCard extends Model
 {
@@ -71,6 +73,11 @@ class DebitCard extends Model
 	public function debit_card_request()
 	{
 		return $this->hasOne(DebitCardRequest::class);
+	}
+
+	public function new_debit_card_funding_request()
+	{
+		return $this->hasOne(DebitCardFundingRequest::class)->where('is_funded', false);
 	}
 
 	public function debit_card_funding_request()
@@ -183,6 +190,10 @@ class DebitCard extends Model
 			)
 		);
 
+		ActivityLog::logUserActivity(auth()->user()->email . ' made a debit card request');
+
+		auth()->user()->notify(new DebitCardRequested);
+
 		return response()->json($card_request, 201);
 	}
 
@@ -201,6 +212,10 @@ class DebitCard extends Model
 			$debit_card->debit_card_request->debit_card_request_status_id = DebitCardRequestStatus::orderByDesc('id')->first()->id;
 			$debit_card->debit_card_request->save();
 			$debit_card->save();
+
+			ActivityLog::logUserActivity(auth()->user()->email . ' has just successfully activated his new credit card');
+			auth()->user()->notify(new DebitCardActivated);
+
 			return response()->json(['message' => 'Card Activated'], 204);
 		} else {
 			return response()->json(['message' => 'Invalid CSC'], 403);
@@ -209,7 +224,7 @@ class DebitCard extends Model
 
 	public function trackCardUserDebitCard()
 	{
-		$current_request_id = optional(auth()->user()->last_debit_card_request)->debit_card_request_status_id;
+		$current_request_id = optional(auth()->user()->pending_debit_card_requests)->debit_card_request_status_id;
 		$status = collect(DebitCardRequestStatus::all())->reject(function ($status) use ($current_request_id) {
 			return $status->id > $current_request_id;
 		});
@@ -242,7 +257,7 @@ class DebitCard extends Model
 
 			$debit_card = $user->debit_cards()->create($request->all());
 
-			ActivityLog::logAdminActivity('Created new Debit card ' . $debit_card->card_number);
+			ActivityLog::logAdminActivity(auth()->user()->email . ' created new Debit card ' . $debit_card->card_number);
 
 			DB::commit();
 			return response()->json(['rsp' => $debit_card], 201);
@@ -258,6 +273,9 @@ class DebitCard extends Model
 	{
 		$debit_card->is_suspended = !$debit_card->is_suspended;
 		$debit_card->save();
+
+		ActivityLog::logAdminActivity(auth()->user()->email . ' changed the suspension state of debit card ' . $debit_card->card_number);
+
 		return response()->json([], 204);
 	}
 
@@ -267,6 +285,9 @@ class DebitCard extends Model
 			$debit_card->is_admin_activated = true;
 			$debit_card->activated_at = now();
 			$debit_card->save();
+
+			ActivityLog::logAdminActivity(auth()->user()->email . ' activated debit card ' . $debit_card->card_number);
+
 			return response()->json([], 204);
 		} else {
 			return response()->json(['message' => 'User has not activated card'], 403);
@@ -292,6 +313,8 @@ class DebitCard extends Model
 		$debit_card->sales_rep_id = $sales_rep->id;
 		$debit_card->assigned_by = auth()->id();
 		$debit_card->save();
+
+		ActivityLog::logAdminActivity(auth()->user()->email . ' assigned debit card ' . $debit_card->card_number . ' to ' . $sales_rep->email);
 
 		return response()->json([], 204);
 	}
@@ -344,7 +367,7 @@ class DebitCard extends Model
 		]);
 
 		/** record activity */
-		ActivityLog::logAdminActivity('Allocated card ' . $debit_card->card_number . ' to user: ' . $card_user->id);
+		ActivityLog::logAdminActivity(auth()->user()->email . ' allocated card ' . $debit_card->card_number . ' to user: ' . $card_user->email);
 
 		return response()->json([], 204);
 	}
@@ -358,6 +381,8 @@ class DebitCard extends Model
 
 	public function showFullPANNumber(DebitCard $debit_card)
 	{
+		ActivityLog::logAdminActivity(auth()->user()->email . ' accessed the full PAN number of card ' . $debit_card->card_number);
+
 		return response()->json(['full_pan' => $debit_card->full_pan_number], 200);
 	}
 }

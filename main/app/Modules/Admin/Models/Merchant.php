@@ -14,7 +14,7 @@ use App\Modules\Admin\Models\MerchantTransaction;
 use Illuminate\Foundation\Auth\Access\Authorizable;
 use App\Modules\Admin\Transformers\AdminMerchantTransformer;
 use App\Modules\Admin\Http\Requests\CreateMerchantValidation;
-use App\Modules\CardUser\Transformers\CardIUserMerchantTransformer;
+use App\Modules\CardUser\Transformers\CardUserMerchantTransformer;
 use App\Modules\Admin\Transformers\AdminMerchantCategoryTransformer;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
@@ -68,7 +68,7 @@ class Merchant  extends Model implements AuthenticatableContract, AuthorizableCo
 
 	public function viewAllMerchants()
 	{
-		return (new CardIUserMerchantTransformer)->collectionTransformer(self::all(), 'transform');
+		return (new CardUserMerchantTransformer)->collectionTransformer(self::all(), 'transform');
 	}
 
 	/**
@@ -100,6 +100,9 @@ class Merchant  extends Model implements AuthenticatableContract, AuthorizableCo
 		$merchant->is_active = true;
 		$merchant->merchant_img = $url;
 		$merchant->save();
+
+		ActivityLog::logAdminActivity(auth()->user()->email . ' created merchant ' . $merchant->name);
+
 		return response()->json(['merchant' => $merchant], 201);
 	}
 
@@ -107,6 +110,9 @@ class Merchant  extends Model implements AuthenticatableContract, AuthorizableCo
 	{
 		$merchant->is_active = false;
 		$merchant->save();
+
+		ActivityLog::logAdminActivity(auth()->user()->email . ' suspended merchant ' . $merchant->name);
+
 		return response()->json(['merchant' => $merchant], 204);
 	}
 
@@ -114,6 +120,9 @@ class Merchant  extends Model implements AuthenticatableContract, AuthorizableCo
 	{
 		$merchant->is_active = true;
 		$merchant->save();
+
+		ActivityLog::logAdminActivity(auth()->user()->email . ' restored ' . $merchant->name . '\'s account');
+
 		return response()->json(['merchant' => $merchant], 204);
 	}
 }

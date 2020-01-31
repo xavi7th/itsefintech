@@ -5,6 +5,7 @@ namespace App\Modules\Admin\Models;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Database\Eloquent\Model;
+use App\Modules\Admin\Models\ActivityLog;
 use App\Modules\CardUser\Models\CardUser;
 use App\Modules\Admin\Models\VoucherRequest;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -129,12 +130,14 @@ class Voucher extends Model
 	{
 
 		if ($request->auto_generate) {
-
 			$voucher_code = unique_random('vouchers', 'code', null, 10);
 			$voucher = Voucher::create(Arr::add($request->except('code'), 'code', $voucher_code));
 		} else {
 			$voucher = Voucher::create($request->all());
 		}
+
+		ActivityLog::logAdminActivity(auth()->user()->email . ' created a voucher for ' . to_naira($voucher->amount));
+
 		return response()->json(['voucher' => $voucher], 201);
 	}
 }

@@ -102,7 +102,7 @@ class LoginController extends Controller
 	}
 
 	/**
-	 * The user has been authenticated. We can redirect them to where we want or leave empty for the redirectto property to handle
+	 * The user has been authenticated. We can redirect them to where we want or leave empty for the redirectTo property to handle
 	 *
 	 * @param  \Illuminate\Http\Request  $request
 	 * @param  mixed  $user

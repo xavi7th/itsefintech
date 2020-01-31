@@ -2,15 +2,19 @@
 
 namespace App\Modules\Admin\Models;
 
+use Illuminate\Support\Facades\DB;
 use App\Modules\Admin\Models\Voucher;
 use Illuminate\Support\Facades\Route;
 use App\Modules\Admin\Models\Merchant;
 use Illuminate\Database\Eloquent\Model;
+use App\Modules\Admin\Models\ActivityLog;
 use App\Modules\CardUser\Models\CardUser;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Modules\CardUser\Notifications\VoucherPaid;
+use App\Modules\CardUser\Notifications\VoucherApproved;
 use App\Modules\Admin\Http\Requests\MerchantDebitVoucherValidation;
 use App\Modules\CardUser\Http\Requests\MakeVoucherRepaymentValidation;
 use App\Modules\CardUser\Transformers\CardUserMerchantTransactionTransformer;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class MerchantTransaction extends Model
 {
@@ -79,6 +83,8 @@ class MerchantTransaction extends Model
 			'trans_type' => 'debit request'
 		]);
 
+		// ActivityLog::logUserActivity($merchant->name . ' requests voucher debit from ' . optional($voucher->card_user)->email . '. Voucher Number: ' . $voucher->code);
+
 		return (new CardUserMerchantTransactionTransformer)->transform($trans, 'transform');
 	}
 
@@ -114,16 +120,29 @@ class MerchantTransaction extends Model
 		$mer->trans_type = 'debit';
 		$mer->save();
 
+		ActivityLog::logUserActivity(auth()->user()->email . ' approves voucher debit from ' . optional($mer->merchant)->name . '. Voucher Number: ' . optional($mer->voucher)->code);
+
+		auth('card_user')->user()->notify(new VoucherApproved($mer->name));
+
 		return response()->json([], 204);
 	}
 
 	public function repayVoucherLoan(MakeVoucherRepaymentValidation $request)
 	{
+		$voucher = auth()->user()->active_voucher;
+		DB::beginTransaction();
 		auth()->user()->merchant_transactions()->create([
 			'amount' => $request->amount,
-			'voucher_id' => auth()->user()->active_voucher->id,
+			'voucher_id' => $voucher->id,
 			'trans_type' => 'repayment'
 		]);
+
+		ActivityLog::logUserActivity(auth()->user()->email . ' repays merchant credit. Voucher Number: ' . $voucher->code . '. Amount: ' . $request->amount);
+
+		auth('card_user')->user()->notify(new VoucherPaid($request->amount));
+
+		DB::commit();
+
 		return response()->json(['rsp' => true], 201);
 	}
 }

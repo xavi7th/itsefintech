@@ -6,14 +6,18 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
+use Watson\Rememberable\Rememberable;
 use Illuminate\Database\Eloquent\Model;
+use App\Modules\Admin\Models\ActivityLog;
 use App\Modules\CardUser\Models\CardUser;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Modules\CardUser\Models\LoanTransaction;
+use App\Modules\Admin\Notifications\LoanApproved;
+use App\Modules\Admin\Notifications\LoanProcessed;
+use App\Modules\CardUser\Notifications\LoanRequested;
 use App\Modules\CardUser\Transformers\LoanRequestTransformer;
 use App\Modules\Admin\Transformers\AdminLoanRequestTransformer;
 use App\Modules\CardUser\Http\Requests\CreateLoanRequestValidation;
-use Watson\Rememberable\Rememberable;
 
 class LoanRequest extends Model
 {
@@ -63,10 +67,10 @@ class LoanRequest extends Model
 			'total_duration' => (string)$this->total_duration . ' months',
 			'minimum_repayment_amount' => (float)round($this->amount * ($this->monthly_interest / 100), 2),
 			'minimum_repayment_amount_in_kobo' => (float)(round($this->amount * ($this->monthly_interest / 100), 2) * 100),
-			'total_interest_amount' => (float)round($total_interest_amount = ($this->monthly_interest / 100) * $this->amount * $this->total_duration, 2),
+			'total_interest_amount' => (float)round($total_interest_amount = ($this->monthly_interest / 100) * $this->amount * (now()->diffInMonths(($this->paid_at)) + 1), 2),
 			'total_repayment_amount' => (float)round($total_repayment_amount = $total_interest_amount + $this->amount, 2),
 			'scheduled_repayment_amount' => (float)number_format($total_repayment_amount / $this->total_duration, 2, '.', ''),
-			'scheduled_repayment_amount_in_kobo' => (float)(number_format($total_repayment_amount / $this->total_duration, 2, '.', '') * 2)
+			'scheduled_repayment_amount_in_kobo' => (float)(number_format($total_repayment_amount / $this->total_duration, 2, '.', '') * 100)
 		];
 	}
 
@@ -89,7 +93,7 @@ class LoanRequest extends Model
 	}
 
 	/**
-	 * Card User Route Methods
+	 * ! Card User Route Methods
 	 */
 
 	public function getLoanRequest(Request $request)
@@ -117,16 +121,23 @@ class LoanRequest extends Model
 			'amount' => $request->input('amount'),
 			'total_duration' => $request->input('total_duration'),
 			'monthly_interest' => auth()->user()->credit_percentage,
-			'is_school_fees' => filter_var($request->is_school_fees, FILTER_VALIDATE_BOOLEAN)
+			'is_school_fees' => $is_school_fees_loan = filter_var($request->is_school_fees, FILTER_VALIDATE_BOOLEAN)
 		]);
 
+		if ($is_school_fees_loan) {
+			ActivityLog::logUserActivity(auth()->user()->email . ' made a school fees loan request of ' . $request->input('amount'));
+			auth()->user()->notify(new LoanRequested($request->input('amount'), true));
+		} else {
+			ActivityLog::logUserActivity(auth()->user()->email . ' made a loan request of ' . $request->input('amount'));
+			auth()->user()->notify(new LoanRequested($request->input('amount')));
+		}
 		return response()->json((array)$loan_request->breakdownStatistics(), 201);
 	}
 
 
 
 	/**
-	 * Admin Route Methods
+	 * !Admin Route Methods
 	 */
 
 	public function showAllLoanRequests($admin = null)
@@ -141,9 +152,15 @@ class LoanRequest extends Model
 
 	public function approveLoanRequest(LoanRequest $loan_request)
 	{
+		$card_user = $loan_request->card_user;
+
 		$loan_request->approved_at = now();
 		$loan_request->approved_by = auth()->id();
 		$loan_request->save();
+
+		ActivityLog::logAdminActivity(auth()->user()->email . ' approved a loan request of ' . $loan_request->amount . ' for ' . $card_user->email);
+
+		$card_user->notify(new LoanApproved($loan_request->amount, $loan_request->is_school_fees));
 
 		return response()->json(['rsp' => []], 204);
 	}
@@ -151,6 +168,8 @@ class LoanRequest extends Model
 	public function markLoanRequestAsPaid(LoanRequest $loan_request)
 	{
 		DB::beginTransaction();
+
+		$card_user = $loan_request->card_user;
 
 		$loan_request->paid_at = now();
 		$loan_request->marked_paid_by = auth()->id();
@@ -168,7 +187,12 @@ class LoanRequest extends Model
 			]
 		);
 
+		ActivityLog::logAdminActivity(auth()->user()->email . ' marked ' .  $card_user->email . '\'s loan request of ' . $loan_request->amount . ' as paid.');
+
 		DB::commit();
+
+		$card_user->notify(new LoanProcessed($loan_request->amount, $loan_request->is_school_fees));
+
 		return response()->json(['rsp' => []], 204);
 	}
 }

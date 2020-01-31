@@ -187,7 +187,7 @@
     methods: {
       initialiseChart() {
         axios.get(getSalesRepStatistics).then(({ data: statistics }) => {
-          console.log(statistics);
+
           this.statistics = statistics;
 
           new Morris.Line({

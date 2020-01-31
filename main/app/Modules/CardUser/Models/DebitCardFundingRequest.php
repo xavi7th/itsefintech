@@ -12,6 +12,9 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Modules\CardUser\Http\Requests\RequestDebitCardFundingValidation;
 use App\Modules\CardUser\Transformers\DebitCardFundingRequestTransformer;
 use App\Modules\NormalAdmin\Transformers\AdminDebitCardFundingRequestTransformer;
+use App\Modules\Admin\Models\ActivityLog;
+use App\Modules\CardUser\Notifications\CardFundingRequested;
+use App\Modules\Admin\Notifications\CardFundingProcessed;
 
 class DebitCardFundingRequest extends Model
 {
@@ -67,6 +70,10 @@ class DebitCardFundingRequest extends Model
 			'amount' => $request->amount
 		]);
 
+		ActivityLog::logUserActivity(auth()->user()->email . ' requested card funds of ' . $request->amount);
+
+		auth()->user()->notify(new CardFundingRequested($request->amount));
+
 		return response()->json((new DebitCardFundingRequestTransformer)->transform($fund_request), 201);
 	}
 
@@ -90,6 +97,7 @@ class DebitCardFundingRequest extends Model
 
 	public function markProcessed(DebitCardFundingRequest $funding_request)
 	{
+		$card_user = $funding_request->card_user;
 		DB::beginTransaction();
 		/**
 		 * Create a credit transaction for this debit card
@@ -103,12 +111,15 @@ class DebitCardFundingRequest extends Model
 		$debit_card->trans_type = 'credit';
 		$debit_card->save();
 
-
 		/**
 		 * Mark the funding request as processed
 		 */
 		$funding_request->is_funded = true;
 		$funding_request->save();
+
+		ActivityLog::logAdminActivity(auth()->user()->email . ' marked ' . $card_user . '\'s funding request as processed');
+
+		$card_user->notify(new CardFundingProcessed($funding_request->amount));
 
 		DB::commit();
 		return response()->json([], 204);

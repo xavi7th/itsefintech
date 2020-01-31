@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Route;
 use App\Modules\Admin\Models\ApiRoute;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Modules\Admin\Transformers\AdminUserTransformer;
+use App\Modules\Admin\Models\ActivityLog;
 
 class AccountOfficer extends User
 {
@@ -36,6 +37,11 @@ class AccountOfficer extends User
 		return $this->morphToMany(ApiRoute::class, 'user', 'api_routes_permissions', 'user_id');
 	}
 
+	public function activities()
+	{
+		return $this->morphMany(ActivityLog::class, 'user');
+	}
+
 	protected static function boot()
 	{
 		parent::boot();
@@ -46,63 +52,103 @@ class AccountOfficer extends User
 		});
 	}
 
-	static function routes()
+	static function adminRoutes()
 	{
-		Route::get('account-officers', function () {
-			return (new AdminUserTransformer)->collectionTransformer(AccountOfficer::withTrashed()->get(), 'transformForAdminViewAccountOfficers');
-		})->middleware('auth:admin');
+		Route::group(['namespace' => '\App\Modules\AccountOfficer\Models'], function () {
+			Route::get('account-officers', 'AccountOfficer@getAllAccountOfficers')->middleware('auth:admin');
 
-		Route::post('account-officer/create', function () {
-			// return request()->all();
-			try {
-				DB::beginTransaction();
-				$account_officer = AccountOfficer::create(Arr::collapse([
-					request()->all(),
-					[
-						'password' => bcrypt('itsefintech@account_officer'),
-					]
-				]));
+			Route::post('account-officer/create', 'AccountOfficer@createAccountOfficer')->middleware('auth:admin');
 
-				DB::commit();
-				return response()->json(['rsp' => $account_officer], 201);
-			} catch (Throwable $e) {
-				if (app()->environment() == 'local') {
-					return response()->json(['error' => $e->getMessage()], 500);
-				}
-				return response()->json(['rsp' => 'error occurred'], 500);
+			Route::get('account-officer/{account_officer}/permissions', 'AccountOfficer@getAccountOfficerPermissions')->middleware('auth:admin');
+
+			Route::put('account-officer/{account_officer}/permissions', 'AccountOfficer@editAccountOfficerPermissions')->middleware('auth:admin');
+
+			Route::put('account-officer/{account_officer}/suspend', 'AccountOfficer@suspendAccountOfficer')->middleware('auth:admin');
+
+			Route::put('account-officer/{id}/restore', 'AccountOfficer@restoreAccountOfficer')->middleware('auth:admin');
+
+			Route::delete('account-officer/{account_officer}/delete', 'AccountOfficer@deleteAccountOfficer')->middleware('auth:admin');
+		});
+	}
+
+
+	public function getAllAccountOfficers()
+	{
+		return (new AdminUserTransformer)->collectionTransformer(AccountOfficer::withTrashed()->get(), 'transformForAdminViewAccountOfficers');
+	}
+
+	public function createAccountOfficer()
+	{
+		try {
+			DB::beginTransaction();
+			$account_officer = AccountOfficer::create(Arr::collapse([
+				request()->all(),
+				[
+					'password' => bcrypt('itsefintech@account_officer'),
+				]
+			]));
+
+			DB::commit();
+
+			ActivityLog::logAdminActivity(auth()->user()->email . ' created an account officer account for ' . $account_officer->email);
+
+			return response()->json(['rsp' => $account_officer], 201);
+		} catch (Throwable $e) {
+			if (app()->environment() == 'local') {
+				return response()->json(['error' => $e->getMessage()], 500);
 			}
-		})->middleware('auth:admin');
+			return response()->json(['rsp' => 'error occurred'], 500);
+		}
+	}
 
-		Route::get('account-officer/{account_officer}/permissions', function (AccountOfficer $account_officer) {
-			$permitted_routes = $account_officer->api_routes()->get(['api_routes.id'])->map(function ($item, $key) {
-				return $item->id;
-			});
+	public function getAccountOfficerPermissions(AccountOfficer $account_officer)
+	{
+		$permitted_routes = $account_officer->api_routes()->get(['api_routes.id'])->map(function ($item, $key) {
+			return $item->id;
+		});
 
-			$all_routes = ApiRoute::get(['id', 'description'])->map(function ($item, $key) {
-				return ['id' => $item->id, 'description' => $item->description];
-			});
+		$all_routes = ApiRoute::get(['id', 'description'])->map(function ($item, $key) {
+			return ['id' => $item->id, 'description' => $item->description];
+		});
 
-			return ['permitted_routes' => $permitted_routes, 'all_routes' => $all_routes];
-		})->middleware('auth:admin');
+		return ['permitted_routes' => $permitted_routes, 'all_routes' => $all_routes];
+	}
 
-		Route::put('account-officer/{account_officer}/permissions', function (AccountOfficer $account_officer) {
-			$account_officer->api_routes()->sync(request('permitted_routes'));
-			return response()->json(['rsp' => true], 204);
-		})->middleware('auth:admin');
+	public function editAccountOfficerPermissions(AccountOfficer $account_officer)
+	{
+		$account_officer->api_routes()->sync(request('permitted_routes'));
 
-		Route::put('account-officer/{account_officer}/suspend', function (AccountOfficer $account_officer) {
-			$account_officer->delete();
-			return response()->json(['rsp' => true], 204);
-		})->middleware('auth:admin');
+		ActivityLog::logAdminActivity(auth()->user()->email . ' edited the account permissions for ' . $account_officer->email);
 
-		Route::put('account-officer/{id}/restore', function ($id) {
-			AccountOfficer::withTrashed()->find($id)->restore();
-			return response()->json(['rsp' => true], 204);
-		})->middleware('auth:admin');
+		return response()->json(['rsp' => true], 204);
+	}
 
-		Route::delete('account-officer/{account_officer}/delete', function (AccountOfficer $account_officer) {
-			$account_officer->forceDelete();
-			return response()->json(['rsp' => true], 204);
-		})->middleware('auth:admin');
+	public function suspendAccountOfficer(AccountOfficer $account_officer)
+	{
+		ActivityLog::logAdminActivity(auth()->user()->email . ' suspended the account of ' . $account_officer->email);
+
+		$account_officer->delete();
+
+		return response()->json(['rsp' => true], 204);
+	}
+
+	public function restoreAccountOfficer($id)
+	{
+		$account_officer = AccountOfficer::withTrashed()->find($id);
+
+		$account_officer->restore();
+
+		ActivityLog::logAdminActivity(auth()->user()->email . ' restored the account of ' . $account_officer->email);
+
+		return response()->json(['rsp' => true], 204);
+	}
+
+	public function deleteAccountOfficer(AccountOfficer $account_officer)
+	{
+		ActivityLog::logAdminActivity(auth()->user()->email . ' permanently deleted the account of ' . $account_officer->email);
+
+		$account_officer->forceDelete();
+
+		return response()->json(['rsp' => true], 204);
 	}
 }

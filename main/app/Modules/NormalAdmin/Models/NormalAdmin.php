@@ -56,69 +56,107 @@ class NormalAdmin extends User
 		});
 	}
 
-	static function routes()
+	static function adminRoutes()
 	{
-		Route::get('normal-admins', function () {
-			return (new AdminUserTransformer)->collectionTransformer(NormalAdmin::withTrashed()->get(), 'transformForAdminViewNormalAdmins');
-		})->middleware('auth:admin');
+		Route::group(['namespace' => '\App\Modules\NormalAdmin\Models'], function () {
+			Route::get('normal-admins', 'NormalAdmin@getAllNormalAdmins')->middleware('auth:admin');
 
-		Route::post('normal-admin/create', function () {
-			// return request()->all();
-			try {
-				DB::beginTransaction();
-				$admin = NormalAdmin::create(Arr::collapse([
-					request()->all(),
-					[
-						'password' => bcrypt('itsefintech@admin'),
-					]
-				]));
+			Route::post('normal-admin/create', 'NormalAdmin@createNormalAdmin')->middleware('auth:admin');
 
-				DB::commit();
-				return response()->json(['rsp' => $admin], 201);
-			} catch (\Throwable $e) {
-				if (app()->environment() == 'local') {
-					return response()->json(['error' => $e->getMessage()], 500);
-				}
-				return response()->json(['rsp' => 'error occurred'], 500);
+			Route::get('normal-admin/{admin}/permissions', 'NormalAdmin@getNormalAdminRoutePermissions')->middleware('auth:admin');
+
+			Route::put('normal-admin/{admin}/permissions', 'NormalAdmin@editNormalAdminRoutePermissions')->middleware('auth:admin');
+
+			Route::put('normal-admin/{admin}/suspend', 'NormalAdmin@suspendNormalAdmin')->middleware('auth:admin');
+
+			Route::put('normal-admin/{id}/restore', 'NormalAdmin@restoreNormalAdmin')->middleware('auth:admin');
+
+			Route::delete('normal-admin/{admin}/delete', 'NormalAdmin@deleteNormalAdminAccount')->middleware('auth:admin');
+		});
+	}
+
+	public function getAllNormalAdmins()
+	{
+		return (new AdminUserTransformer)->collectionTransformer(NormalAdmin::withTrashed()->get(), 'transformForAdminViewNormalAdmins');
+	}
+
+	public function createNormalAdmin()
+	{
+		try {
+			DB::beginTransaction();
+			$admin = NormalAdmin::create(Arr::collapse([
+				request()->all(),
+				[
+					'password' => bcrypt('itsefintech@admin'),
+				]
+			]));
+
+			DB::commit();
+
+			ActivityLog::logAdminActivity(auth()->user()->email . ' created a normal admin account for ' . $admin->email);
+
+			return response()->json(['rsp' => $admin], 201);
+		} catch (\Throwable $e) {
+			if (app()->environment() == 'local') {
+				return response()->json(['error' => $e->getMessage()], 500);
 			}
-		})->middleware('auth:admin');
+			return response()->json(['rsp' => 'error occurred'], 500);
+		}
+	}
 
-		Route::get('normal-admin/{admin}/permissions', function (NormalAdmin $admin) {
-			$permitted_routes = $admin->api_routes()->get(['api_routes.id'])->map(function ($item, $key) {
-				return $item->id;
-			});
+	public function getNormalAdminRoutePermissions(NormalAdmin $admin)
+	{
+		$permitted_routes = $admin->api_routes()->get(['api_routes.id'])->map(function ($item, $key) {
+			return $item->id;
+		});
 
-			$all_routes = ApiRoute::get(['id', 'description'])->map(function ($item, $key) {
-				return ['id' => $item->id, 'description' => $item->description];
-			});
+		$all_routes = ApiRoute::get(['id', 'description'])->map(function ($item, $key) {
+			return ['id' => $item->id, 'description' => $item->description];
+		});
 
-			return ['permitted_routes' => $permitted_routes, 'all_routes' => $all_routes];
-		})->middleware('auth:admin');
+		return ['permitted_routes' => $permitted_routes, 'all_routes' => $all_routes];
+	}
 
-		Route::put('normal-admin/{admin}/permissions', function (NormalAdmin $admin) {
-			$admin->api_routes()->sync(request('permitted_routes'));
-			return response()->json(['rsp' => true], 204);
-		})->middleware('auth:admin');
+	public function editNormalAdminRoutePermissions(NormalAdmin $admin)
+	{
+		$admin->api_routes()->sync(request('permitted_routes'));
 
-		Route::put('normal-admin/{admin}/suspend', function (NormalAdmin $admin) {
-			if ($admin->id === auth()->id()) {
-				return response()->json(['rsp' => false], 403);
-			}
-			$admin->delete();
-			return response()->json(['rsp' => true], 204);
-		})->middleware('auth:admin');
+		ActivityLog::logAdminActivity(auth()->user()->email . ' edited account permissions for ' . $admin->email);
 
-		Route::put('normal-admin/{id}/restore', function ($id) {
-			NormalAdmin::withTrashed()->find($id)->restore();
-			return response()->json(['rsp' => true], 204);
-		})->middleware('auth:admin');
+		return response()->json(['rsp' => true], 204);
+	}
 
-		Route::delete('normal-admin/{admin}/delete', function (NormalAdmin $admin) {
-			if ($admin->id === auth()->id()) {
-				return response()->json(['rsp' => false], 403);
-			}
-			$admin->forceDelete();
-			return response()->json(['rsp' => true], 204);
-		})->middleware('auth:admin');
+	public function suspendNormalAdmin(NormalAdmin $admin)
+	{
+		if ($admin->id === auth()->id()) {
+			return response()->json(['rsp' => false], 403);
+		}
+		$admin->delete();
+
+		ActivityLog::logAdminActivity(auth()->user()->email . ' suspended the normal admin account for ' . $admin->email);
+
+		return response()->json(['rsp' => true], 204);
+	}
+
+	public function restoreNormalAdmin($id)
+	{
+		$admin = NormalAdmin::withTrashed()->find($id);
+		$admin->restore();
+
+		ActivityLog::logAdminActivity(auth()->user()->email . ' restored the normal admin account for ' . $admin->email);
+
+		return response()->json(['rsp' => true], 204);
+	}
+
+	public function deleteNormalAdminAccount(NormalAdmin $admin)
+	{
+		if ($admin->id === auth()->id()) {
+			return response()->json(['rsp' => false], 403);
+		}
+
+		ActivityLog::logAdminActivity(auth()->user()->email . ' permanently deleted the normal admin account for ' . $admin->email);
+
+		$admin->forceDelete();
+		return response()->json(['rsp' => true], 204);
 	}
 }

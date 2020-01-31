@@ -22,7 +22,7 @@ class CardUserCategoriesTableSeeder extends Seeder
 			1 =>
 			array(
 				'id' => 1,
-				'category_name' => 'students',
+				'category_name' => 'Student',
 				'credit_limit' => 0.0,
 				'created_at' => '2020-01-02 17:23:15',
 				'updated_at' => '2020-01-02 17:23:15',
@@ -31,7 +31,7 @@ class CardUserCategoriesTableSeeder extends Seeder
 			2 =>
 			array(
 				'id' => 2,
-				'category_name' => 'salary earners',
+				'category_name' => 'Employed',
 				'credit_limit' => 0.0,
 				'created_at' => NULL,
 				'updated_at' => NULL,
@@ -40,7 +40,7 @@ class CardUserCategoriesTableSeeder extends Seeder
 			3 =>
 			array(
 				'id' => 3,
-				'category_name' => 'business owners',
+				'category_name' => 'Business Owner',
 				'credit_limit' => 0.0,
 				'created_at' => NULL,
 				'updated_at' => NULL,

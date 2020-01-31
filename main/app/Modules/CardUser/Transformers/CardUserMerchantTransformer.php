@@ -5,7 +5,7 @@ namespace App\Modules\CardUser\Transformers;
 use App\Modules\Admin\Models\Merchant;
 
 
-class CardIUserMerchantTransformer
+class CardUserMerchantTransformer
 {
 	public function collectionTransformer($collection, $transformerMethod)
 	{

@@ -53,63 +53,103 @@ class Accountant extends User
 		});
 	}
 
-	static function routes()
+	static function adminRoutes()
 	{
-		Route::get('accountants', function () {
-			return (new AdminUserTransformer)->collectionTransformer(Accountant::withTrashed()->get(), 'transformForAdminViewAccountants');
-		})->middleware('auth:admin');
+		Route::group(['namespace' => '\App\Modules\Accountant\Models'], function () {
+			Route::get('accountants', 'Accountant@getAllAccountants')->middleware('auth:admin');
 
-		Route::post('accountant/create', function () {
-			// return request()->all();
-			try {
-				DB::beginTransaction();
-				$accountant = Accountant::create(Arr::collapse([
-					request()->all(),
-					[
-						'password' => bcrypt('itsefintech@accountant'),
-					]
-				]));
+			Route::post('accountant/create', 'Accountant@createAccountant')->middleware('auth:admin');
 
-				DB::commit();
-				return response()->json(['rsp' => $accountant], 201);
-			} catch (Throwable $e) {
-				if (app()->environment() == 'local') {
-					return response()->json(['error' => $e->getMessage()], 500);
-				}
-				return response()->json(['rsp' => 'error occurred'], 500);
+			Route::get('accountant/{accountant}/permissions', 'Accountant@getAccountantPermissions')->middleware('auth:admin');
+
+			Route::put('accountant/{accountant}/permissions', 'Accountant@editAccountantPermissions')->middleware('auth:admin');
+
+			Route::put('accountant/{accountant}/suspend', 'Accountant@suspendAccountant')->middleware('auth:admin');
+
+			Route::put('accountant/{id}/restore', 'Accountant@restoreAccountant')->middleware('auth:admin');
+
+			Route::delete('accountant/{accountant}/delete', 'Accountant@deleteAccountant')->middleware('auth:admin');
+		});
+	}
+
+
+	public function getAllAccountants()
+	{
+		return (new AdminUserTransformer)->collectionTransformer(Accountant::withTrashed()->get(), 'transformForAdminViewAccountants');
+	}
+
+	public function createAccountant()
+	{
+		try {
+			DB::beginTransaction();
+			$accountant = Accountant::create(Arr::collapse([
+				request()->all(),
+				[
+					'password' => bcrypt('itsefintech@accountant'),
+				]
+			]));
+
+			DB::commit();
+
+			ActivityLog::logAdminActivity(auth()->user()->email . ' created an accountant account for ' . $accountant->email);
+
+			return response()->json(['rsp' => $accountant], 201);
+		} catch (Throwable $e) {
+			if (app()->environment() == 'local') {
+				return response()->json(['error' => $e->getMessage()], 500);
 			}
-		})->middleware('auth:admin');
+			return response()->json(['rsp' => 'error occurred'], 500);
+		}
+	}
 
-		Route::get('accountant/{accountant}/permissions', function (Accountant $accountant) {
-			$permitted_routes = $accountant->api_routes()->get(['api_routes.id'])->map(function ($item, $key) {
-				return $item->id;
-			});
+	public function getAccountantPermissions(Accountant $accountant)
+	{
+		$permitted_routes = $accountant->api_routes()->get(['api_routes.id'])->map(function ($item, $key) {
+			return $item->id;
+		});
 
-			$all_routes = ApiRoute::get(['id', 'description'])->map(function ($item, $key) {
-				return ['id' => $item->id, 'description' => $item->description];
-			});
+		$all_routes = ApiRoute::get(['id', 'description'])->map(function ($item, $key) {
+			return ['id' => $item->id, 'description' => $item->description];
+		});
 
-			return ['permitted_routes' => $permitted_routes, 'all_routes' => $all_routes];
-		})->middleware('auth:admin');
+		return ['permitted_routes' => $permitted_routes, 'all_routes' => $all_routes];
+	}
 
-		Route::put('accountant/{accountant}/permissions', function (Accountant $accountant) {
-			$accountant->api_routes()->sync(request('permitted_routes'));
-			return response()->json(['rsp' => true], 204);
-		})->middleware('auth:admin');
+	public function editAccountantPermissions(Accountant $accountant)
+	{
+		$accountant->api_routes()->sync(request('permitted_routes'));
 
-		Route::put('accountant/{accountant}/suspend', function (Accountant $accountant) {
-			$accountant->delete();
-			return response()->json(['rsp' => true], 204);
-		})->middleware('auth:admin');
+		ActivityLog::logAdminActivity(auth()->user()->email . ' edited the account permissions for ' . $accountant->email);
 
-		Route::put('accountant/{id}/restore', function ($id) {
-			Accountant::withTrashed()->find($id)->restore();
-			return response()->json(['rsp' => true], 204);
-		})->middleware('auth:admin');
+		return response()->json(['rsp' => true], 204);
+	}
 
-		Route::delete('accountant/{accountant}/delete', function (Accountant $accountant) {
-			$accountant->forceDelete();
-			return response()->json(['rsp' => true], 204);
-		})->middleware('auth:admin');
+	public function suspendAccountant(Accountant $accountant)
+	{
+		ActivityLog::logAdminActivity(auth()->user()->email . ' suspended the account of ' . $accountant->email);
+
+		$accountant->delete();
+
+		return response()->json(['rsp' => true], 204);
+	}
+
+	public function restoreAccountant($id)
+	{
+		$accountant = Accountant::withTrashed()->find($id);
+
+		$accountant->restore();
+
+		ActivityLog::logAdminActivity(auth()->user()->email . ' restored the account of ' . $accountant->email);
+
+		return response()->json(['rsp' => true], 204);
+	}
+
+	public function deleteAccountant(Accountant $accountant)
+	{
+		ActivityLog::logAdminActivity(auth()->user()->email . ' permanently deleted the account of ' . $accountant->email);
+
+		$accountant->forceDelete();
+
+		return response()->json(['rsp' => true], 204);
 	}
 }

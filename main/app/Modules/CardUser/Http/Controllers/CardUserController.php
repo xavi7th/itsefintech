@@ -30,11 +30,11 @@ class CardUserController extends Controller
 
 		Route::group(['prefix' => 'v1'], function () {
 
+			Route::get('/', 'CardUserController@index');
+
 			LoginController::routes();
 
 			RegisterController::routes();
-
-			Route::get('/', 'CardUserController@index');
 
 			CardUser::cardUserRoutes();
 

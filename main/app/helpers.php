@@ -58,7 +58,8 @@ if (!function_exists('unique_random')) {
 			if ($chars == null) {
 				$random = $prefix . rand(100001, 999999999);
 			} else {
-				$random = $prefix . Str::random($chars);
+				// $random = $prefix . Str::random($chars);
+				$random = $prefix . rand(substr(100000001, -($chars)), substr(9999999999, -($chars)));
 			}
 
 			// Check if it's already testing
@@ -230,6 +231,24 @@ if (!function_exists('alt_dd')) {
 if (!function_exists('slug_to_string')) {
 	function slug_to_string($data)
 	{
-		str_replace('-', ' ', $data);
+		return str_replace('-', ' ', $data);
+	}
+}
+
+if (!function_exists('to_naira')) {
+	/**
+	 * convert a number to naira with the naira symbol
+	 *
+	 * @param float $amount The amount to convert
+	 * @return string
+	 * @throws Exception when the amount supplied is not a number
+	 **/
+
+	function to_naira($amount): string
+	{
+		if (!is_numeric($amount)) {
+			throw new Exception("can only convert numbers to naira", 500);
+		}
+		return '₦' . number_format($amount, 2);
 	}
 }

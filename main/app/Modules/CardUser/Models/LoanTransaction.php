@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Watson\Rememberable\Rememberable;
 use Illuminate\Database\Eloquent\Model;
+use App\Modules\Admin\Models\ActivityLog;
 use App\Modules\CardUser\Models\CardUser;
 use App\Modules\CardUser\Models\LoanRequest;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -99,11 +100,14 @@ class LoanTransaction extends Model
 			 */
 			'next_installment_due_date' => now()->addMonth(),
 		]);
+
+		ActivityLog::logUserActivity(auth()->user()->email . 'made a loan repayment. Amount: ' . $request->amount . ' Type: '  . $trans_type);
+
 		return (new LoanTransactionTransformer)->transformForUserViewLoanTransactions($loan_transaction);
 	}
 
 	/**
-	 * Admin Route Methods
+	 * ! Admin Route Methods
 	 */
 
 	public function showAllLoanTransactions()

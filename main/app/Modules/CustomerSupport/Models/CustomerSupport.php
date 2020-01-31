@@ -52,63 +52,103 @@ class CustomerSupport extends User
 		});
 	}
 
-	static function routes()
+	static function adminRoutes()
 	{
-		Route::get('customer-supports', function () {
-			return (new AdminUserTransformer)->collectionTransformer(CustomerSupport::withTrashed()->get(), 'transformForAdminViewCustomerSupports');
-		})->middleware('auth:admin');
+		Route::group(['namespace' => '\App\Modules\CustomerSupport\Models'], function () {
+			Route::get('customer-supports', 'CustomerSupport@getAllCustomerSupports')->middleware('auth:admin');
 
-		Route::post('customer-support/create', function () {
-			// return request()->all();
-			try {
-				DB::beginTransaction();
-				$customer_support = CustomerSupport::create(Arr::collapse([
-					request()->all(),
-					[
-						'password' => bcrypt('itsefintech@customer_support'),
-					]
-				]));
+			Route::post('customer-support/create', 'CustomerSupport@createCustomerSupport')->middleware('auth:admin');
 
-				DB::commit();
-				return response()->json(['rsp' => $customer_support], 201);
-			} catch (Throwable $e) {
-				if (app()->environment() == 'local') {
-					return response()->json(['error' => $e->getMessage()], 500);
-				}
-				return response()->json(['rsp' => 'error occurred'], 500);
+			Route::get('customer-support/{customer_support}/permissions', 'CustomerSupport@getCustomerSupportPermissions')->middleware('auth:admin');
+
+			Route::put('customer-support/{customer_support}/permissions', 'CustomerSupport@editCustomerSupportPermissions')->middleware('auth:admin');
+
+			Route::put('customer-support/{customer_support}/suspend', 'CustomerSupport@suspendCustomerSupport')->middleware('auth:admin');
+
+			Route::put('customer-support/{id}/restore', 'CustomerSupport@restoreCustomerSupport')->middleware('auth:admin');
+
+			Route::delete('customer-support/{customer_support}/delete', 'CustomerSupport@deleteCustomerSupport')->middleware('auth:admin');
+		});
+	}
+
+
+	public function getAllCustomerSupports()
+	{
+		return (new AdminUserTransformer)->collectionTransformer(CustomerSupport::withTrashed()->get(), 'transformForAdminViewCustomerSupports');
+	}
+
+	public function createCustomerSupport()
+	{
+		try {
+			DB::beginTransaction();
+			$customer_support = CustomerSupport::create(Arr::collapse([
+				request()->all(),
+				[
+					'password' => bcrypt('itsefintech@customer_support'),
+				]
+			]));
+
+			DB::commit();
+
+			ActivityLog::logAdminActivity(auth()->user()->email . ' created an account officer account for ' . $customer_support->email);
+
+			return response()->json(['rsp' => $customer_support], 201);
+		} catch (Throwable $e) {
+			if (app()->environment() == 'local') {
+				return response()->json(['error' => $e->getMessage()], 500);
 			}
-		})->middleware('auth:admin');
+			return response()->json(['rsp' => 'error occurred'], 500);
+		}
+	}
 
-		Route::get('customer-support/{customer_support}/permissions', function (CustomerSupport $customer_support) {
-			$permitted_routes = $customer_support->api_routes()->get(['api_routes.id'])->map(function ($item, $key) {
-				return $item->id;
-			});
+	public function getCustomerSupportPermissions(CustomerSupport $customer_support)
+	{
+		$permitted_routes = $customer_support->api_routes()->get(['api_routes.id'])->map(function ($item, $key) {
+			return $item->id;
+		});
 
-			$all_routes = ApiRoute::get(['id', 'description'])->map(function ($item, $key) {
-				return ['id' => $item->id, 'description' => $item->description];
-			});
+		$all_routes = ApiRoute::get(['id', 'description'])->map(function ($item, $key) {
+			return ['id' => $item->id, 'description' => $item->description];
+		});
 
-			return ['permitted_routes' => $permitted_routes, 'all_routes' => $all_routes];
-		})->middleware('auth:admin');
+		return ['permitted_routes' => $permitted_routes, 'all_routes' => $all_routes];
+	}
 
-		Route::put('customer-support/{customer_support}/permissions', function (CustomerSupport $customer_support) {
-			$customer_support->api_routes()->sync(request('permitted_routes'));
-			return response()->json(['rsp' => true], 204);
-		})->middleware('auth:admin');
+	public function editCustomerSupportPermissions(CustomerSupport $customer_support)
+	{
+		$customer_support->api_routes()->sync(request('permitted_routes'));
 
-		Route::put('customer-support/{customer_support}/suspend', function (CustomerSupport $customer_support) {
-			$customer_support->delete();
-			return response()->json(['rsp' => true], 204);
-		})->middleware('auth:admin');
+		ActivityLog::logAdminActivity(auth()->user()->email . ' edited the account permissions for ' . $customer_support->email);
 
-		Route::put('customer-support/{id}/restore', function ($id) {
-			CustomerSupport::withTrashed()->find($id)->restore();
-			return response()->json(['rsp' => true], 204);
-		})->middleware('auth:admin');
+		return response()->json(['rsp' => true], 204);
+	}
 
-		Route::delete('customer-support/{customer_support}/delete', function (CustomerSupport $customer_support) {
-			$customer_support->forceDelete();
-			return response()->json(['rsp' => true], 204);
-		})->middleware('auth:admin');
+	public function suspendCustomerSupport(CustomerSupport $customer_support)
+	{
+		ActivityLog::logAdminActivity(auth()->user()->email . ' suspended the account of ' . $customer_support->email);
+
+		$customer_support->delete();
+
+		return response()->json(['rsp' => true], 204);
+	}
+
+	public function restoreCustomerSupport($id)
+	{
+		$customer_support = CustomerSupport::withTrashed()->find($id);
+
+		$customer_support->restore();
+
+		ActivityLog::logAdminActivity(auth()->user()->email . ' restored the account of ' . $customer_support->email);
+
+		return response()->json(['rsp' => true], 204);
+	}
+
+	public function deleteCustomerSupport(CustomerSupport $customer_support)
+	{
+		ActivityLog::logAdminActivity(auth()->user()->email . ' permanently deleted the account of ' . $customer_support->email);
+
+		$customer_support->forceDelete();
+
+		return response()->json(['rsp' => true], 204);
 	}
 }

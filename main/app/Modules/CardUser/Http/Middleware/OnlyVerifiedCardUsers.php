@@ -18,8 +18,8 @@ class OnlyVerifiedCardUsers
 	public function handle(Request $request, Closure $next)
 	{
 
-		if ( !$request->user()->is_otp_verified()) {
-			return response()->json(['message' => 'Unverified user'], 423);
+		if (!$request->user()->is_otp_verified()) {
+			return response()->json('Unverified user', 422);
 		}
 
 		return $next($request);

@@ -9,9 +9,11 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Auth\Events\Registered;
 use App\Modules\CardUser\Models\CardUser;
 use Illuminate\Foundation\Auth\RegistersUsers;
+use App\Modules\CardUser\Notifications\SendOTP;
+use App\Modules\CardUser\Notifications\AccountCreated;
 use App\Modules\CardUser\Transformers\CardUserTransformer;
 use App\Modules\CardUser\Http\Requests\RegistrationValidation;
-use App\Modules\CardUser\Notifications\AccountCreated;
+use App\Modules\Admin\Models\ActivityLog;
 
 class RegisterController extends Controller
 {
@@ -63,14 +65,15 @@ class RegisterController extends Controller
 		event(new Registered($card_user = $this->create($request->all())));
 
 		/** Create OTP */
-		// $otp = $card_user->createOTP();
+		$otp = $card_user->createOTP();
 
 		/** Send OTP code */
+		$card_user->notify(new SendOTP($otp));
 
 		/** Log the user in */
 		$token = (string)auth('card_user')->login($card_user);
 
-		// dd(get_class($token));
+
 		DB::commit();
 
 		return $this->respondWithToken($token);
@@ -91,19 +94,21 @@ class RegisterController extends Controller
 		/** Replace the public part of the url with storage to make it accessible on the frontend */
 		// $url = str_replace_first('public', '/storage', $url);
 
+		/**
+		 * ! TODO Regularise the number properly
+		 */
+
+		$phone_number = '+234' . substr($data['phone'], -10);
+
 		$card_user = CardUser::create([
 			'first_name' => $data['first_name'],
 			'last_name' => $data['last_name'],
 			'card_user_category_id' => $data['card_user_category_id'],
 			'email' => $data['email'],
 			'password' => bcrypt($data['password']),
-			'phone' => $data['phone'],
+			'phone' => $phone_number,
 			'bvn' => $data['bvn']
 		]);
-
-		Log::critical($card_user->email . ' registered an account on the site.');
-
-		$card_user->notify(new AccountCreated);
 
 		return $card_user;
 	}
@@ -122,9 +127,10 @@ class RegisterController extends Controller
 			'token_type' => 'bearer',
 			'expires_in' => auth('card_user')->factory()->getTTL() * 60,
 			'user' => (new CardUserTransformer)->transform($user = auth('card_user')->user()),
-			'is_card_activated' => !$user->has_unactivated_card(),
-			'is_card_requested' => $user->debit_card_requests()->exists(),
-			'success' => true
+			'is_otp_verified' => (boolean)$user->is_otp_verified(),
+			'is_card_activated' => (boolean)!$user->has_unactivated_card(),
+			'is_card_requested' => (boolean)$user->debit_card_requests()->exists(),
+			'success' => (boolean)true
 		], 201);
 	}
 }
