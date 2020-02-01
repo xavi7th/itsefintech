@@ -22,7 +22,7 @@ class CardUserCategoriesTableSeeder extends Seeder
 			1 =>
 			array(
 				'id' => 1,
-				'category_name' => 'Student',
+				'category_name' => 'Undergraduate',
 				'credit_limit' => 0.0,
 				'created_at' => '2020-01-02 17:23:15',
 				'updated_at' => '2020-01-02 17:23:15',

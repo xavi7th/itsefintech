@@ -21,6 +21,6 @@ class CardUserCategory extends Model
 
 	public function is_student()
 	{
-		return $this->category_name == 'students';
+		return $this->category_name == 'Undergraduate';
 	}
 }

@@ -60,7 +60,7 @@ class VoucherRequested extends Notification
 	{
 
 		return [
-			'action' => $this->amount . ' merchant credit requested.',
+			'action' => $notifiable->merchant_limit . ' merchant credit requested.',
 
 		];
 	}

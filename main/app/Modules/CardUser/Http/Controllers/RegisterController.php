@@ -105,7 +105,7 @@ class RegisterController extends Controller
 			'last_name' => $data['last_name'],
 			'card_user_category_id' => $data['card_user_category_id'],
 			'email' => $data['email'],
-			'password' => bcrypt($data['password']),
+			'password' => $data['password'],
 			'phone' => $phone_number,
 			'bvn' => $data['bvn']
 		]);

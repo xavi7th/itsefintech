@@ -20,14 +20,15 @@ use App\Modules\CardUser\Models\LoanTransaction;
 use App\Modules\Admin\Models\MerchantTransaction;
 use App\Modules\CardUser\Models\DebitCardRequest;
 use App\Modules\CardUser\Models\DebitCardTransaction;
+use App\Modules\CardUser\Notifications\ProfileEdited;
 use App\Modules\CardUser\Notifications\AccountCreated;
 use App\Modules\CardUser\Models\DebitCardRequestStatus;
 use App\Modules\Admin\Transformers\AdminUserTransformer;
 use App\Modules\CardUser\Models\DebitCardFundingRequest;
 use App\Modules\CardUser\Transformers\CardUserTransformer;
 use App\Modules\Admin\Http\Requests\SetCardUserCreditLimitValidation;
+use App\Modules\CardUser\Notifications\SendPasswordResetNotification;
 use App\Modules\CardUser\Http\Requests\CardUserUpdateProfileValidation;
-use App\Modules\CardUser\Notifications\ProfileEdited;
 
 class CardUser extends User
 {
@@ -39,7 +40,13 @@ class CardUser extends User
 		'password',
 		'phone',
 		'user_passport',
-		'bvn'
+		'bvn',
+		'school',
+		'department',
+		'level',
+		'mat_no',
+		'address',
+		'city'
 	];
 
 	/**
@@ -69,6 +76,7 @@ class CardUser extends User
 		'school',
 		'department',
 		'level',
+		'mat_no',
 		'address',
 		'city'
 	];
@@ -106,10 +114,22 @@ class CardUser extends User
 		return $otp;
 	}
 
-	// public function notifications()
-	// {
-	// 	return $this->hasMany(Notification::class);
-	// }
+	public function sendPasswordResetNotification($token)
+	{
+		$token = $this->generatePasswordResetToken();
+		$this->notify(new SendPasswordResetNotification($token));
+	}
+
+	private function generatePasswordResetToken()
+	{
+		$token = unique_random('password_resets', 'token', null, 6);
+		DB::table('password_resets')->updateOrInsert(
+			['email' => $this->email],
+			['token' => $token, 'created_at' => now()]
+
+		);
+		return $token;
+	}
 
 	public function vouchers()
 	{
@@ -214,7 +234,7 @@ class CardUser extends User
 
 	public function due_for_school_fees_loan()
 	{
-		return $this->card_user_category->is_student() && !is_null($this->school)  && !is_null($this->department)  && !is_null($this->level);
+		return $this->card_user_category->is_student() && !is_null($this->school)  && !is_null($this->department)  && !is_null($this->level) && !is_null($this->mat_no);
 	}
 
 	public function debit_card_requests()
@@ -265,7 +285,7 @@ class CardUser extends User
 
 	public function loan_request()
 	{
-		return $this->hasOne(LoanRequest::class)->where('paid_at', null);
+		return $this->hasMany(LoanRequest::class)->where('paid_at', null);
 	}
 
 	public function has_loan_request()
@@ -312,6 +332,11 @@ class CardUser extends User
 		$this->attributes['bvn'] = encrypt($value);
 	}
 
+	public function setPasswordAttribute($value)
+	{
+		$this->attributes['password'] = bcrypt($value);
+	}
+
 	static function adminRoutes()
 	{
 		Route::group(['namespace' => '\App\Modules\CardUser\Models'], function () {
@@ -341,7 +366,8 @@ class CardUser extends User
 	{
 		Route::group(['namespace' =>  '\App\Modules\CardUser\Models'], function () {
 			Route::get('card-users/profile-details', 'CardUser@getCardUserProfileDetails');
-			Route::put('card-user/profile', 'CardUser@editCardUserProfileDetails')->middleware('auth:card_user');
+			/** Redundant Route use /user instead */
+			// Route::put('card-user/profile', 'CardUser@editCardUserProfileDetails')->middleware('auth:card_user');
 			Route::get('card-users/categories', 'CardUser@getCardUserCategories');
 		});
 
@@ -354,7 +380,7 @@ class CardUser extends User
 
 			Route::group(['middleware' => ['verified_card_users']], function () {
 				Route::get('/user', 'CardUser@user');
-				Route::put('/user', 'CardUser@updateUserProfile');
+				Route::put('/user', 'CardUser@updateUserProfile')->middleware('auth:card_user');
 			});
 		});
 	}
@@ -411,7 +437,10 @@ class CardUser extends User
 
 	public function updateUserProfile(CardUserUpdateProfileValidation $request)
 	{
-		auth('card_user')->user()->update($request->except(['email', 'bvn']));
+		auth('card_user')->user()->update($request->except(['email', 'bvn', 'phone']));
+
+		auth()->user()->notify(new ProfileEdited);
+
 		return response()->json(['updated' => true], 204);
 	}
 
@@ -437,7 +466,7 @@ class CardUser extends User
 
 		ActivityLog::logUserActivity(auth()->user()->email . ' edited his profile.');
 
-		auth()->user()->notify(new ProfileEdited);
+		// auth()->user()->notify(new ProfileEdited);
 
 
 		return response()->json([], 204);

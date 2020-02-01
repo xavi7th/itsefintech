@@ -36,6 +36,10 @@ class CardUserController extends Controller
 
 			RegisterController::routes();
 
+			ForgotPasswordController::routes();
+
+			ResetPasswordController::routes();
+
 			CardUser::cardUserRoutes();
 
 			LoanTransaction::cardUserRoutes();

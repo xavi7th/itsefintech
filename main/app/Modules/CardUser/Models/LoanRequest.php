@@ -99,7 +99,7 @@ class LoanRequest extends Model
 	public function getLoanRequest(Request $request)
 	{
 		try {
-			return (new LoanRequestTransformer)->transform($request->user()->loan_request);
+			return (new LoanRequestTransformer)->collectionTransformer($request->user()->loan_request, 'transform');
 		} catch (\Throwable $th) {
 			return response()->json(['mesage' => 'User has no existing loan request'], 404);
 		}
