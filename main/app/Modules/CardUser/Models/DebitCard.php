@@ -127,7 +127,7 @@ class DebitCard extends Model
 	static function cardUserRoutes()
 	{
 
-		Route::group(['prefix' => 'card', 'middleware' => ['auth:card_user', 'card_users']], function () {
+		Route::group(['prefix' => 'card', 'middleware' => ['auth:card_user', 'card_users', 'verified_card_users']], function () {
 			Route::group(['namespace' => '\App\Modules\CardUser\Models'], function () {
 				Route::get('/list', 'DebitCard@getCardUserDebitCards');
 				Route::post('/new', 'DebitCard@requestDebitCard');

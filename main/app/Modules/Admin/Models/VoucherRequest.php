@@ -33,7 +33,7 @@ class VoucherRequest extends Model
 
 	static function cardUserRoutes()
 	{
-		Route::group(['namespace' => '\App\Modules\Admin\Models'], function () {
+		Route::group(['namespace' => '\App\Modules\Admin\Models', 'middleware' => ['verified_card_users']], function () {
 			Route::get('voucher-request', 'VoucherRequest@getVoucherRequest')->middleware('auth:card_user');
 			Route::post('voucher-request/create', 'VoucherRequest@makeVoucherRequest')->middleware('auth:card_user');
 		});

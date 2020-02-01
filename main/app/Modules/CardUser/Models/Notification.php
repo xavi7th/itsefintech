@@ -20,7 +20,7 @@ class Notification extends DatabaseNotification
 
 	static function cardUserRoutes()
 	{
-		Route::group(['namespace' => '\App\Modules\CardUser\Models'], function () {
+		Route::group(['namespace' => '\App\Modules\CardUser\Models', 'middleware' => ['verified_card_users']], function () {
 			Route::get('notifications', 'Notification@getUserNotifications')->middleware('auth:card_user');
 		});
 	}

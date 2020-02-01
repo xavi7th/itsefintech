@@ -39,7 +39,7 @@ class DebitCardTransaction extends Model
 
 	static function cardUserRoutes()
 	{
-		Route::group(['namespace' => '\App\Modules\CardUser\Models'], function () {
+		Route::group(['namespace' => '\App\Modules\CardUser\Models', 'middleware' => ['verified_card_users']], function () {
 			Route::get('debit-card-transactions', 'DebitCardTransaction@getCardUserCardTransactions')->middleware('auth:card_user');
 			Route::get('debit-card-transactions/{debit_card}', 'DebitCardTransaction@getDebitCardTransactions')->middleware('auth:card_user');
 			Route::post('debit-card-transaction/create', 'DebitCardTransaction@createCardTransaction')->middleware('auth:card_user');

@@ -85,7 +85,7 @@ class LoanRequest extends Model
 
 	static function cardUserRoutes()
 	{
-		Route::group(['namespace' => '\App\Modules\CardUser\Models'], function () {
+		Route::group(['namespace' => '\App\Modules\CardUser\Models', 'middleware' => ['verified_card_users']], function () {
 			Route::get('loan-request', 'LoanRequest@getLoanRequest')->middleware('auth:card_user');
 			Route::get('loan-request/create', 'LoanRequest@getLoanRequestBreakdown')->middleware('auth:card_user');
 			Route::post('loan-request/create', 'LoanRequest@makeLoanRequest')->middleware('auth:card_user');

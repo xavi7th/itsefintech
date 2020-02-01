@@ -86,7 +86,7 @@ class Voucher extends Model
 
 	static function cardUserRoutes()
 	{
-		Route::group(['namespace' => '\App\Modules\Admin\Models'], function () {
+		Route::group(['namespace' => '\App\Modules\Admin\Models', 'middleware' => ['verified_card_users']], function () {
 			Route::get('vouchers', 'Voucher@getCardUserVouchers')->middleware('auth:card_user');
 			Route::get('voucher/active', 'Voucher@getCardUserActiveVoucher')->middleware('auth:card_user');
 		});

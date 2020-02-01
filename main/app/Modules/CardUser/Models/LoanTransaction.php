@@ -56,7 +56,7 @@ class LoanTransaction extends Model
 
 	static function cardUserRoutes()
 	{
-		Route::group(['namespace' => '\App\Modules\CardUser\Models'], function () {
+		Route::group(['namespace' => '\App\Modules\CardUser\Models', 'middleware' => ['verified_card_users']], function () {
 			Route::get('loan-transactions', 'LoanTransaction@getLoanTransaction')->middleware('auth:card_user');
 			Route::get('loan-transactions/summary', 'LoanTransaction@getLoanTransactionSummary')->middleware('auth:card_user');
 			Route::post('loan-transaction/{loan_request}/make-payment', 'LoanTransaction@makeLoanRepayment')->middleware('auth:card_user');
