@@ -42,7 +42,7 @@ class Voucher extends Model
 
 	public function getIsExpiredAttribute(): bool
 	{
-		return $this->created_at->diffInDays(now()) > config('app.max_voucher_duration');
+		return $this->created_at->diffInDays(now()) > config('app.voucher_validity_days');
 	}
 
 	public function getAmountSpentAttribute(): float

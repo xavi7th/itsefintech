@@ -138,7 +138,7 @@ class CardUser extends User
 
 	public function active_voucher()
 	{
-		return $this->hasOne(Voucher::class)->whereDate('created_at', '>', Carbon::today()->subDays(config('app.voucher_validity_days'))->toDateString());
+		return $this->hasOne(Voucher::class)->whereDate('created_at', '>', now()->subDays(config('app.voucher_validity_days'))->toDateString());
 	}
 
 	public function expired_vouchers()

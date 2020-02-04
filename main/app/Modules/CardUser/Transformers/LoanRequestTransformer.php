@@ -51,7 +51,7 @@ class LoanRequestTransformer
 
 	public function transformWithLoanTransactions(LoanRequest $loan_request)
 	{
-		$transactions = $loan_request->loan_transactions;
+		$transactions = $loan_request->loan_transactions->slice(1);
 		$breakdown_statistics = $loan_request->breakdownStatistics();
 		return collect([
 			'id' => $loan_request->id,

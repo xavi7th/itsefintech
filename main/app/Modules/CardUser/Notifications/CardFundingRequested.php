@@ -47,9 +47,7 @@ class CardFundingRequested extends Notification
 		return (new MailMessage)
 			->subject('Card Funding Requested!')
 			->greeting('Hello, ' . $notifiable->first_name . '.')
-			->line('You just requested a card funding of ' . $this->amount)
-			->line('Our team will review the funding request and get back to you on the decicion taken.')
-			->line('Thank you for using our application!');
+			->line('We received your credit request of ' . $this->amount);
 	}
 
 	/**
@@ -75,7 +73,7 @@ class CardFundingRequested extends Notification
 	{
 
 		return (new SMSSolutionsMessage)
-			->sms_message('You just requested a card funding of ' . $this->merchant . '. Our team will look into the request and you will get a notification when we respond.')
+			->sms_message('Hello, ' . $notifiable->first_name . '. We received your credit request of ' . $this->amount)
 			->to($notifiable->phone);
 	}
 }
