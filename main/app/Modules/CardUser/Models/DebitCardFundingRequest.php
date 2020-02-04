@@ -106,7 +106,7 @@ class DebitCardFundingRequest extends Model
 		$debit_card->card_user_id = $funding_request->card_user_id;
 		$debit_card->debit_card_id = $funding_request->debit_card_id;
 		$debit_card->amount = $funding_request->amount;
-		$debit_card->trans_description = 'Card funding';
+		$debit_card->trans_description = 'Card funded';
 		$debit_card->trans_category = 'Card funding';
 		$debit_card->trans_type = 'credit';
 		$debit_card->save();

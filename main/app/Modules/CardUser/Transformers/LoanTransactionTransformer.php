@@ -44,6 +44,8 @@ class LoanTransactionTransformer
 			'id' => (int)$loan_transaction->id,
 			'amount' => (float)$loan_transaction->amount,
 			'transaction_type' => (string)$loan_transaction->transaction_type,
+			'date_for_humans' => (string) $loan_transaction->created_at->diffForHumans(),
+			'date' => (string) $loan_transaction->created_at->toDateString(),
 		];
 	}
 	public function transformForSummary(Request $request)

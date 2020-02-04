@@ -22,11 +22,11 @@ class CreateLoanRequestsTable extends Migration
 			$table->boolean('is_school_fees')->default(false);
 			$table->timestamp('approved_at')->nullable();
 			$table->bigInteger('approved_by')->unsigned()->nullable()->default(null);
-			$table->foreign('approved_by')->references('id')->on('admins')->onDelete('no action');
+			$table->foreign('approved_by')->references('id')->on('admins')->onDelete('cascade');
 			// $table->string('approved_by_user_type')->nullable();
 			$table->timestamp('paid_at')->nullable();
 			$table->bigInteger('marked_paid_by')->unsigned()->nullable()->default(null);
-			$table->foreign('marked_paid_by')->references('id')->on('admins')->onDelete('no action');
+			$table->foreign('marked_paid_by')->references('id')->on('admins')->onDelete('cascade');
 			// $table->string('marked_paid_by_user_type')->nullable();
 
 			$table->timestamps();

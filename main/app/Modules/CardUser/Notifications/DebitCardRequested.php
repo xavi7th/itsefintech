@@ -12,14 +12,16 @@ class DebitCardRequested extends Notification
 {
 	use Queueable;
 
+	protected $debit_card_type;
+
 	/**
 	 * Create a new notification instance.
 	 *
 	 * @return void
 	 */
-	public function __construct()
+	public function __construct($debit_card_type)
 	{
-		//
+		$this->debit_card_type = $debit_card_type;
 	}
 
 	/**
@@ -73,7 +75,7 @@ class DebitCardRequested extends Notification
 	{
 
 		return (new SMSSolutionsMessage)
-			->sms_message('You just requested a new credit card. Our team will look into the request and you will get a notification when we respond.')
+			->sms_message('We have received your request for a '. $this->debit_card_type->card_type_name . ' Card. Kindly log in our mobile app to track delivery updates. For more enquiries, call ' . config('app.phone'))
 			->to($notifiable->phone);
 	}
 }

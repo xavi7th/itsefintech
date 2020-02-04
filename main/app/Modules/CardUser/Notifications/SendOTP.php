@@ -43,6 +43,6 @@ class SendOTP extends Notification
 	public function toNexmo($notifiable)
 	{
 		return (new NexmoMessage)
-			->content('Your CapitalX OTP code:' . $this->otp . '.');
+			->content(' DO NOT DISCLOSE. Your Capital X OTP code for phone number confirmation is ' . $this->otp . '.');
 	}
 }

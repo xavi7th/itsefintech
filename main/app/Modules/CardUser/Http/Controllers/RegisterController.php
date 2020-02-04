@@ -68,7 +68,7 @@ class RegisterController extends Controller
 		$otp = $card_user->createOTP();
 
 		/** Send OTP code */
-		$card_user->notify(new SendOTP($otp));
+		// $card_user->notify(new SendOTP($otp));
 
 		/** Log the user in */
 		$token = (string)auth('card_user')->login($card_user);

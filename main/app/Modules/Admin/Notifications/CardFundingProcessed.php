@@ -6,6 +6,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
+use App\Modules\CardUser\Notifications\Channels\SMSSolutionsMessage;
 
 class CardFundingProcessed extends Notification
 {

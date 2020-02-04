@@ -190,9 +190,11 @@ class DebitCard extends Model
 			)
 		);
 
+		$debit_card_type = DebitCardType::find($request->debit_card_type_id);
+
 		ActivityLog::logUserActivity(auth()->user()->email . ' made a debit card request');
 
-		auth()->user()->notify(new DebitCardRequested);
+		auth()->user()->notify(new DebitCardRequested($debit_card_type));
 
 		return response()->json($card_request, 201);
 	}

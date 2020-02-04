@@ -422,7 +422,11 @@ class CardUser extends User
 
 		/** Send welcome message */
 		ActivityLog::logUserActivity($request->user()->email . ' OTP successfully verified.');
-		$request->user()->notify(new AccountCreated);
+
+		/**
+		 * ! Disabled per app owner's request
+		 */
+		// $request->user()->notify(new AccountCreated);
 
 		DB::commit();
 

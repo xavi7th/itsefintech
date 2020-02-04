@@ -14,6 +14,7 @@ return [
     */
 
 	'name' => env('APP_NAME', 'Laravel'),
+	'phone' => env('APP_PHONE', '08022222222'),
 	'migration_key' => env('MIGRATION_KEY', '9999'),
 	'card_cost' => env('CARD_COST', '1000'),
 	'voucher_validity_days' => env('VOUCHER_VALIDITY_DAYS', 30),
