@@ -22,7 +22,7 @@ class CardDebited extends Notification
 	 */
 	public function __construct(array $trans_details)
 	{
-		$this->trans_details = $trans_details;
+		$this->trans_details = (object)$trans_details;
 	}
 
 	/**
@@ -47,8 +47,8 @@ class CardDebited extends Notification
 
 		return (new MailMessage)
 			->subject('Debit Alert!')
-			->greeting('Dear ' . $notifiable->first_name . '.')
-			->line('Your card '. DebitCard::find($this->trans_details->debit_card_id)->card_number .' has been debited with ' . to_naira($this->trans_details->amount) .' by ' . $this->trans_details->trans_description . ' on ' . now()->toDateTime() . '. Kindly visit an ATM close to you for full card balance.');
+			->greeting('Dear ' . $notifiable->first_name . ',')
+			->line('Your card '. DebitCard::find($this->trans_details->debit_card_id)->card_number .' has been debited with ' . to_naira($this->trans_details->amount) .' by ' . $this->trans_details->trans_description . ' on ' . now()->toDateTimeString() . '. Kindly visit an ATM close to you for full card balance.');
 
 	}
 
@@ -61,7 +61,7 @@ class CardDebited extends Notification
 	{
 
 		return [
-			'action' => DebitCard::find($this->trans_details->debit_card_id)->card_number .' debited ' . to_naira($this->trans_details->amount) .' by ' . $this->trans_details->trans_description . ' on ' . now()->toDateTime() . '.',
+			'action' => DebitCard::find($this->trans_details->debit_card_id)->card_number .' debited ' . to_naira($this->trans_details->amount) .' by ' . $this->trans_details->trans_description . ' on ' . now()->toDateTimeString() . '.',
 		];
 	}
 
@@ -73,7 +73,7 @@ class CardDebited extends Notification
 	public function toSMSSolutions($notifiable)
 	{
 		return (new SMSSolutionsMessage)
-			->sms_message('Your card '. DebitCard::find($this->trans_details->debit_card_id)->card_number .' has been debited with ' . to_naira($this->trans_details->amount) .' by ' . $this->trans_details->trans_description . ' on ' . now()->toDateTime() . '. Kindly visit an ATM close to you for full card balance.')
+			->sms_message('Your card '. DebitCard::find($this->trans_details->debit_card_id)->card_number .' has been debited with ' . to_naira($this->trans_details->amount) .' by ' . $this->trans_details->trans_description . ' on ' . now()->toDateTimeString() . '. Kindly visit an ATM close to you for full card balance.')
 			->to($notifiable->phone);
 	}
 }
