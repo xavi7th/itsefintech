@@ -31,10 +31,10 @@ class LoanRequested extends Notification
 	/**
 	 * Get the notification's delivery channels.
 	 *
-	 * @param mixed $notifiable
+	 * @param App\Modules\CardUser\Models\CardUser $card_user
 	 * @return array
 	 */
-	public function via($notifiable)
+	public function via($card_user)
 	{
 		return ['mail', 'database', SMSSolutionsMessage::class];
 	}
@@ -42,43 +42,45 @@ class LoanRequested extends Notification
 	/**
 	 * Get the mail representation of the notification.
 	 *
-	 * @param mixed $notifiable
+	 * @param App\Modules\CardUser\Models\CardUser $card_user
 	 * @return \Illuminate\Notifications\Messages\MailMessage
 	 */
-	public function toMail($notifiable)
+	public function toMail($card_user)
 	{
 		if ($this->is_school_fees) {
 			return (new MailMessage)
-				->subject('Loan Requested!')
-				->greeting('Hello, ' . $notifiable->first_name . '.')
-				->line('You just requested a school fees loan of ' . $this->amount)
-				->line('Our team will review the loan request, get in touch with the school you have entered in your records and get back to you on the decicion taken.')
-				->line('Thank you for using our application!');
+				->subject('Credit Request!')
+				->greeting('Hello ' . $card_user->first_name . ',')
+				->line('We’ve received your request for ' . $this->amount . ' school fees credit.')
+				->line('We will notify you when it is approved and payments have been made.')
+				->line('Regards')
+				->salutation('Capital X Card Team');
 		} else {
 			return (new MailMessage)
-				->subject('Loan Requested!')
-				->greeting('Hello, ' . $notifiable->first_name . '.')
-				->line('You just requested a loan of ' . $this->amount)
-				->line('Our team will review the loan request and get back to you on the decicion taken.')
-				->line('Thank you for using our application!');
+				->subject('Credit Requested!')
+				->greeting('Hello ' . $card_user->first_name . ',')
+				->line('We’ve received your request for ' . $this->amount . ' credit.')
+				->line('We will notify you when it is approved and accessible on your card for usage.')
+				->line('Regards')
+				->salutation('Capital X Card Team');
 		}
 	}
 
 	/**
 	 * Get the database representation of the notification.
 	 *
-	 * @param mixed $notifiable
+	 * @param App\Modules\CardUser\Models\CardUser $card_user
 	 */
-	public function toDatabase($notifiable)
+	public function toDatabase($card_user)
 	{
 		if ($this->is_school_fees) {
 			return [
-				'action' => $this->amount . ' loan requested for school fees.',
+				'action' => $this->amount . ' credit requested for school fees.',
 
 			];
 		} else {
 			return [
-				'action' => $this->amount . ' loan requested.',
+				'action' => $this->amount . ' credit requested.',
 
 			];
 		}
@@ -87,18 +89,18 @@ class LoanRequested extends Notification
 	/**
 	 * Get the SMS representation of the notification.
 	 *
-	 * @param mixed $notifiable
+	 * @param App\Modules\CardUser\Models\CardUser $card_user
 	 */
-	public function toSMSSolutions($notifiable)
+	public function toSMSSolutions($card_user)
 	{
 		if ($this->is_school_fees) {
 			return (new SMSSolutionsMessage)
-				->sms_message('You just requested ' . $this->amount . ' loan for your school fees. We will look into your request ASAP')
-				->to($notifiable->phone);
+				->sms_message('Dear ' . $card_user->full_name . ', we received your credit request of ' . $this->amount . ' for your school fees.')
+				->to($card_user->phone);
 		} else {
 			return (new SMSSolutionsMessage)
-				->sms_message('You just requested a loan of ' . $this->amount . '. Our team will look into the request and you will get a notification when we respond.')
-				->to($notifiable->phone);
+				->sms_message('Dear ' . $card_user->full_name . ', we received your credit request of ' . $this->amount . '.')
+				->to($card_user->phone);
 		}
 	}
 }

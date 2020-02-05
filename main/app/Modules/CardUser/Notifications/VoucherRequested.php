@@ -3,6 +3,7 @@
 namespace App\Modules\CardUser\Notifications;
 
 use Illuminate\Bus\Queueable;
+use App\Modules\CardUser\Models\CardUser;
 use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -26,10 +27,10 @@ class VoucherRequested extends Notification
 	/**
 	 * Get the notification's delivery channels.
 	 *
-	 * @param mixed $notifiable
+	 * @param CardUser $card_user
 	 * @return array
 	 */
-	public function via($notifiable)
+	public function via($card_user)
 	{
 		return ['mail', 'database', SMSSolutionsMessage::class];
 	}
@@ -37,30 +38,31 @@ class VoucherRequested extends Notification
 	/**
 	 * Get the mail representation of the notification.
 	 *
-	 * @param mixed $notifiable
+	 * @param CardUser $card_user
 	 * @return \Illuminate\Notifications\Messages\MailMessage
 	 */
-	public function toMail($notifiable)
+	public function toMail($card_user)
 	{
 
 		return (new MailMessage)
 			->subject('Merchant Credit Requested!')
-			->greeting('Hello, ' . $notifiable->first_name . '.')
-			->line('You just requested a merchant credit')
-			->line('Our team will review the credit request and get back to you on the decision taken.')
-			->line('Thank you for using our application!');
+			->greeting('Hello ' . $card_user->first_name . ',')
+			->line('We’ve received your request for ' . $this->amount . ' school fees credit.')
+			->line('We will notify you when it is approved and and accessible as a voucher for usage.')
+			->line('Regards')
+			->salutation('Capital X Card Team');
 	}
 
 	/**
 	 * Get the database representation of the notification.
 	 *
-	 * @param mixed $notifiable
+	 * @param CardUser $card_user
 	 */
-	public function toDatabase($notifiable)
+	public function toDatabase($card_user)
 	{
 
 		return [
-			'action' => $notifiable->merchant_limit . ' merchant credit requested.',
+			'action' => $card_user->merchant_limit . ' merchant credit requested.',
 
 		];
 	}
@@ -68,13 +70,13 @@ class VoucherRequested extends Notification
 	/**
 	 * Get the SMS representation of the notification.
 	 *
-	 * @param mixed $notifiable
+	 * @param CardUser $card_user
 	 */
-	public function toSMSSolutions($notifiable)
+	public function toSMSSolutions($card_user)
 	{
 
 		return (new SMSSolutionsMessage)
-			->sms_message('You just requested a merchant credit. Our team will look into the request and you will get a notification when we respond.')
-			->to($notifiable->phone);
+			->sms_message('Dear ' . $card_user->full_name . ', we received your merchant credit request of ' . $this->amount . '.')
+			->to($card_user->phone);
 	}
 }

@@ -47,7 +47,7 @@ class Merchant  extends Model implements AuthenticatableContract, AuthorizableCo
 
 	static function cardUserRoutes()
 	{
-		Route::group(['namespace' => '\App\Modules\Admin\Models', 'middleware' => ['verified_card_users']], function () {
+		Route::group(['namespace' => '\App\Modules\Admin\Models'], function () {
 			Route::get('merchant-list', 'Merchant@viewAllMerchants');
 		});
 	}

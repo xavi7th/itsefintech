@@ -27,10 +27,10 @@ class CardFundingProcessed extends Notification
 	/**
 	 * Get the notification's delivery channels.
 	 *
-	 * @param mixed $notifiable
+	 * @param App\Modules\CardUser\Models\CardUser $card_user
 	 * @return array
 	 */
-	public function via($notifiable)
+	public function via($card_user)
 	{
 		return ['mail', 'database', SMSSolutionsMessage::class];
 	}
@@ -38,25 +38,24 @@ class CardFundingProcessed extends Notification
 	/**
 	 * Get the mail representation of the notification.
 	 *
-	 * @param mixed $notifiable
+	 * @param App\Modules\CardUser\Models\CardUser $card_user
 	 * @return \Illuminate\Notifications\Messages\MailMessage
 	 */
-	public function toMail($notifiable)
+	public function toMail($card_user)
 	{
 
 		return (new MailMessage)
 			->subject('Card Funding Request Processed!')
-			->greeting('Hurray, ' . $notifiable->first_name . '!')
-			->line('Your card funding request of ' . $this->amount . ' has been processed')
-			->line('Thank you for using our application!');
+			->greeting('Dear ' . $card_user->first_name . '.')
+			->line('Your card funding request of ' . $this->amount .' has been processed & is ready for immediate access on your card. For more enquiries, call ' . config('app.phone'));
 	}
 
 	/**
 	 * Get the database representation of the notification.
 	 *
-	 * @param mixed $notifiable
+	 * @param App\Modules\CardUser\Models\CardUser $card_user
 	 */
-	public function toDatabase($notifiable)
+	public function toDatabase($card_user)
 	{
 
 		return [
@@ -68,13 +67,13 @@ class CardFundingProcessed extends Notification
 	/**
 	 * Get the SMS representation of the notification.
 	 *
-	 * @param mixed $notifiable
+	 * @param App\Modules\CardUser\Models\CardUser $card_user
 	 */
-	public function toSMSSolutions($notifiable)
+	public function toSMSSolutions($card_user)
 	{
 
 		return (new SMSSolutionsMessage)
-			->sms_message('Your requested card funds of ' . $this->amount . ' has been processed.')
-			->to($notifiable->phone);
+			->sms_message('Your card funding request of ' . $this->amount .' has been processed & is ready for immediate access on your card. For more enquiries, call ' . config('app.phone'))
+			->to($card_user->phone);
 	}
 }

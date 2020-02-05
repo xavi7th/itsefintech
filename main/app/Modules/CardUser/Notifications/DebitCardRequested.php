@@ -45,11 +45,12 @@ class DebitCardRequested extends Notification
 	{
 
 		return (new MailMessage)
-			->subject('Card Requested!')
-			->greeting('Hello, ' . $notifiable->first_name . '.')
-			->line('You just requested a new card.')
-			->line('Our team will look into the request and you will get a notification when we respond.')
-			->line('Thank you for using our application!');
+			->subject('Card Request!')
+			->greeting('Dear ' . $notifiable->first_name . ',')
+			->line('Thank you for requesting for the '. $this->debit_card_type->card_type_name .' .')
+			->line('Your request will be processed and delivered to your desired address. Delivery takes between 10 - 20 days. You can also track your card delivery update on the app.')
+			->line('Kindly call ' .config('app.phone'). ' for enquiries.')
+			->salutation('Regards.');
 	}
 
 	/**

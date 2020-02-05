@@ -4,11 +4,12 @@ namespace App\Modules\CardUser\Models;
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Database\Eloquent\Model;
+use App\Modules\Admin\Models\ActivityLog;
 use App\Modules\CardUser\Models\CardUser;
 use App\Modules\CardUser\Models\DebitCard;
+use App\Modules\CardUser\Notifications\CardDebited;
 use App\Modules\CardUser\Http\Requests\CreateCardTransactionValidation;
 use App\Modules\CardUser\Transformers\DebitCardTransactionsTransformer;
-use App\Modules\Admin\Models\ActivityLog;
 
 class DebitCardTransaction extends Model
 {
@@ -65,6 +66,8 @@ class DebitCardTransaction extends Model
 		$card_trans = auth()->user()->debit_card_transactions()->create($request->all());
 
 		ActivityLog::logUserActivity(auth()->user()->email . ' carried out a transaction on his card');
+
+		auth()->user()->notify(new CardDebited($request->all()));
 
 		return response()->json((new DebitCardTransactionsTransformer)->transform($card_trans), 201);
 	}

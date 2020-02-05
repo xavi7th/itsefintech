@@ -3,23 +3,26 @@
 namespace App\Modules\CardUser\Notifications;
 
 use Illuminate\Bus\Queueable;
+use App\Modules\CardUser\Models\DebitCard;
 use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use App\Modules\CardUser\Notifications\Channels\SMSSolutionsMessage;
 
-class ProfileEdited extends Notification
+class CardDebited extends Notification
 {
-	use Queueable;
+    use Queueable;
+
+    protected $trans_details;
 
 	/**
 	 * Create a new notification instance.
 	 *
 	 * @return void
 	 */
-	public function __construct()
+	public function __construct(array $trans_details)
 	{
-		//
+		$this->trans_details = $trans_details;
 	}
 
 	/**
@@ -41,12 +44,12 @@ class ProfileEdited extends Notification
 	 */
 	public function toMail($notifiable)
 	{
+
 		return (new MailMessage)
-			->subject('Profile Edited!')
-			->greeting('Hello, ' . $notifiable->first_name . '.')
-			->line('Your profile details was just changed on our platform.')
-			->line('If this was done by you, you can safely ignore this message. If you have no knowledge of this action, contact our support team immediately.')
-			->line('Thank you for using our application!');
+			->subject('Debit Alert!')
+			->greeting('Dear ' . $notifiable->first_name . '.')
+			->line('Your card '. DebitCard::find($this->trans_details->debit_card_id)->card_number .' has been debited with ' . to_naira($this->trans_details->amount) .' by ' . $this->trans_details->trans_description . ' on ' . now()->toDateTime() . '. Kindly visit an ATM close to you for full card balance.');
+
 	}
 
 	/**
@@ -56,9 +59,9 @@ class ProfileEdited extends Notification
 	 */
 	public function toDatabase($notifiable)
 	{
-		return [
-			'action' =>  'Profile details updated.',
 
+		return [
+			'action' => DebitCard::find($this->trans_details->debit_card_id)->card_number .' debited ' . to_naira($this->trans_details->amount) .' by ' . $this->trans_details->trans_description . ' on ' . now()->toDateTime() . '.',
 		];
 	}
 
@@ -70,7 +73,7 @@ class ProfileEdited extends Notification
 	public function toSMSSolutions($notifiable)
 	{
 		return (new SMSSolutionsMessage)
-			->sms_message('You just updated your profile details on Capital X.')
+			->sms_message('Your card '. DebitCard::find($this->trans_details->debit_card_id)->card_number .' has been debited with ' . to_naira($this->trans_details->amount) .' by ' . $this->trans_details->trans_description . ' on ' . now()->toDateTime() . '. Kindly visit an ATM close to you for full card balance.')
 			->to($notifiable->phone);
 	}
 }

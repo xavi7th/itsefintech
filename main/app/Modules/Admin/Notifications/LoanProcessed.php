@@ -50,17 +50,13 @@ class LoanProcessed extends Notification
 		if ($this->is_school_fees) {
 			return (new MailMessage)
 				->subject('Loan Processed!')
-				->greeting('Hurray, ' . $notifiable->first_name . '!')
-				->line('CapitalX has just finished processing your school fees loan of ' . $this->amount)
-				->line('Payments have been made to your institution, and all the necessary receipts collected. Our team will contact you concerning getting the necessary documentations to you. Remember to shun cultism and stay focused on your academic pursuits and the sky will be your limit.')
-				->line('Thank you for using our application!');
+				->greeting('Hello, ' . $notifiable->first_name . ',')
+				->line('your school fees loan of ' . to_naira($this->amount) . ' has been processed  by Capital X on ' . now()->toDateString() .'.');
 		} else {
 			return (new MailMessage)
 				->subject('Loan Processed!')
-				->greeting('Hurray, ' . $notifiable->first_name . '!')
-				->line('We just finished processing your loan of ' . $this->amount)
-				->line('The funds are now available on your card for spending.')
-				->line('Thank you for using our application!');
+				->greeting('Hello, ' . $notifiable->first_name . ',')
+				->line('your card has been credited with ' . to_naira($this->amount) . ' by Capital X on ' . now()->toDateString() .' Kindly visit an ATM close to you for full card balance.');
 		}
 	}
 
@@ -97,7 +93,7 @@ class LoanProcessed extends Notification
 				->to($notifiable->phone);
 		} else {
 			return (new SMSSolutionsMessage)
-				->sms_message('Your requested loan of ' . $this->amount . ' has been processed and is ready for immediate access on your credit card.')
+				->sms_message('Hello ' . $notifiable->full_name . ', your card has been credited with ' . to_naira($this->amount) . ' by Capital X on ' . now()->toDateString() .' Kindly visit an ATM close to you for full card balance.')
 				->to($notifiable->phone);
 		}
 	}

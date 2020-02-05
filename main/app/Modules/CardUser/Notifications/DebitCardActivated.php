@@ -45,8 +45,11 @@ class DebitCardActivated extends Notification
 		return (new MailMessage)
 			->subject('Card Activated!')
 			->greeting('Hello, ' . $notifiable->first_name . '.')
-			->line('You just activated a new debit card')
-			->line('Thank you for using our application!');
+			->line('Your Card has been activated and ready for usage')
+			->line('Now you can enjoy access to; Credit – up to NGN500,000 limit, Bills Payment and News on the go.')
+			->line('Do everything you love – on CREDIT!')
+			->line('Regards!')
+			->salutation('Capital X Card Team.!');
 	}
 
 	/**
@@ -72,7 +75,7 @@ class DebitCardActivated extends Notification
 	{
 
 		return (new SMSSolutionsMessage)
-			->sms_message('Your card activation was successful')
+			->sms_message('Your card activation was successful. Thank you for choosing Capital X.')
 			->to($notifiable->phone);
 	}
 }

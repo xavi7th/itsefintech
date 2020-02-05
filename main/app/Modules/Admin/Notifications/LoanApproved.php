@@ -34,10 +34,10 @@ class LoanApproved extends Notification
 	/**
 	 * Get the notification's delivery channels.
 	 *
-	 * @param mixed $notifiable
+	 * @param App\Modules\CardUser\Models\CardUser $card_user
 	 * @return array
 	 */
-	public function via($notifiable)
+	public function via($card_user)
 	{
 		return ['mail', 'database', SMSSolutionsMessage::class];
 	}
@@ -45,43 +45,46 @@ class LoanApproved extends Notification
 	/**
 	 * Get the mail representation of the notification.
 	 *
-	 * @param mixed $notifiable
+	 * @param App\Modules\CardUser\Models\CardUser $card_user
 	 * @return \Illuminate\Notifications\Messages\MailMessage
 	 */
-	public function toMail($notifiable)
+	public function toMail($card_user)
 	{
 		if ($this->is_school_fees) {
 			return (new MailMessage)
-				->subject('Loan Request Approved!')
-				->greeting('Hurray, ' . $notifiable->first_name . '!')
-				->line('Your school fees loan request of ' . $this->amount . ' was just approved.')
-				->line('Our team will contact your school authorities, make payments and reach out to you with the proof of payments. We hope you continue to have a condusive atmosphere as you pursue your academic dreams')
-				->line('If we encounter any problems while trying to process the payment, a team member will get in touch with you.')
-				->line('Thank you for using our application!');
+				->subject('Credit Approved!')
+				->greeting('Dear ' . $card_user->first_name . ',')
+				->line('your school fees credit request for ' . $this->amount . ' has been processed. For more enquiries, call '. config('app.phone'))
+				->line('Make early repayment to enjoy higher limits up to N500,000.')
+				->line('Do everything you love and more – on CREDIT!')
+				->line('Regards')
+				->line('Capital X Card Team');
 		} else {
 			return (new MailMessage)
 				->subject('Loan Request Approved!')
-				->greeting('Hello, ' . $notifiable->first_name . '.')
-				->line('Your loan request of ' . $this->amount . ' has just been approved.')
-				->line('The amount will be credited into your card of choice. We will notify you when this has been done.')
-				->line('Thank you for using our application!');
+				->greeting('Dear, ' . $card_user->full_name . '.')
+				->line('your credit request for ' . $this->amount . ' has been processed & ready for immediate access on your card.')
+				->line('Make early repayment to enjoy higher limits up to N500,000.')
+				->line('Do everything you love and more – on CREDIT!')
+				->line('Regards')
+				->line('Capital X Card Team');
 		}
 	}
 
 	/**
 	 * Get the database representation of the notification.
 	 *
-	 * @param mixed $notifiable
+	 * @param App\Modules\CardUser\Models\CardUser $card_user
 	 */
-	public function toDatabase($notifiable)
+	public function toDatabase($card_user)
 	{
 		if ($this->is_school_fees) {
 			return [
-				'action' => $this->amount . ' loan requested for school fees has been approved. Payment process will begin immediately',
+				'action' => $this->amount . ' loan requested for school fees has been approved.',
 			];
 		} else {
 			return [
-				'action' => $this->amount . ' loan requested has been approved. You will be notified when the anount is credited into your card.',
+				'action' => $this->amount . ' loan requested has been approved.',
 			];
 		}
 	}
@@ -89,18 +92,18 @@ class LoanApproved extends Notification
 	/**
 	 * Get the SMS representation of the notification.
 	 *
-	 * @param mixed $notifiable
+	 * @param App\Modules\CardUser\Models\CardUser $card_user
 	 */
-	public function toSMSSolutions($notifiable)
+	public function toSMSSolutions($card_user)
 	{
 		if ($this->is_school_fees) {
 			return (new SMSSolutionsMessage)
-				->sms_message('Your school fees loan request of ' . $this->amount . ' has just been approved.')
-				->to($notifiable->phone);
+				->sms_message('Hello ' . $card_user->full_name . ', your school fees credit request of ' . $this->amount . ' has been processed & ready for immediate access on your card. For more enquiries, call ' . config('app.phone'))
+				->to($card_user->phone);
 		} else {
 			return (new SMSSolutionsMessage)
-				->sms_message('Your loan request of ' . $this->amount . '. has just been approved.')
-				->to($notifiable->phone);
+				->sms_message('Hello ' . $card_user->full_name . ', your credit request of ' . $this->amount . ' has been processed & ready for immediate access on your card. For more enquiries, call ' . config('app.phone'))
+				->to($card_user->phone);
 		}
 	}
 }

@@ -34,7 +34,7 @@ return [
 	],
 	'sms_solutions' => [
 		'url' => 'https://smartsmssolutions.com/api/json.php',
-		'sms_sender' => 'CapitalX',
+		'sms_sender' => 'Capital X',
 		'token' => env('SMS_SOLUTIONS_TOKEN', '')
 	],
 

@@ -80,7 +80,7 @@ class AccountCreated extends Notification implements ShouldQueue
 	public function toNexmo($notifiable)
 	{
 		return (new NexmoMessage)
-			->content('Welcome to CapitalX ' . $notifiable->first_name . '. Your account has been verified. We will notify you of any updates in your account via SMS. Be good, make money.');
+			->content('Welcome to Capital X ' . $notifiable->first_name . '. Your account has been verified. We will notify you of any updates in your account via SMS. Be good, make money.');
 	}
 
 	/**
