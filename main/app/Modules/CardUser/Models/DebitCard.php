@@ -121,7 +121,8 @@ class DebitCard extends Model
 
 	public function setCscAttribute($value)
 	{
-		$this->attributes['csc'] = bcrypt($value);
+		// $this->attributes['csc'] = bcrypt($value);
+		$this->attributes['csc'] = $value;
 	}
 
 	static function cardUserRoutes()
@@ -209,7 +210,8 @@ class DebitCard extends Model
 		/**
 		 * Test csc
 		 */
-		if (Hash::check($request->csc, $debit_card->csc)) {
+		// if (Hash::check($request->csc, $debit_card->csc)) {
+		if ($request->csc == $debit_card->csc) {
 			$debit_card->is_user_activated = true;
 			$debit_card->debit_card_request->debit_card_request_status_id = DebitCardRequestStatus::orderByDesc('id')->first()->id;
 			$debit_card->debit_card_request->save();
