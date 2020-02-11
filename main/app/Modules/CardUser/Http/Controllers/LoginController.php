@@ -50,6 +50,10 @@ class LoginController extends Controller
 		if (!$token = auth()->guard('card_user')->attempt($credentials)) {
 			return response()->json(['error' => true, 'rsp' => 'Invalid details supplied'], 401);
 		}
+		if (!auth('card_user')->user()->is_otp_verified()) {
+			auth('card_user')->logout();
+			return generate_422_error(['error' => 'otp not verified']);
+		}
 
 		auth('card_user')->user()->notify(new LoginAttempt);
 

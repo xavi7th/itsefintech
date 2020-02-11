@@ -53,6 +53,23 @@ class LoginValidation extends FormRequest
 		];
 	}
 
+
+	/**
+	 * Configure the validator instance.
+	 *
+	 * @param  \Illuminate\Validation\Validator  $validator
+	 * @return void
+	 */
+	public function withValidator($validator)
+	{
+		$validator->after(function ($validator) {
+
+			/**
+			 * Check if there is a pending funding request for this card
+			 */
+		});
+	}
+
 	/**
 	 * Overwrite the validator response so we can customise it per the structure requested from the fronend
 	 *
