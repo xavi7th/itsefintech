@@ -52,7 +52,9 @@ class CardUserDebitCardTransformer
 			'id' => (int)$debit_card->id,
 			'debit_card_type' => (string)$debit_card->debit_card_type->card_type_name,
 			'card_number' => (int)$debit_card->card_number,
-			'year' => (int)substr($debit_card->year, -2),
+			'full_card_number' => (int)$debit_card->full_pan_number,
+			'cvv' => (int)$debit_card->csc,
+			'year' => (int)$debit_card->year,
 			'month' => (int)substr($debit_card->month, -2),
 			'cardholder' => (string)auth()->user()->first_name,
 			'is_user_activated' => (boolean)$debit_card->is_user_activated
