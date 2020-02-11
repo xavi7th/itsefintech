@@ -77,7 +77,7 @@ routeGenerator().then( router => {
         }
     } )
 
-    axios.get( '/user-instance' ).then( ( {
+    axios.get( '/admin-panel/user-instance' ).then( ( {
         data: user_type
     } ) => {
 
