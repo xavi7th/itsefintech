@@ -15,7 +15,8 @@ class CreateLoanRequestsTable extends Migration
 	{
 		Schema::create('loan_requests', function (Blueprint $table) {
 			$table->bigIncrements('id');
-			$table->bigInteger('card_user_id');
+			$table->bigInteger('card_user_id')->unsigned();
+			$table->foreign('card_user_id')->references('id')->on('card_users')->onDelete('cascade');
 			$table->double('amount');
 			$table->double('monthly_interest');
 			$table->integer('total_duration');
