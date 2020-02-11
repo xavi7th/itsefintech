@@ -21,6 +21,11 @@ return [
 	'maximum_repayment_duration' => env('MAXIMUM_REPAYMENT_DURATION', '30'),
 	'minimum_repayment_percentage' => env('MINIMUM_REPAYMENT_PERCENTAGE', '20'),
 
+	/**
+	 * The amount of time the user is allowed to be idle before logging them out
+	 */
+	'permissible_idle_time' => env('PERMISSIBLE_IDLE_TIME', 300),
+
 	/*
     |--------------------------------------------------------------------------
     | Application Environment
