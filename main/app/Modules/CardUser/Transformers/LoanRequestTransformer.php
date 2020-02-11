@@ -51,7 +51,8 @@ class LoanRequestTransformer
 
 	public function transformWithLoanTransactions(LoanRequest $loan_request)
 	{
-		$transactions = $loan_request->loan_transactions->slice(1);
+		$transactions = $loan_request->loan_transactions;
+		$mod_transactions = $loan_request->loan_transactions->slice(1)->values();
 		$breakdown_statistics = $loan_request->breakdownStatistics();
 		return collect([
 			'id' => $loan_request->id,
@@ -60,9 +61,9 @@ class LoanRequestTransformer
 			'request_date' => $loan_request->created_at->toDateString(),
 			'total_paid' => (float)$total_paid = $transactions->where('transaction_type', 'repayment')->sum('amount'),
 			'total_balance' => (float)$total_balance = ((object)$breakdown_statistics)->total_repayment_amount - $total_paid,
-			'next_repayment_due_date' => $due_date = ($transactions->sortByDesc('id')->values()->first())->next_installment_due_date->toDateString(),
-			'loan_defaulter' => (boolean)$total_balance == 0 ? false : now()->gte($due_date),
+			'next_repayment_due_date' => $due_date =  $transactions->isEmpty() ? null : ($transactions->sortByDesc('id')->values()->first())->next_installment_due_date->toDateString(),
+			'loan_defaulter' => (boolean)$total_balance == 0 && !is_null($due_date)   ? false : now()->gte($due_date),
 			'payment_complete' => (boolean)$total_balance
-		])->merge($breakdown_statistics)->merge((new LoanTransactionTransformer)->collectionTransformer($transactions, 'transformForUserViewLoanTransactions'));
+		])->merge($breakdown_statistics)->merge((new LoanTransactionTransformer)->collectionTransformer($mod_transactions, 'transformForUserViewLoanTransactions'));
 	}
 }
