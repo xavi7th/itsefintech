@@ -252,3 +252,19 @@ if (!function_exists('to_naira')) {
 		return '₦' . number_format($amount, 2);
 	}
 }
+
+if (!function_exists('generate_422_error')) {
+	/**
+	 * Generate a 422 error in a format that axios and sweetalert 2 can display it
+	 *
+	 * @param  array  $errors An array of errors to display
+	 * @return Response
+	 */
+	function generate_422_error(array $errors)
+	{
+		return response()->json([
+			'error' => 'form validation error',
+			'message' => $errors
+		], 422);
+	}
+}
