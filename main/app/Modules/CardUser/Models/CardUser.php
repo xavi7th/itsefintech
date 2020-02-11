@@ -222,6 +222,11 @@ class CardUser extends User
 		return $this->debit_cards()->where('is_admin_activated', true)->where('is_suspended', false)->whereDate('activated_at', '<=', now()->subDays(30)->toDateString())->exists();
 	}
 
+	public function due_for_merchant_credit()
+	{
+		return (boolean)$this->merchant_limit;
+	}
+
 	public function activities()
 	{
 		return $this->morphMany(ActivityLog::class, 'user');

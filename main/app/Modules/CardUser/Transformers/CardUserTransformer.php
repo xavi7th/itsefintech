@@ -55,6 +55,7 @@ class CardUserTransformer
 			'assigned_credit_limit' => (float)$user->assigned_credit_limit,
 			'assigned_merchant_limit' => (float)$user->merchant_limit,
 			'due_for_credit' => (boolean)$user->due_for_credit(),
+			'due_for_merchant_credit' => (boolean)$user->due_for_merchant_credit(),
 			'num_of_days_active' => (int)$user->activeDays(),
 			'is_otp_verified' => (boolean)$user->is_otp_verified()
 
