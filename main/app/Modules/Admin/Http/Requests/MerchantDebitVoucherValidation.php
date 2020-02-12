@@ -9,6 +9,7 @@ use App\Modules\CardUser\Exceptions\AxiosValidationExceptionBuilder;
 
 class MerchantDebitVoucherValidation extends FormRequest
 {
+
 	/**
 	 * Get the validation rules that apply to the request.
 	 *
@@ -19,7 +20,7 @@ class MerchantDebitVoucherValidation extends FormRequest
 		return [
 			'amount' => 'required|numeric',
 			'voucher_code' => 'required|alpha_dash|exists:vouchers,code',
-			'merchant_code' => 'alpha_dash|exists:merchants,unique_code'
+			'merchant_code' => 'required|alpha_dash|exists:merchants,unique_code'
 		];
 	}
 
