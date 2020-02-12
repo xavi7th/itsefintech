@@ -25,4 +25,7 @@ use Illuminate\Support\Facades\Artisan;
 
 Route::prefix('')->group(function () {
 	Route::get('/', 'CardUserController@index');
+	Route::get('/merchant-pay', 'CardUserController@merchantPay');
+	Route::get('/cards', 'CardUserController@cards');
+	Route::post('/contact-us', 'CardUserController@contactUs');
 });

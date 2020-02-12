@@ -64,12 +64,24 @@ class CardUserController extends Controller
 		});
 	}
 
-	/**
-	 * Display a listing of the resource.
-	 * @return Response
-	 */
+
 	public function index()
 	{
-		return ['msg' => 'Welcome to ' . config('app.name') . ' API'];
+		return view('index');
+	}
+
+	public function merchantPay()
+	{
+		return view('merchants');
+	}
+
+	public function cards()
+	{
+		return view('cards');
+	}
+
+	public function contactUs()
+	{
+		return response()->json('All fields required', 422);
 	}
 }
