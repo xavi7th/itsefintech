@@ -47,7 +47,7 @@ class MerchantTransaction extends Model
 	static function merchantRoutes()
 	{
 		Route::group(['namespace' => '\App\Modules\Admin\Models', 'prefix' => 'api/v1'], function () {
-			Route::post('merchant-transaction/create', 'MerchantTransaction@merchantDebitVoucher'); //->middleware('auth.basic:merchant');
+			Route::post('merchant-transaction/create', 'MerchantTransaction@merchantDebitVoucher')->middleware('web'); //->middleware('auth.basic:merchant');
 			Route::get('merchant-transactions', 'MerchantTransaction@merchantViewTransactions'); //->middleware('auth.basic:merchant');
 			Route::get('merchant-transactions/pending', 'MerchantTransaction@viewPendingVoucherDebitTransaction')->middleware('auth:card_user');
 			Route::put('merchant-transaction/{merchant_transaction}/approve', 'MerchantTransaction@approveVoucherDebitTransaction')->middleware('auth:card_user');
@@ -85,7 +85,11 @@ class MerchantTransaction extends Model
 
 		// ActivityLog::logUserActivity($merchant->name . ' requests voucher debit from ' . optional($voucher->card_user)->email . '. Voucher Number: ' . $voucher->code);
 
-		return (new CardUserMerchantTransactionTransformer)->transform($trans, 'transform');
+		if ($request->ajax()) {
+			return (new CardUserMerchantTransactionTransformer)->transform($trans, 'transform');
+		} else {
+			return back()->withSuccess('Debit request created');
+		}
 	}
 
 	public function merchantViewTransactions()
