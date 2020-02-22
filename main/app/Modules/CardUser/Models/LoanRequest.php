@@ -87,6 +87,7 @@ class LoanRequest extends Model
 	{
 		Route::group(['namespace' => '\App\Modules\CardUser\Models', 'middleware' => ['verified_card_users']], function () {
 			Route::get('loan-request', 'LoanRequest@getLoanRequest')->middleware('auth:card_user');
+			Route::get('{loan_request}/loan-transactions', 'LoanRequest@getLoanRequestTransactions')->middleware('auth:card_user');
 			Route::get('loan-request/create', 'LoanRequest@getLoanRequestBreakdown')->middleware('auth:card_user');
 			Route::post('loan-request/create', 'LoanRequest@makeLoanRequest')->middleware('auth:card_user');
 		});
@@ -103,6 +104,11 @@ class LoanRequest extends Model
 		} catch (\Throwable $th) {
 			return response()->json(['mesage' => 'User has no existing loan request'], 404);
 		}
+	}
+
+	public function getLoanRequestTransactions(LoanRequest $loan_request)
+	{
+		return (new LoanRequestTransformer)->transformLoanTransactions($loan_request);
 	}
 
 	public function getLoanRequestBreakdown(CreateLoanRequestValidation $request)
