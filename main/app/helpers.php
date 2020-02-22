@@ -59,7 +59,7 @@ if (!function_exists('unique_random')) {
 				$random = $prefix . rand(100001, 999999999);
 			} else {
 				// $random = $prefix . Str::random($chars);
-				$random = $prefix . rand(substr(100000001, -($chars)), substr(9999999999, -($chars)));
+				$random = $prefix . rand(substr(100000001, 1, ($chars)), substr(9999999999, -($chars)));
 			}
 
 			// Check if it's already testing
