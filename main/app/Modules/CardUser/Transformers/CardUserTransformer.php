@@ -50,7 +50,7 @@ class CardUserTransformer
 			'department' => (string)$user->department,
 			'level' => (string)$user->level,
 			'mat_no' => (string)$user->mat_no,
-			'bvn' => (float)$user->bvn,
+			'bvn' => (string)$user->bvn == 'Not provided' ? null : $user->bvn,
 			'card_user_category' => (string)$user->card_user_category->category_name,
 			'assigned_credit_limit' => (float)$user->assigned_credit_limit,
 			'assigned_merchant_limit' => (float)$user->merchant_limit,
