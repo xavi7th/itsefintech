@@ -88,6 +88,7 @@ class Voucher extends Model
 	{
 		Route::group(['namespace' => '\App\Modules\Admin\Models', 'middleware' => ['verified_card_users']], function () {
 			Route::get('vouchers', 'Voucher@getCardUserVouchers')->middleware('auth:card_user');
+			Route::get('{voucher}/transactions', 'Voucher@getCardUserVoucherTransactions')->middleware('auth:card_user');
 			Route::get('voucher/active', 'Voucher@getCardUserActiveVoucher')->middleware('auth:card_user');
 		});
 	}
@@ -106,6 +107,11 @@ class Voucher extends Model
 	public function getCardUserVouchers()
 	{
 		return (new CardUserVoucherTransformer)->collectionTransformer(auth()->user()->vouchers, 'transformForCardUserListVouchers');
+	}
+
+	public function getCardUserVoucherTransactions(Voucher $voucher)
+	{
+		return (new CardUserVoucherTransformer)->transformVoucherTransactions($voucher);
 	}
 
 	public function getCardUserActiveVoucher()
