@@ -66,4 +66,10 @@ class LoanRequestTransformer
 			'payment_complete' => (boolean)$total_balance
 		])->merge($breakdown_statistics)->merge((new LoanTransactionTransformer)->collectionTransformer($mod_transactions, 'transformForUserViewLoanTransactions'));
 	}
+
+	public function transformLoanTransactions(LoanRequest $loan_request)
+	{
+		$mod_transactions = $loan_request->loan_transactions->slice(1)->values();
+		return (new LoanTransactionTransformer)->collectionTransformer($mod_transactions, 'transformForUserViewLoanTransactions');
+	}
 }

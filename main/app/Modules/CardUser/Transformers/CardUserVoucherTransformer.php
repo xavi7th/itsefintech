@@ -25,4 +25,9 @@ class CardUserVoucherTransformer
 			'transactions' => (new CardUserMerchantTransactionTransformer)->collectionTransformer($voucher->merchant_transactions, 'transform')['voucher_transactions'],
 		])->merge($voucher->breakdownStatistics());
 	}
+
+	public function transformVoucherTransactions(Voucher $voucher)
+	{
+		return (new CardUserMerchantTransactionTransformer)->collectionTransformer($voucher->merchant_transactions, 'transform');
+	}
 }
