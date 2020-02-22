@@ -24,7 +24,7 @@ class RegistrationValidation extends FormRequest
 			'email' => 'required|string|email|max:100|unique:card_users,email',
 			'password' => 'required|string|min:6',
 			'phone' => 'required|regex:/^[\+]?[0-9\Q()\E\s-]+$/i|unique:card_users,phone',
-			'bvn' => 'required|numeric|digits_between:11,16',
+			'bvn' => 'numeric|digits_between:11,16',
 			'card_user_category_id' => 'required|exists:card_user_categories,id'
 		];
 	}
