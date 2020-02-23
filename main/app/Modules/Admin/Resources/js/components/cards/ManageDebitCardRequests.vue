@@ -147,9 +147,9 @@
 <script>
   import {
     adminViewDebitCardRequests,
-    adminUpdateDebitCardRequestStatus,
     adminConfirmDebitCardRequestPayment
   } from "@admin-assets/js/config";
+  import { cardAdminUpdateDebitCardRequestStatus } from "@cardAdmin-assets/js/config";
   import { cardAdminAllocateDebitCardToRequest } from "@cardAdmin-assets/js/config";
   import { cardAdminMarkDebitCardRequestAsPaid } from "@cardAdmin-assets/js/config";
   import PreLoader from "@admin-components/misc/PageLoader";
@@ -300,7 +300,9 @@
         });
         axios
           .put(
-            adminUpdateDebitCardRequestStatus(this.debitCardRequestDetails.id),
+            cardAdminUpdateDebitCardRequestStatus(
+              this.debitCardRequestDetails.id
+            ),
             {
               details: this.debitCardRequestDetails
             }

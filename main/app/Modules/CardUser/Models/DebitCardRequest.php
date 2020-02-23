@@ -58,6 +58,8 @@ class DebitCardRequest extends Model
 			Route::put('debit-card-request/{debit_card_request}/paid', 'DebitCardRequest@markRequestAsPaid')->middleware('auth:card_admin');
 
 			Route::put('debit-card-request/{debit_card_request}/allocate', 'DebitCardRequest@allocateCardToRequest')->middleware('auth:card_admin');
+
+			Route::put('debit-card-request/{debit_card_request}/status/update', 'DebitCardRequest@updateRequestStatus')->middleware('auth:card_admin');
 		});
 	}
 
@@ -68,8 +70,6 @@ class DebitCardRequest extends Model
 			Route::get('debit-card-requests', 'DebitCardRequest@getDebitCardRequests')->middleware('auth:admin,card_admin');
 
 			Route::put('debit-card-request/{debit_card_request}/paid/confirm', 'DebitCardRequest@confirmRequestPayment')->middleware('auth:admin');
-
-			Route::put('debit-card-request/{debit_card_request}/status/update', 'DebitCardRequest@updateRequestStatus')->middleware('auth:admin');
 
 			Route::delete('debit-card-request/{debit_card_request}/delete', 'DebitCardRequest@deleteCardRequest')->middleware('auth:admin');
 		});
