@@ -151,18 +151,8 @@ export const allRoutes = [
                 meta: {
                     title: APP_NAME + ' | All Debit Cards',
                     iconClass: 'home',
-                    menuName: 'All Debit Cards'
-                },
-            },
-            {
-                path: '/cards/:rep/list',
-                component: adminView( 'cards/ManageDebitCards' ),
-                name: 'admin.cards.sales-rep.list',
-                meta: {
-                    title: APP_NAME + ' | Sales Rep Debit Cards',
-                    iconClass: 'home',
-                    menuName: 'Sales Rep Debit Cards',
-                    navSkip: true
+                    menuName: 'All Debit Cards',
+                    // navSkip: true
                 },
             },
             {

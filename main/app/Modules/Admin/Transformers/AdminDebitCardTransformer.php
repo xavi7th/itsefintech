@@ -30,7 +30,7 @@ class AdminDebitCardTransformer
 			'is_user_activated' => (boolean)$card->is_user_activated,
 			'is_admin_activated' => (boolean)$card->is_admin_activated,
 			'amount' => (float)$card->debit_card_type->amount,
-			'card_type' => (float)$card->debit_card_type->card_type_name
+			'card_type' => (string)$card->debit_card_type->card_type_name
 		];
 	}
 	public function transformForBasicDebitCardDetails(DebitCard $card)

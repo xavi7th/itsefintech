@@ -85,7 +85,9 @@
                                     <ul class="nav navbar-nav navbar-right" style="position: relative; top: 30px;">
                                         <li class="active"><a class="page-scroll" href="/#hero">Home</a></li>
                                         <li><a class="page-scroll" href="#features">Features</a></li>
-                                        <li><a class="page-scroll" href="/merchant-pay">Merchant Pay</a></li>
+                                        <li><a class="page-scroll"
+                                                href="{{ route('merchant.pay', ['sub'=> 'pay']) }}">Merchant Pay</a>
+                                        </li>
                                         <li><a class="page-scroll" href="/cards">Cards</a></li>
                                         <li><a class="page-scroll" href="#faqs">FAQ</a></li>
                                         <li><a class="page-scroll" href="#contact">Contact</a></li>

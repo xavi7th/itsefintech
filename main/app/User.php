@@ -55,14 +55,11 @@ class User extends Authenticatable implements JWTSubject
 			return 'normaladmin.dashboard';
 		} else if (Auth::accountant()) {
 			return 'accountant.dashboard';
-		}
-		else if (Auth::accountOfficer()) {
+		} else if (Auth::accountOfficer()) {
 			return 'accountofficer.dashboard';
-		}
-		else if (Auth::salesRep()) {
+		} else if (Auth::salesRep()) {
 			return 'salesrep.dashboard';
-		}
-		 else {
+		} else {
 			return 'home';
 		}
 	}
@@ -74,6 +71,11 @@ class User extends Authenticatable implements JWTSubject
 	 * @return string
 	 */
 	public function routeNotificationForNexmo($notification)
+	{
+		return $this->phone;
+	}
+
+	public function routeNotificationForTwilio()
 	{
 		return $this->phone;
 	}

@@ -5,28 +5,28 @@
         <div class="logo">
           <div class="logo-type">
             <router-link :to="{name:'salesRep.root'}">
-              <img src="/img/logo-round-small.png" alt="ItseFinTech Unique Logo" class="loader-img" />
+              <img src="/img/basicsite/logor.png" alt="Logo" class="loader-img" />
               <span id="logo-caption">
-                itse
-                <span>fintech</span>
+                Capital
+                <span>X</span>
               </span>
             </router-link>
           </div>
         </div>
       </div>
       <ul class="menu">
-        <li class="menu-category">ADMIN</li>
+        <li class="menu-category">SALES REP</li>
 
         <li
           v-for="(item, index) in routes.filter(x => x.path !== '*')"
           :key="index"
           :class="{'nav-sub':!item.name}"
         >
-          <router-link :to="item.path" v-if="item.name && !item.meta.skip" class="nav-link">
+          <router-link :to="item.path" v-if="item.name && !item.meta.navSkip" class="nav-link">
             <i class="fa fa-home nav-icon" :class="item.meta.iconClass"></i>
             {{item.meta.menuName}}
           </router-link>
-          <a href="#" v-else-if="!item.meta.skip">
+          <a href="#" v-else-if="!item.meta.navSkip">
             <i class="fa fa-desktop nav-icon" v-bind:class="item.meta.iconClass"></i>
             {{item.meta.menuName}}
           </a>
@@ -34,7 +34,7 @@
             <li
               v-for="childItem in item.children"
               :key="childItem.name"
-              v-show="!childItem.meta.skip"
+              v-show="!childItem.meta.navSkip"
             >
               <router-link :to="childItem.path" class="nav-link">{{childItem.meta.menuName}}</router-link>
             </li>
@@ -47,7 +47,7 @@
 
 <script>
   export default {
-    name: "AccountantNav",
+    name: "SalesRepNav",
     mounted() {
       this.$loadScript("/js/admin-nav.js");
       setTimeout(() => {

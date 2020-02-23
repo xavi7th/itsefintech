@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Route;
 use App\Modules\Admin\Models\ApiRoute;
 use App\Modules\SalesRep\Models\SalesRep;
+use App\Modules\CardUser\Models\DebitCard;
 
 class SalesRepController extends Controller
 {
@@ -21,6 +22,8 @@ class SalesRepController extends Controller
 			LoginController::routes();
 
 			SalesRep::salesRepRoutes();
+
+			DebitCard::salesRepRoutes();
 		});
 	}
 }

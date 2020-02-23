@@ -14,6 +14,7 @@
     name: "CustomerSupportDashboard",
     mounted() {
       this.$emit("page-loaded");
+      console.log(this.$user);
     }
   };
 </script>

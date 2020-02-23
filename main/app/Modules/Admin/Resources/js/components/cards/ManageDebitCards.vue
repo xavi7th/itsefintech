@@ -4,13 +4,12 @@
     <div class="content">
       <!-- table basic -->
       <div class="card">
-        <div class="card-title">
+        <div class="card-title" v-if="$user.isAdmin">
           <button
             type="button"
             class="btn btn-bold btn-pure btn-twitter btn-shadow"
             data-toggle="modal"
             data-target="#modal-card"
-            v-if="!saleRepId"
           >Create Debit Card</button>
         </div>
         <div class="card-body">
@@ -55,13 +54,13 @@
                   <div
                     class="fs-11 btn btn-bold badge badge-purple pointer"
                     @click="assignCard(debitCard)"
-                    v-if="!debitCard.sales_rep && $user.type == 'admin'"
+                    v-if="!debitCard.sales_rep && $user.isAdmin"
                   >Assign Card</div>
 
                   <div
                     class="fs-11 btn btn-bold badge badge-success pointer"
                     @click="allocateCard(debitCard)"
-                    v-if="debitCard.sales_rep && !debitCard.card_user && $user.type == 'admin'"
+                    v-if="debitCard.sales_rep && !debitCard.card_user && $user.isSalesRep"
                   >Allocate Card</div>
                 </td>
               </tr>
@@ -236,10 +235,10 @@
     adminViewDebitCards,
     adminActivateDebitCard,
     adminAssignDebitCard,
-    adminAllocateDebitCardToCardUser,
     toggleDebitCardSuspension,
     adminCreateDebitCard
   } from "@admin-assets/js/config";
+  import { salesRepAllocateDebitCardToCardUser } from "@salesRep-assets/js/config";
   import PreLoader from "@admin-components/misc/PageLoader";
   export default {
     name: "ManageDebitCards",
@@ -415,7 +414,7 @@
             showLoaderOnConfirm: true,
             preConfirm: email => {
               return axios
-                .put(adminAllocateDebitCardToCardUser(debitCardDetails.id), {
+                .put(salesRepAllocateDebitCardToCardUser(debitCardDetails.id), {
                   email
                 })
                 .then(response => {

@@ -5,8 +5,8 @@
     </transition>
   </div>
   <div class="wrapper" v-else>
-    <account-officer-nav></account-officer-nav>
-    <account-officer-header v-on:logout-user="logoutUser()" v-if="!is404"></account-officer-header>
+    <sales-rep-nav></sales-rep-nav>
+    <sales-rep-header v-on:logout-user="logoutUser()" v-if="!is404" :isHome="isHome"></sales-rep-header>
 
     <transition name="fade" :duration="{ enter: 1300, leave: 200 }">
       <pre-loader v-if="isLoading"></pre-loader>
@@ -15,15 +15,15 @@
       <router-view @page-loaded="pageLoaded" @is-loading="toggleLoadState" />
     </transition>
 
-    <account-officer-footer v-if="!is404"></account-officer-footer>
+    <admin-footer v-if="!is404"></admin-footer>
   </div>
 </template>
 
 <script>
   import PreLoader from "@admin-components/misc/PageLoader";
-  import DispatchAdminNav from "@salesRep-components/partials/NavComponent";
-  import DispatchAdminHeader from "@salesRep-components/partials/HeaderComponent";
-  import DispatchAdminFooter from "@admin-components/partials/FooterComponent";
+  import SalesRepNav from "@salesRep-components/partials/NavComponent";
+  import SalesRepHeader from "@salesRep-components/partials/HeaderComponent";
+  import AdminFooter from "@admin-components/partials/FooterComponent";
 
   export default {
     name: "SalesRepApp",
@@ -32,9 +32,9 @@
       isLoading: true
     }),
     components: {
-      DispatchAdminHeader,
-      DispatchAdminFooter,
-      DispatchAdminNav,
+      SalesRepNav,
+      AdminFooter,
+      SalesRepHeader,
       PreLoader
     },
     computed: {
@@ -44,6 +44,13 @@
       is404() {
         return this.$route.name
           ? this.$route.name.match("site.error")
+            ? true
+            : false
+          : false;
+      },
+      isHome() {
+        return this.$route.name
+          ? this.$route.name.match("site.root")
             ? true
             : false
           : false;

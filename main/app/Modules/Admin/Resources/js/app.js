@@ -100,7 +100,6 @@ routeGenerator().then( router => {
             value: {
                 ...user,
                 isAdmin: user.type == 'admin',
-                isSalesRep: user.type == 'sales_rep',
             },
             writable: false
         } )

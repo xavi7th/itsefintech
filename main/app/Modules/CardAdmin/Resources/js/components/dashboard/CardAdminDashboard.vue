@@ -14,6 +14,7 @@
     name: "AccountantDashboard",
     mounted() {
       this.$emit("page-loaded");
+      console.log(this.$user);
     }
   };
 </script>

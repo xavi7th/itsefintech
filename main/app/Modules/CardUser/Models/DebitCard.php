@@ -139,11 +139,18 @@ class DebitCard extends Model
 		});
 	}
 
+	static function salesRepRoutes()
+	{
+		Route::group(['namespace' => '\App\Modules\CardUser\Models', 'prefix' => 'api'], function () {
+			Route::put('debit-card/{debit_card}/allocate', 'DebitCard@allocateDebitCard')->middleware('auth:sales_rep');
+		});
+	}
+
 	static function adminRoutes()
 	{
 		Route::group(['namespace' => '\App\Modules\CardUser\Models'], function () {
 
-			Route::get('debit-cards/{rep?}', 'DebitCard@getDebitCards')->middleware('auth:admin');
+			Route::get('debit-cards', 'DebitCard@getDebitCards')->middleware('auth:admin,sales_rep');
 
 			Route::post('debit-card/create', 'DebitCard@createDebitCard')->middleware('auth:admin');
 
@@ -152,8 +159,6 @@ class DebitCard extends Model
 			Route::put('debit-card/{debit_card}/activate', 'DebitCard@activateDebitCard')->middleware('auth:admin');
 
 			Route::put('debit-card/{debit_card}/assign', 'DebitCard@assignDebitCard')->middleware('auth:admin');
-
-			Route::put('debit-card/{debit_card}/allocate', 'DebitCard@allocateDebitCard')->middleware('auth:admin');
 
 			Route::delete('debit-card/{debit_card}/delete', 'DebitCard@deleteDebitCard')->middleware('auth:admin');
 
@@ -241,10 +246,10 @@ class DebitCard extends Model
 	 */
 	public function getDebitCards($rep = null)
 	{
-		if (is_null($rep)) {
+		if (auth('admin')->check()) {
 			$debit_cards = DebitCard::withTrashed()->get();
-		} else {
-			$debit_cards = SalesRep::find($rep)->assigned_debit_cards()->withTrashed()->get();
+		} else if (auth('sales_rep')->check()) {
+			$debit_cards = auth('sales_rep')->user()->assigned_debit_cards()->withTrashed()->get();
 		}
 		return (new AdminDebitCardTransformer)->collectionTransformer($debit_cards, 'transformForAdminViewDebitCards');
 	}
@@ -325,7 +330,6 @@ class DebitCard extends Model
 
 	public function allocateDebitCard(DebitCard $debit_card)
 	{
-
 		/** Make sure they supply an email */
 		if (!request('email')) {
 			return generate_422_error([

@@ -5,7 +5,13 @@ export const CONSTANTS = {
 const baseUrl = '/sales-reps/'
 const apiBaseUrl = `${baseUrl}api/`
 
-export const adminLoginEndpoint = baseUrl + 'login'
-export const adminViewAdmins = apiBaseUrl + 'admins'
-export const adminCreateAdmin = apiBaseUrl + 'admin/create'
-export const adminAdminPermissions = id => apiBaseUrl + 'admin/' + id + '/permissions'
+export const salesRepLoginEndpoint = baseUrl + 'login'
+export const salesRepViewAdmins = apiBaseUrl + 'admins'
+export const salesRepCreateAdmin = apiBaseUrl + 'admin/create'
+export const salesRepAdminPermissions = id => apiBaseUrl + 'admin/' + id + '/permissions'
+
+
+/** Sales Reps routes */
+export const getSalesRepStatistics = apiBaseUrl + 'statistics'
+export const requestCardStock = apiBaseUrl + 'debit-card/request'
+export const salesRepAllocateDebitCardToCardUser = id => `${apiBaseUrl}debit-card/${id}/allocate`

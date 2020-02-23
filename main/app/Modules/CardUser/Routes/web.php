@@ -22,10 +22,13 @@ use Illuminate\Support\Facades\Artisan;
 	});
  **/
 
+Route::domain('pay.itsefintech.test')->group(function () {
+	Route::get('/', 'CardUserController@merchantPay')->name('merchant.pay');
+});
 
 Route::prefix('')->group(function () {
 	Route::get('/', 'CardUserController@index');
-	Route::get('/merchant-pay', 'CardUserController@merchantPay');
 	Route::get('/cards', 'CardUserController@cards');
+	Route::get('/merchant-pay', 'CardUserController@merchantPay');
 	Route::post('/contact-us', 'CardUserController@contactUs');
 });

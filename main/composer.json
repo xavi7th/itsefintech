@@ -11,6 +11,7 @@
         "php": "^7.2",
         "danielme85/laravel-log-to-db": "^2.0",
         "fideloper/proxy": "^4.0",
+        "laravel-notification-channels/twilio": "^2.0",
         "laravel/framework": "^6.6",
         "laravel/nexmo-notification-channel": "^2.3",
         "laravel/tinker": "^1.0",

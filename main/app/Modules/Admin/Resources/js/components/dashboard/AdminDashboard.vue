@@ -3,79 +3,6 @@
     <page-header pageTitle="Dashboard"></page-header>
     <div class="content">
       <div class="row">
-        <!-- card -->
-        <div class="col-lg-3 col-md-6">
-          <div class="card card-hover">
-            <div class="card-body flex j-c-between a-i-center text-whs-nowrap">
-              <div>
-                <span
-                  class="d-block fs-22 fw-600 mt-5"
-                >{{ statistics.total_sales_amount | currency('₦') }}</span>
-                <small class="fs-12 text-dark mr-10">Sales</small>
-                <span class="fs-10 text-danger fw-400 mt-5">
-                  {{ statistics.total_cards_sold }} cards
-                  <!-- <i class="fa fa-angle-down ml-5"></i> -->
-                </span>
-              </div>
-              <div class="card-icon w-50 h-50 flex-sh-0">
-                <i class="fas fa-shopping-basket"></i>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- card -->
-        <div class="col-lg-3 col-md-6">
-          <div class="card card-hover card-gradient purple">
-            <div class="card-body flex j-c-between a-i-center text-whs-nowrap">
-              <div>
-                <span class="d-block fs-22 fw-600 mt-5">{{ statistics.total_assigned_cards }}</span>
-                <small class="fs-12 text-white mr-10">Total Assigned Cards</small>
-                <span class="fs-10 text-success fw-400 mt-5">
-                  <!-- <i class="fa fa-angle-up ml-5"></i> -->
-                </span>
-              </div>
-              <div class="card-icon w-50 h-50 flex-sh-0">
-                <i class="fab fa-cc-visa"></i>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-lg-3 col-md-6">
-          <div class="card card-hover" :class="{'card-gradient-dark': true}">
-            <div class="card-body flex j-c-between a-i-center text-whs-nowrap">
-              <div>
-                <span class="d-block fs-22 fw-600 mt-5">{{ statistics.total_allocated_cards }}</span>
-                <small class="fs-12 text-white">Total Allocated</small>
-              </div>
-              <div class="card-icon w-50 h-50 flex-sh-0 text-white">
-                <i class="far fa-user"></i>
-              </div>
-            </div>
-          </div>
-        </div>
-        <!-- make it red unallocated drops below 10 -->
-        <div class="col-lg-3 col-md-6">
-          <div
-            class="card card-hover card-gradient"
-            :class="{'green': statistics.total_unallocated_cards > 5}"
-          >
-            <div class="card-body flex j-c-between a-i-center text-whs-nowrap">
-              <div>
-                <span class="d-block fs-22 fw-600 mt-5">{{ statistics.total_unallocated_cards }}</span>
-                <small class="fs-12 text-white">Total Unallocated</small>
-              </div>
-              <div class="card-icon w-50 h-50 flex-sh-0 text-white">
-                <i class="far fa-user"></i>
-              </div>
-              <span class="card-request" @click="requestStock">REQUEST CARD</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="row">
         <div class="col-12">
           <div class="card pb-0">
             <div class="card-title">
@@ -181,13 +108,13 @@
     }),
     mounted() {
       this.$emit("page-loaded");
+      console.log(this.$user);
 
       this.initialiseChart();
     },
     methods: {
       initialiseChart() {
         axios.get(getSalesRepStatistics).then(({ data: statistics }) => {
-
           this.statistics = statistics;
 
           new Morris.Line({

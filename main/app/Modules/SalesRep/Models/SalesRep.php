@@ -11,8 +11,10 @@ use App\Modules\Admin\Models\ApiRoute;
 use App\Modules\Admin\Models\ActivityLog;
 use App\Modules\CardUser\Models\DebitCard;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use App\Modules\Admin\Transformers\AdminUserTransformer;
 use App\Modules\NormalAdmin\Models\StockRequest;
+use App\Modules\CardUser\Models\DebitCardRequest;
+use App\Modules\Admin\Transformers\AdminUserTransformer;
+use App\Modules\SalesRep\Transformers\SalesRepDebitCardRequestTransformer;
 
 class SalesRep extends User
 {
@@ -89,6 +91,8 @@ class SalesRep extends User
 
 			Route::group(['prefix' => 'api'], function () {
 				Route::post('test-route-permission', 'SalesRep@testRoutePermission');
+
+				Route::get('statistics', 'SalesRep@getDashboardStatistics')->middleware('auth:sales_rep');
 			});
 
 			Route::get('/{subcat?}', 'SalesRep@loadSalesRepApplication')->name('salesrep.dashboard')->where('subcat', '^((?!(api)).)*');
@@ -109,6 +113,25 @@ class SalesRep extends User
 			return response()->json(['rsp' => false], 410);
 		}
 	}
+
+
+	public function getDashboardStatistics()
+	{
+		$sales_rep_sales = DebitCardRequest::where('sales_rep_id', auth()->id())->get();
+		return [
+			'total_assigned_cards' =>  DebitCard::where('sales_rep_id', auth()->id())->count(),
+			'total_allocated_cards' => DebitCard::where('sales_rep_id', auth()->id())->where('card_user_id', '<>', null)->count(),
+			'total_unallocated_cards' =>  DebitCard::where('sales_rep_id', auth()->id())->where('card_user_id', null)->count(),
+			'total_sales_amount' => $sales_rep_sales->where('is_payment_confirmed', true)->count() * config('app.card_cost'),
+			'total_cards_sold' => $sales_rep_sales->where('is_payment_confirmed', true)->count(),
+			'sales_rep_sales' => (new SalesRepDebitCardRequestTransformer)->collectionTransformer($sales_rep_sales, 'transformForSalesRepViewSales')['debit_card_requests'],
+			'monthly_summary' => DebitCardRequest::whereMonth('created_at', now()->month())->where('sales_rep_id', auth()->id())->groupBy('day')
+				->orderBy('day', 'DESC')->get([DB::raw('Date(created_at) as day'), DB::raw('COUNT(*) as "num_of_sales"')]),
+			'unpaid_sales' => $sales_rep_sales->where('is_paid', false)->count(),
+			'unconfirmed_sales' => $sales_rep_sales->where('is_payment_confirmed', false)->count(),
+		];
+	}
+
 
 	public function getAllSalesReps()
 	{
