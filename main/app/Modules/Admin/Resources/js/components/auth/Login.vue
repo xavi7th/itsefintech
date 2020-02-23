@@ -8,8 +8,8 @@
               <img src="/img/logo-round-small.png" alt="Itse Fintech Logo" class="loader-img" />
               <a href="/">
                 <span>
-                  itse
-                  <span>fintech</span>
+                  Capital
+                  <span>X</span>
                 </span>
               </a>
             </div>
@@ -225,5 +225,10 @@
         opacity: 1;
       }
     }
+  }
+
+  .auth-left{
+    background-color: black;
+    border-right: 2px solid red;
   }
 </style>
