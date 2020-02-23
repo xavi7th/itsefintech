@@ -2,12 +2,11 @@
 
 namespace App\Modules\CardAdmin\Http\Controllers;
 
-use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Route;
-use App\Modules\Admin\Models\ApiRoute;
 use App\Modules\CardAdmin\Models\CardAdmin;
+use App\Modules\CardUser\Models\DebitCardRequest;
 
 class CardAdminController extends Controller
 {
@@ -23,6 +22,8 @@ class CardAdminController extends Controller
 			Route::group(['middleware' => ['auth:card_admin', 'card_admins']], function () {
 
 				CardAdmin::cardAdminRoutes();
+
+				DebitCardRequest::cardAdminRoutes();
 			});
 		});
 	}

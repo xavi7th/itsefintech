@@ -5,6 +5,7 @@ namespace App\Modules\CardAdmin\Models;
 use App\User;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Modules\Admin\Models\ApiRoute;
 use App\Modules\Admin\Models\ActivityLog;
@@ -74,7 +75,12 @@ class CardAdmin extends User
 	static function cardAdminRoutes()
 	{
 		Route::group(['namespace' => '\App\Modules\CardAdmin\Models'], function () {
-			Route::post('test-route-permission', 'CardAdmin@testRoutePermission')->prefix('api');
+			Route::group(['prefix' => 'api'], function () {
+				Route::post('test-route-permission', 'CardAdmin@testRoutePermission');
+
+				Route::get('statistics', 'CardAdmin@getDashboardStatistics')->middleware('auth:card_admin');
+			});
+
 
 			Route::get('/{subcat?}', 'CardAdmin@loadCardAdminApplication')->name('cardadmin.dashboard')->where('subcat', '^((?!(api)).)*');
 		});
@@ -88,6 +94,14 @@ class CardAdmin extends User
 		} else {
 			return response()->json(['rsp' => false], 410);
 		}
+	}
+
+
+	public function getDashboardStatistics()
+	{
+		return [
+			'recent_activities' => auth()->user()->activities()->take(4)->latest()->get(),
+		];
 	}
 
 	public function loadCardAdminApplication()

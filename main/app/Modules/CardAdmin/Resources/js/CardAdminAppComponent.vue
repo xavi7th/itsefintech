@@ -5,8 +5,8 @@
     </transition>
   </div>
   <div class="wrapper" v-else>
-    <account-officer-nav></account-officer-nav>
-    <account-officer-header v-on:logout-user="logoutUser()" v-if="!is404"></account-officer-header>
+    <card-admin-nav></card-admin-nav>
+    <card-admin-header v-on:logout-user="logoutUser()" v-if="!is404"></card-admin-header>
 
     <transition name="fade" :duration="{ enter: 1300, leave: 200 }">
       <pre-loader v-if="isLoading"></pre-loader>
@@ -15,14 +15,14 @@
       <router-view @page-loaded="pageLoaded" @is-loading="toggleLoadState" />
     </transition>
 
-    <account-officer-footer v-if="!is404"></account-officer-footer>
+    <card-admin-footer v-if="!is404"></card-admin-footer>
   </div>
 </template>
 
 <script>
   import PreLoader from "@admin-components/misc/PageLoader";
-  import CardAdminNav from "@accountOfficer-components/partials/NavComponent";
-  import CardAdminHeader from "@accountOfficer-components/partials/HeaderComponent";
+  import CardAdminNav from "@cardAdmin-components/partials/NavComponent";
+  import CardAdminHeader from "@cardAdmin-components/partials/HeaderComponent";
   import CardAdminFooter from "@admin-components/partials/FooterComponent";
 
   export default {
