@@ -229,6 +229,6 @@
 
   .auth-left{
     background-color: black;
-    border-right: 2px solid red;
+    border-right: 6px solid red;
   }
 </style>
