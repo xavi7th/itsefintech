@@ -5,8 +5,10 @@ namespace App\Modules\CardUser\Models;
 use Carbon\Carbon;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Route;
+use Watson\Rememberable\Rememberable;
 use Illuminate\Database\Eloquent\Model;
 use App\Modules\Admin\Models\ActivityLog;
 use App\Modules\CardUser\Models\CardUser;
@@ -18,14 +20,13 @@ use App\Modules\CardUser\Models\DebitCardTransaction;
 use App\Modules\CardUser\Models\DebitCardRequestStatus;
 use App\Modules\CardUser\Models\DebitCardFundingRequest;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use App\Modules\CardUser\Notifications\DebitCardActivated;
+use App\Modules\CardUser\Notifications\DebitCardRequested;
 use App\Modules\Admin\Transformers\AdminDebitCardTransformer;
 use App\Modules\CardUser\Http\Requests\CardRequestValidation;
 use App\Modules\Admin\Http\Requests\DebitCardCreationValidation;
 use App\Modules\CardUser\Http\Requests\CardActivationValidation;
 use App\Modules\CardUser\Transformers\CardUserDebitCardTransformer;
-use Watson\Rememberable\Rememberable;
-use App\Modules\CardUser\Notifications\DebitCardRequested;
-use App\Modules\CardUser\Notifications\DebitCardActivated;
 
 class DebitCard extends Model
 {
@@ -200,7 +201,11 @@ class DebitCard extends Model
 
 		ActivityLog::logUserActivity(auth()->user()->email . ' made a debit card request');
 
-		auth()->user()->notify(new DebitCardRequested($debit_card_type));
+		try {
+			auth()->user()->notify(new DebitCardRequested($debit_card_type));
+		} catch (\Throwable $th) {
+			Log::alert('New Debit Card request alert not sent to ' . auth()->user()->email);
+		}
 
 		return response()->json($card_request, 201);
 	}
@@ -358,14 +363,16 @@ class DebitCard extends Model
 		Model::unguard();
 		$card_user->debit_card_requests()->create([
 			'sales_rep_id' => auth('sales_rep')->id(),
-			'debit_card_request_status_id' => 1,
+			'debit_card_request_status_id' => DebitCardRequestStatus::delivered_id(),
+			'debit_card_type_id' => $debit_card->debit_card_type->id,
 			'debit_card_id' => $debit_card->id,
-			'payment_method' => 'Sales Rep',
+			'payment_method' => 'Direct Sales',
 			'last_updated_by' => auth('sales_rep')->id(),
 			'phone' => $card_user->phone,
 			'address' => $card_user->address  ?? 'N/A',
 			'zip' => $card_user->zip ?? 'N/A',
 			'city' => $card_user->city ?? 'N/A',
+			'is_paid' => true,
 		]);
 		Model::reguard();
 

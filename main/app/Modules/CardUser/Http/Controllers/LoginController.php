@@ -55,7 +55,11 @@ class LoginController extends Controller
 			return generate_422_error(['error' => 'otp not verified']);
 		}
 
-		auth('card_user')->user()->notify(new LoginAttempt);
+		try {
+			auth('card_user')->user()->notify(new LoginAttempt);
+		} catch (\Throwable $th) {
+			Log::alert('Login notification not sent to ' . auth('card_user')->user()->email);
+		}
 
 		return $this->respondWithToken($token);
 	}
