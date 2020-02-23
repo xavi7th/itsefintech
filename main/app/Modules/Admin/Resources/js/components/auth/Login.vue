@@ -228,7 +228,7 @@
   }
 
   .auth-left{
-    background-color: black;
+    background-color: green;
     border-right: 6px solid red;
     color: #fff;
   }
