@@ -1,5 +1,5 @@
 <template>
-  <footer>©2019 DoubleSouthNg. All Rights Reserved.</footer>
+  <footer>©2020 CapitalX. All Rights Reserved.</footer>
 </template>
 
 <script>

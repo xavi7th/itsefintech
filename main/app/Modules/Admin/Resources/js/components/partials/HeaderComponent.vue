@@ -14,18 +14,18 @@
       </a>
 
       <!-- search -->
-      <div class="form-group search-field flex a-i-center hide-xs">
+      <!-- <div class="form-group search-field flex a-i-center hide-xs">
         <div class="header-divider"></div>
         <label for="header-search">
           <i class="fa fa-search"></i>
         </label>
         <input type="text" class="form-control" id="header-search" placeholder="Search here..." />
-      </div>
+      </div> -->
     </div>
 
     <div class="header-right">
       <!-- dropdown language -->
-      <div class="dropdown hide-md dropdown-xs">
+      <!-- <div class="dropdown hide-md dropdown-xs">
         <a href class="header-btn alert-active" data-toggle="dropdown">
           <i class="far fa-flag"></i>
         </a>
@@ -34,7 +34,7 @@
           <a href class="dropdown-item active">EN</a>
           <a href class="dropdown-item">RU</a>
         </div>
-      </div>
+      </div> -->
       <!-- dropdown language //. -->
 
       <!-- dropdown notification -->

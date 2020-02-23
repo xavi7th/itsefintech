@@ -5,17 +5,11 @@
         <div class="auth-logo">
           <div class="logo">
             <div class="logo-type logo-type-colored">
-              <img src="/img/logo-round-small.png" alt="Itse Fintech Logo" class="loader-img" />
-              <a href="/">
-                <span>
-                  Capital
-                  <span>X</span>
-                </span>
-              </a>
+              <img src="/img/logowhite.png" alt="CapitalX Logo" class="loader-img" />
             </div>
           </div>
         </div>
-        <div class="fs-18 fw-600 text-center mb-30 text-title">Log In</div>
+        <!-- <div class="fs-18 fw-600 text-center mb-30 text-title">Log In</div> -->
         <form @submit.prevent="loginAdmin">
           <div class="form-group mb-20" :class="{'has-error': errors.has('email')}">
             <label for="form-mail">
@@ -23,11 +17,12 @@
             </label>
             <input
               type="text"
-              class="form-control form-control-pill"
+              class="form-control"
               id="form-mail"
               v-model="details.email"
               v-validate="'required|email'"
               name="email"
+              placeholder="Enter E-mail"
             />
             <span>{{ errors.first('email') }}</span>
           </div>
@@ -37,11 +32,12 @@
             </label>
             <input
               type="password"
-              class="form-control form-control-pill"
+              class="form-control"
               id="form-pass"
               v-model="details.password"
               v-validate="'required'"
               name="password"
+              placeholder="Enter password"
             />
             <span>{{ errors.first('password') }}</span>
           </div>
@@ -52,7 +48,7 @@
         </form>
       </div>
     </div>
-    <div class="auth-right" style="background-image:url('/img/amju-building.jpg')">
+    <div class="auth-right" style="background-image:url('/img/auth-split.jpg')">
       <div class="auth-content">
         <div class="auth-right__caption">
           <h1>Admin Panel</h1>
@@ -193,13 +189,44 @@
     font-weight: bold;
   }
 
+  .auth-split .auth-right:after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    box-shadow: -10px 0 30px rgba(103, 3, 29, 0.2);
+    // background: linear-gradient(-45deg, #ec9c4f, rgba(51, 129, 181, 0.9), rgba(161, 2, 13, 0.5), #ec9c4f);
+    background: linear-gradient(-45deg, #d20707, rgba(0, 0, 0, 0.92), rgba(161, 2, 13, 0.75), #000000);
+    background-size: 400% 400%;
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=85)";
+    opacity: 0.85;
+    filter: alpha(opacity=85);
+    -webkit-animation-name: sliderBg;
+    animation-name: sliderBg;
+    -webkit-animation-duration: 10s;
+    animation-duration: 10s;
+    -webkit-animation-timing-function: ease-in-out;
+    animation-timing-function: ease-in-out;
+    -webkit-animation-iteration-count: infinite;
+    animation-iteration-count: infinite;
+    -webkit-animation-play-state: running;
+    animation-play-state: running;
+}
+
   .btn-primary.btn-shadow {
-    box-shadow: 0 3px 10px rgba(27, 151, 235, 0.5);
+    box-shadow: 0 3px 10px rgba(235, 27, 27, 0.5);
+    // box-shadow: 0 3px 10px rgba(27, 151, 235, 0.5);
   }
 
   .btn-primary {
-    background-color: #1b97eb;
-    border-color: #1b97eb;
+    background-color: #eb1b1b;
+    border-color: #eb1b1b;
+  }
+
+  .btn.btn-round {
+    border-radius: 3px;
   }
 
   .form-group {
@@ -228,8 +255,8 @@
   }
 
   .auth-left{
-    background-color: blue;
-    border-right: 6px solid red;
+    background-color: #121213;
+    border-right: 2px solid red;
     color: #fff;
   }
 </style>
