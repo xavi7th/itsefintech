@@ -228,8 +228,8 @@
   }
 
   .auth-left{
-    background-color: black;
-    border-right: 10px solid red;
+    background-color: green;
+    border-right: 6px solid red;
     color: #fff;
   }
 </style>
