@@ -7,7 +7,7 @@ $factory->define(SalesRep::class, function (Faker $faker) {
 
 	return [
 		'full_name' => 'SalesRep',
-		'email' => 'salesrep@itsefintech.com',
+		'email' => 'grant@itsefintech.com',
 		'password' => bcrypt('pass'),
 		'phone' => '08034444444444',
 		'bvn' => '2567890-98765432',

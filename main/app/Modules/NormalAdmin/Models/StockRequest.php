@@ -27,7 +27,6 @@ class StockRequest extends Model
 	static function adminRoutes()
 	{
 		Route::group(['namespace' => '\App\Modules\NormalAdmin\Models'], function () {
-			Route::post('debit-card/request', 'StockRequest@createStockRequest')->middleware('auth:admin');
 
 			Route::get('stock-requests', 'StockRequest@adminViewStockRequests')->middleware('auth:admin');
 
@@ -39,8 +38,8 @@ class StockRequest extends Model
 
 	static function salesRepRoutes()
 	{
-		Route::group(['namespace' => '\App\Modules\NormalAdmin\Models'], function () {
-			Route::post('debit-card/request', 'StockRequest@createStockRequest')->middleware('auth:admin');
+		Route::group(['namespace' => '\App\Modules\NormalAdmin\Models', 'prefix' => 'api'], function () {
+			Route::post('stock-request/create', 'StockRequest@createStockRequest')->middleware('auth:sales_rep');
 		});
 	}
 

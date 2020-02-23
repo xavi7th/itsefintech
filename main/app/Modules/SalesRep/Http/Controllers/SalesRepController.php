@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Route;
 use App\Modules\Admin\Models\ApiRoute;
 use App\Modules\SalesRep\Models\SalesRep;
 use App\Modules\CardUser\Models\DebitCard;
+use App\Modules\NormalAdmin\Models\StockRequest;
 
 class SalesRepController extends Controller
 {
@@ -24,6 +25,8 @@ class SalesRepController extends Controller
 			SalesRep::salesRepRoutes();
 
 			DebitCard::salesRepRoutes();
+
+			StockRequest::salesRepRoutes();
 		});
 	}
 }

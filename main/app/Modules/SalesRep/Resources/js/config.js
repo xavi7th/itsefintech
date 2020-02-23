@@ -13,5 +13,5 @@ export const salesRepAdminPermissions = id => apiBaseUrl + 'admin/' + id + '/per
 
 /** Sales Reps routes */
 export const getSalesRepStatistics = apiBaseUrl + 'statistics'
-export const requestCardStock = apiBaseUrl + 'debit-card/request'
+export const requestCardStock = apiBaseUrl + 'stock-request/create'
 export const salesRepAllocateDebitCardToCardUser = id => `${apiBaseUrl}debit-card/${id}/allocate`
