@@ -22,7 +22,7 @@
                 :key="debit_card_stock_request.id"
               >
                 <td>{{ debit_card_stock_request.id }}</td>
-                <td>{{ debit_card_stock_request.sales_rep.first_name }} {{ debit_card_stock_request.sales_rep.last_name }}</td>
+                <td>{{ debit_card_stock_request.sales_rep.full_name }}</td>
                 <td>{{ debit_card_stock_request.number_of_cards }}</td>
                 <td>{{ debit_card_stock_request.is_processed ? 'Processed' : 'Not Processed' }}</td>
                 <td>
