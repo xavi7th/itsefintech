@@ -151,7 +151,7 @@ class DebitCard extends Model
 	{
 		Route::group(['namespace' => '\App\Modules\CardUser\Models'], function () {
 
-			Route::get('debit-cards', 'DebitCard@getDebitCards')->middleware('auth:admin,sales_rep');
+			Route::get('debit-cards', 'DebitCard@getDebitCards')->middleware('auth:admin,sales_rep,card_admin');
 
 			Route::post('debit-card/create', 'DebitCard@createDebitCard')->middleware('auth:admin');
 
@@ -254,7 +254,11 @@ class DebitCard extends Model
 		if (auth('admin')->check()) {
 			$debit_cards = DebitCard::withTrashed()->get();
 		} else if (auth('sales_rep')->check()) {
-			$debit_cards = auth('sales_rep')->user()->assigned_debit_cards()->withTrashed()->get();
+			$debit_cards = auth('sales_rep')->user()->assigned_debit_cards()->get();
+		} else if (auth('card_admin')->check()) {
+			$debit_cards = DebitCard::withTrashed()->get();
+		} else {
+			$debit_cards = collect([]);
 		}
 		return (new AdminDebitCardTransformer)->collectionTransformer($debit_cards, 'transformForAdminViewDebitCards');
 	}

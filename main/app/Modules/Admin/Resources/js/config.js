@@ -85,8 +85,6 @@ export const adminDeleteMerchant = id => apiBaseUrl + 'merchant/' + id + '/delet
 export const adminViewDebitCards = id => !id ? `${apiBaseUrl}debit-cards` : `${apiBaseUrl}debit-cards/${id}`
 export const adminCreateDebitCard = `${apiBaseUrl}debit-card/create`
 export const adminAssignDebitCard = id => `${apiBaseUrl}debit-card/${id}/assign`
-// export const adminAllocateDebitCardToCardUser = id => `${apiBaseUrl}debit-card/${id}/allocate`
-export const adminAllocateDebitCardToRequest = id => `${apiBaseUrl}debit-card-request/${id}/allocate`
 export const toggleDebitCardSuspension = id => apiBaseUrl + 'debit-card/' + id + '/suspension'
 export const adminActivateDebitCard = id => apiBaseUrl + 'debit-card/' + id + '/activate'
 export const adminShowFullPANNumber = id => apiBaseUrl + 'debit-card/' + id + '/pan'

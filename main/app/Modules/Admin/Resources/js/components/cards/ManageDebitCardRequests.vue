@@ -148,9 +148,9 @@
   import {
     adminViewDebitCardRequests,
     adminUpdateDebitCardRequestStatus,
-    adminAllocateDebitCardToRequest,
     adminConfirmDebitCardRequestPayment
   } from "@admin-assets/js/config";
+  import { cardAdminAllocateDebitCardToRequest } from "@cardAdmin-assets/js/config";
   import { cardAdminMarkDebitCardRequestAsPaid } from "@cardAdmin-assets/js/config";
   import PreLoader from "@admin-components/misc/PageLoader";
   export default {
@@ -259,7 +259,7 @@
             showLoaderOnConfirm: true,
             preConfirm: card_number => {
               return axios
-                .put(adminAllocateDebitCardToRequest(debitCardDetails.id), {
+                .put(cardAdminAllocateDebitCardToRequest(debitCardDetails.id), {
                   card_number
                 })
                 .then(response => {

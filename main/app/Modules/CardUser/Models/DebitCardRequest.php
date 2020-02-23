@@ -41,10 +41,23 @@ class DebitCardRequest extends Model
 		return $this->belongsTo(DebitCardType::class);
 	}
 
+	/**
+	 * Scope a query to only include remote card requests.
+	 *
+	 * @param  \Illuminate\Database\Eloquent\Builder  $query
+	 * @return \Illuminate\Database\Eloquent\Builder
+	 */
+	public function scopeRemoteRequests($query)
+	{
+		return $query->where('sales_rep_id', null);
+	}
+
 	static function cardAdminRoutes()
 	{
 		Route::group(['namespace' => '\App\Modules\CardUser\Models', 'prefix' => 'api'], function () {
 			Route::put('debit-card-request/{debit_card_request}/paid', 'DebitCardRequest@markRequestAsPaid')->middleware('auth:card_admin');
+
+			Route::put('debit-card-request/{debit_card_request}/allocate', 'DebitCardRequest@allocateCardToRequest')->middleware('auth:card_admin');
 		});
 	}
 
@@ -53,8 +66,6 @@ class DebitCardRequest extends Model
 		Route::group(['namespace' => '\App\Modules\CardUser\Models'], function () {
 
 			Route::get('debit-card-requests', 'DebitCardRequest@getDebitCardRequests')->middleware('auth:admin,card_admin');
-
-			Route::put('debit-card-request/{debit_card_request}/allocate', 'DebitCardRequest@allocateCardToRequest')->middleware('auth:admin');
 
 			Route::put('debit-card-request/{debit_card_request}/paid/confirm', 'DebitCardRequest@confirmRequestPayment')->middleware('auth:admin');
 
@@ -72,7 +83,7 @@ class DebitCardRequest extends Model
 		if (auth('admin')->check()) {
 			return (new AdminDebitCardRequestTransformer)->collectionTransformer(DebitCardRequest::withTrashed()->get(), 'transformForAdminViewDebitCardRequests');
 		} else if (auth('card_admin')->check()) {
-			$pending_card_requests = DebitCardRequest::where('debit_card_request_status_id', '<', DebitCardRequestStatus::delivered_id())->get();
+			$pending_card_requests = DebitCardRequest::remoteRequests()->get();
 			return (new AdminDebitCardRequestTransformer)->collectionTransformer($pending_card_requests, 'transformForAdminViewDebitCardRequests');
 		}
 	}
@@ -97,7 +108,7 @@ class DebitCardRequest extends Model
 		$debit_card = DebitCard::retrieve(request('card_number'));
 
 		/** Check card has being assigned to this sales rep */
-		if (auth()->id() !== intval($debit_card->sales_rep_id)) {
+		if ((auth('sales_rep')->check() && auth()->id() !== intval($debit_card->sales_rep_id)) || !is_null($debit_card->sales_rep_id)) {
 			return generate_422_error(['card' => ['This Debit Card has not being assigned to you']]);
 		}
 
@@ -117,7 +128,7 @@ class DebitCardRequest extends Model
 		$debit_card_request->debit_card_id = $debit_card->id;
 
 		/** Set this sales rep as the one attending to the request */
-		$debit_card_request->sales_rep_id = auth()->id();
+		// $debit_card_request->sales_rep_id = auth()->id();
 
 		/** Set last_updated_by of this request */
 		$debit_card_request->last_updated_by = auth()->id();

@@ -1,5 +1,5 @@
 export const CONSTANTS = {
-    APP_NAME: 'Itse FinTech',
+    APP_NAME: 'Capital X',
 }
 
 const baseUrl = '/card-admins/'
@@ -12,3 +12,4 @@ export const adminAdminPermissions = id => apiBaseUrl + 'admin/' + id + '/permis
 
 export const getCardAdminStatistics = apiBaseUrl + 'statistics'
 export const cardAdminMarkDebitCardRequestAsPaid = id => apiBaseUrl + 'debit-card-request/' + id + '/paid'
+export const cardAdminAllocateDebitCardToRequest = id => `${apiBaseUrl}debit-card-request/${id}/allocate`
