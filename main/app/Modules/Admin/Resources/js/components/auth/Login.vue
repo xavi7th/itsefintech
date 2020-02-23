@@ -229,7 +229,7 @@
 
   .auth-left{
     background-color: black;
-    border-right: 6px solid red;
+    border-right: 16px solid red;
     color: #fff;
   }
 </style>
