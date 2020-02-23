@@ -41,15 +41,20 @@ class DebitCardRequest extends Model
 		return $this->belongsTo(DebitCardType::class);
 	}
 
+	static function cardAdminRoutes()
+	{
+		Route::group(['namespace' => '\App\Modules\CardUser\Models', 'prefix' => 'api'], function () {
+			Route::put('debit-card-request/{debit_card_request}/paid', 'DebitCardRequest@markRequestAsPaid')->middleware('auth:card_admin');
+		});
+	}
+
 	static function adminRoutes()
 	{
 		Route::group(['namespace' => '\App\Modules\CardUser\Models'], function () {
 
-			Route::get('debit-card-requests', 'DebitCardRequest@getDebitCardRequests')->middleware('auth:admin');
+			Route::get('debit-card-requests', 'DebitCardRequest@getDebitCardRequests')->middleware('auth:admin,card_admin');
 
 			Route::put('debit-card-request/{debit_card_request}/allocate', 'DebitCardRequest@allocateCardToRequest')->middleware('auth:admin');
-
-			Route::put('debit-card-request/{debit_card_request}/paid', 'DebitCardRequest@markRequestAsPaid')->middleware('auth:admin');
 
 			Route::put('debit-card-request/{debit_card_request}/paid/confirm', 'DebitCardRequest@confirmRequestPayment')->middleware('auth:admin');
 
@@ -64,7 +69,12 @@ class DebitCardRequest extends Model
 	 */
 	public function getDebitCardRequests()
 	{
-		return (new AdminDebitCardRequestTransformer)->collectionTransformer(DebitCardRequest::withTrashed()->get(), 'transformForAdminViewDebitCardRequests');
+		if (auth('admin')->check()) {
+			return (new AdminDebitCardRequestTransformer)->collectionTransformer(DebitCardRequest::withTrashed()->get(), 'transformForAdminViewDebitCardRequests');
+		} else if (auth('card_admin')->check()) {
+			$pending_card_requests = DebitCardRequest::where('debit_card_request_status_id', '<', DebitCardRequestStatus::delivered_id())->get();
+			return (new AdminDebitCardRequestTransformer)->collectionTransformer($pending_card_requests, 'transformForAdminViewDebitCardRequests');
+		}
 	}
 
 	public function allocateCardToRequest(DebitCardRequest $debit_card_request)

@@ -36,17 +36,17 @@
                   <div
                     class="badge badge-success badge-shadow pointer"
                     @click="markAsPaid(debit_card_request)"
-                    v-if="!debit_card_request.is_paid"
+                    v-if="!debit_card_request.is_paid && $user.isCardAdmin"
                   >Mark as Paid</div>
                   <div
                     class="badge badge-warning btn-bold pointer"
                     @click="confirmPayment(debit_card_request)"
-                    v-if="debit_card_request.is_paid && !debit_card_request.is_payment_confirmed"
+                    v-if="debit_card_request.is_paid && !debit_card_request.is_payment_confirmed  && $user.isAccountant"
                   >Confirm Payment</div>
                   <div
                     class="badge badge-purple badge-shadow pointer"
                     @click="allocateCard(debit_card_request)"
-                    v-if="!debit_card_request.debit_card_id"
+                    v-if="!debit_card_request.debit_card_id  && $user.isCardAdmin"
                   >Allocate Card</div>
                 </td>
               </tr>
@@ -108,14 +108,17 @@
                     </div>
                   </div>
                 </div>
-                <div class="modal-footer">
-                  <div class="form-group mb-5" :class="{'has-error': errors.has('exp_year')}">
+                <div class="modal-footer" v-if="$user.isCardAdmin">
+                  <div
+                    class="form-group mb-5"
+                    :class="{'has-error': errors.has('card_request_status')}"
+                  >
                     <select
                       class="form-control"
                       id="form-year"
-                      name="exp_year"
+                      name="card_request_status"
                       v-validate="'required'"
-                      data-vv-as="expiry year"
+                      data-vv-as="card request status"
                       v-model="debitCardRequestDetails.debit_card_request_status_id"
                     >
                       <option v-for="n in requestStatuses" :key="n.name" :value="n.id">{{ n.name }}</option>
@@ -145,10 +148,10 @@
   import {
     adminViewDebitCardRequests,
     adminUpdateDebitCardRequestStatus,
-    adminMarkDebitCardRequestAsPaid,
     adminAllocateDebitCardToRequest,
     adminConfirmDebitCardRequestPayment
   } from "@admin-assets/js/config";
+  import { cardAdminMarkDebitCardRequestAsPaid } from "@cardAdmin-assets/js/config";
   import PreLoader from "@admin-components/misc/PageLoader";
   export default {
     name: "ManageDebitCardRequests",
@@ -187,7 +190,7 @@
           text: "processing ..."
         });
         axios
-          .put(adminMarkDebitCardRequestAsPaid(debitCardRequest.id))
+          .put(cardAdminMarkDebitCardRequestAsPaid(debitCardRequest.id))
           .then(({ status }) => {
             debitCardRequest.is_paid = true;
             if (status === 204) {
