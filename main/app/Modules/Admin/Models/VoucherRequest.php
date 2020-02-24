@@ -39,18 +39,18 @@ class VoucherRequest extends Model
 		});
 	}
 
-	static function accountantRoutes()
+	static function accountOfficerRoutes()
 	{
 		Route::group(['namespace' => '\App\Modules\Admin\Models', 'prefix' => 'api'], function () {
-			Route::put('voucher-request/{voucher_request}/approve', 'VoucherRequest@approveVoucherRequest')->middleware('auth:normal_admin');
-			Route::put('voucher-request/{voucher_request}/allocate', 'VoucherRequest@allocateVoucherRequest')->middleware('auth:normal_admin');
+			Route::put('voucher-request/{voucher_request}/approve', 'VoucherRequest@approveVoucherRequest')->middleware('auth:account_officer');
+			Route::put('voucher-request/{voucher_request}/allocate', 'VoucherRequest@allocateVoucherRequest')->middleware('auth:account_officer');
 		});
 	}
 
 	static function adminRoutes()
 	{
 		Route::group(['namespace' => '\App\Modules\Admin\Models'], function () {
-			Route::get('voucher-requests', 'VoucherRequest@getAllVoucherRequests')->middleware('auth:admin,normal_admin');
+			Route::get('voucher-requests', 'VoucherRequest@getAllVoucherRequests')->middleware('auth:admin,normal_admin,account_officer');
 		});
 	}
 

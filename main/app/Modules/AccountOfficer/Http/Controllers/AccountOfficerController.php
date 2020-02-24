@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Route;
 use App\Modules\AccountOfficer\Models\AccountOfficer;
 use App\Modules\AccountOfficer\Http\Controllers\LoginController;
+use App\Modules\Admin\Models\VoucherRequest;
 
 class AccountOfficerController extends Controller
 {
@@ -20,6 +21,8 @@ class AccountOfficerController extends Controller
 			LoginController::routes();
 
 			AccountOfficer::accountOfficerRoutes();
+
+			VoucherRequest::accountOfficerRoutes();
 		});
 	}
 }

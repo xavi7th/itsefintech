@@ -27,7 +27,7 @@ class MerchantCategory  extends Model
 	static function adminRoutes()
 	{
 		Route::group(['namespace' => '\App\Modules\Admin\Models'], function () {
-			Route::get('merchant-categories', 'MerchantCategory@getAllMerchantCategories')->middleware('auth:admin,normal_admin');
+			Route::get('merchant-categories', 'MerchantCategory@getAllMerchantCategories')->middleware('auth:admin,normal_admin,account_officer');
 			Route::post('merchant-category', 'MerchantCategory@createMerchantCategory')->middleware('auth:admin,normal_admin');
 			Route::put('merchant-category/{merchant_category}', 'MerchantCategory@editMerchantCategory')->middleware('auth:admin,normal_admin');
 		});

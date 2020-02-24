@@ -5,7 +5,6 @@ export const CONSTANTS = {
 const baseUrl = '/account-officers/'
 const apiBaseUrl = `${baseUrl}api/`
 
-export const adminLoginEndpoint = baseUrl + 'login'
-export const adminViewAdmins = apiBaseUrl + 'admins'
-export const adminCreateAdmin = apiBaseUrl + 'admin/create'
 export const adminAdminPermissions = id => apiBaseUrl + 'admin/' + id + '/permissions'
+export const accountOfficeAllocateVoucherToRequest = id => `${apiBaseUrl}voucher-request/${id}/allocate`
+export const accountOfficeApproveVoucherRequest = id => apiBaseUrl + 'voucher-request/' + id + '/approve'

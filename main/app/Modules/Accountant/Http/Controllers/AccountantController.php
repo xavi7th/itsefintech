@@ -24,8 +24,6 @@ class AccountantController extends Controller
 			Accountant::accountantRoutes();
 
 			DebitCardRequest::accountantRoutes();
-
-			VoucherRequest::accountantRoutes();
 		});
 	}
 }

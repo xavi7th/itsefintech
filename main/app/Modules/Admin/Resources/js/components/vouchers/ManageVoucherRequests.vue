@@ -42,12 +42,12 @@
                   <div
                     class="badge badge-success badge-shadow pointer"
                     @click="approveVoucherRequest(voucher_request)"
-                    v-if="!voucher_request.is_approved && $user.isAccountant"
+                    v-if="!voucher_request.is_approved && $user.isAccountOfficer"
                   >Approve</div>
                   <div
                     class="badge badge-purple badge-shadow pointer"
                     @click="allocateVoucher(voucher_request)"
-                    v-if="!voucher_request.voucher_id  && $user.isAccountant"
+                    v-if="!voucher_request.voucher_id  && $user.isAccountOfficer"
                   >Allocate Voucher</div>
                 </td>
               </tr>
@@ -147,9 +147,9 @@
 <script>
   import { adminViewVoucherRequests } from "@admin-assets/js/config";
   import {
-    accountantAllocateVoucherToRequest,
-    accountantApproveVoucherRequest
-  } from "@accountant-assets/js/config";
+    accountOfficeAllocateVoucherToRequest,
+    accountOfficeApproveVoucherRequest
+  } from "@accountOfficer-assets/js/config";
   import PreLoader from "@admin-components/misc/PageLoader";
   export default {
     name: "ManageVoucherRequests",
@@ -192,7 +192,7 @@
         });
 
         axios
-          .put(normalAdminApproveVoucherRequest(voucherRequest.id))
+          .put(accountOfficeApproveVoucherRequest(voucherRequest.id))
           .then(({ status }) => {
             voucherRequest.is_approved = true;
             if (status === 204) {
@@ -265,7 +265,7 @@
             preConfirm: voucher_code => {
               return axios
                 .put(
-                  normalAdminAllocateVoucherToRequest(voucherRequestDetails.id),
+                  accountOfficeAllocateVoucherToRequest(voucherRequestDetails.id),
                   {
                     voucher_code
                   }

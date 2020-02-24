@@ -11,6 +11,7 @@
             data-toggle="modal"
             data-target="#modal-merchant-category"
             @click="details = {}"
+            v-if="$user.isNormalAdmin"
           >Create Merchant Category</button>
         </div>
         <div class="card-body">
@@ -32,6 +33,7 @@
                     data-toggle="modal"
                     data-target="#modal-merchant-category"
                     @click="showEditMerchantCategoryModal(merchantCategory)"
+                    v-if="$user.isNormalAdmin"
                   >Edit Merchant Category</div>
                 </td>
               </tr>

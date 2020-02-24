@@ -30,7 +30,7 @@ class SetCardUserCreditLimitValidation extends FormRequest
 	 */
 	public function authorize()
 	{
-		return auth('admin')->check();
+		return true;
 	}
 
 

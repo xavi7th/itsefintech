@@ -345,23 +345,23 @@ class CardUser extends User
 	static function adminRoutes()
 	{
 		Route::group(['namespace' => '\App\Modules\CardUser\Models'], function () {
-			Route::get('card-users', 'CardUser@getAllCardUsers')->middleware('auth:admin,normal_admin');
+			Route::get('card-users', 'CardUser@getAllCardUsers')->middleware('auth:admin,normal_admin,account_officer');
 
 			Route::post('card-user/create', 'CardUser@createCardUser')->middleware('auth:admin');
 
 			Route::get('card-user/{card_user}/bvn', 'CardUser@getFullBvnNumber')->middleware('auth:admin');
 
-			Route::put('card-user/{card_user}/credit-limit', 'CardUser@setUserCreditLimit')->middleware('auth:admin');
+			Route::put('card-user/{card_user}/credit-limit', 'CardUser@setUserCreditLimit')->middleware('auth:account_officer');
 
-			Route::put('card-user/{card_user}/merchant-limit', 'CardUser@setUserMerchantLimit')->middleware('auth:admin');
+			Route::put('card-user/{card_user}/merchant-limit', 'CardUser@setUserMerchantLimit')->middleware('auth:account_officer');
 
 			Route::get('card-user/{card_user}/permissions', 'CardUser@getPermittedRoutes')->middleware('auth:admin');
 
 			Route::put('card-user/{card_user}/permissions', 'CardUser@setCardUserPermittedRoutes')->middleware('auth:admin');
 
-			Route::put('card-user/{card_user}/suspend', 'CardUser@suspendCardUser')->middleware('auth:admin');
+			Route::put('card-user/{card_user}/suspend', 'CardUser@suspendCardUser')->middleware('auth:account_officer');
 
-			Route::put('card-user/{id}/restore', 'CardUser@unsuspendCardUser')->middleware('auth:admin');
+			Route::put('card-user/{id}/restore', 'CardUser@unsuspendCardUser')->middleware('auth:account_officer');
 
 			Route::delete('card-user/{card_user}/delete', 'CardUser@deleteCardUserAccount')->middleware('auth:admin');
 		});

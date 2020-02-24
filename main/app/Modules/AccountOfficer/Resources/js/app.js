@@ -1,9 +1,9 @@
 import '@admin-assets/js/bootstrap'
 import Vue from 'vue'
 import VeeValidate from 'vee-validate'
+import Vue2Filters from 'vue2-filters'
 import App from './AccountOfficerAppComponent'
 import PageHeader from "@admin-components/partials/PageHeaderComponent";
-// import Vue2Filters from 'vue2-filters'
 
 const {
     routeGenerator
@@ -11,7 +11,17 @@ const {
 
 import LoadScript from 'vue-plugin-load-script'
 
-// Vue.use( Vue2Filters )
+Vue.use( Vue2Filters )
+
+Vue.filter( 'Naira', function ( value, symbol ) {
+    let currency = Vue.filter( 'currency' )
+    symbol = '₦'
+    return currency( value, symbol, 2, {
+        thousandsSeparator: ',',
+        decimalSeparator: '.'
+    } )
+} )
+
 Vue.use( VeeValidate, {
     fieldsBagName: 'formFields'
 } )
@@ -78,11 +88,14 @@ routeGenerator().then( router => {
     } )
 
     axios.get( '/admin-panel/user-instance' ).then( ( {
-        data: user_type
+        data: user
     } ) => {
 
         Object.defineProperty( Vue.prototype, '$user', {
-            value: user_type,
+            value: {
+                ...user,
+                isAccountOfficer: user.type == 'account_officer',
+            },
             writable: false
         } )
 

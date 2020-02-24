@@ -55,7 +55,7 @@ class Merchant  extends Model implements AuthenticatableContract, AuthorizableCo
 	static function adminRoutes()
 	{
 		Route::group(['namespace' => '\App\Modules\Admin\Models'], function () {
-			Route::get('merchants', 'Merchant@getAllMerchants')->middleware('auth:admin,normal_admin');
+			Route::get('merchants', 'Merchant@getAllMerchants')->middleware('auth:admin,normal_admin,account_officer');
 			Route::post('merchant/create', 'Merchant@createMerchant')->middleware('auth:admin,normal_admin');
 			Route::put('merchant/{merchant}/suspend', 'Merchant@suspendMerchant')->middleware('auth:admin,normal_admin');
 			Route::put('merchant/{merchant}/restore', 'Merchant@restoreMerchant')->middleware('auth:admin,normal_admin');
