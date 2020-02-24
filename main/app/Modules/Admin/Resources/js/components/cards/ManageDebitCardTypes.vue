@@ -11,6 +11,7 @@
             data-toggle="modal"
             data-target="#modal-card"
             @click="details = {}"
+            v-if="$user.isAdmin"
           >Create Debit Card Type</button>
         </div>
         <div class="card-body">
@@ -36,12 +37,14 @@
                     data-toggle="modal"
                     data-target="#modal-card"
                     @click="showEditDebitCardTypeModal(debitCardType)"
+                    v-if="$user.isAdmin"
                   >Edit Card Type</div>
                   <div
                     class="badge badge-info badge-shadow pointer"
                     data-toggle="modal"
                     data-target="#modal-statistics"
                     @click="showDetailsModal(debitCardType)"
+                    v-if="$user.isAdmin && false"
                   >Statistics</div>
                 </td>
               </tr>

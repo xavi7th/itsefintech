@@ -34,7 +34,7 @@ class DebitCardType extends Model
 	static function adminRoutes()
 	{
 		Route::group(['namespace' => '\App\Modules\CardUser\Models'], function () {
-			Route::get('debit-card-types', 'DebitCardType@getDebitCardTypes')->middleware('auth:admin');
+			Route::get('debit-card-types', 'DebitCardType@getDebitCardTypes')->middleware('auth:admin,normal_admin');
 
 			Route::post('debit-card-type/create', 'DebitCardType@createDebitCardType')->middleware('auth:admin');
 
