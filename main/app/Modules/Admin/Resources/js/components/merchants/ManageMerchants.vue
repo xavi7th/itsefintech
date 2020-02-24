@@ -42,12 +42,12 @@
                   <button
                     class="btn btn-pure btn-danger btn-xs btn-bold"
                     @click="suspendMerchant(merchant)"
-                    v-if="merchant.is_active"
+                    v-if="merchant.is_active && $user.isAdmin"
                   >Suspend</button>
                   <button
                     class="btn btn-pure btn-warning btn-xs btn-bold"
                     @click="restoreMerchant(merchant)"
-                    v-else
+                    v-else-if="!merchant.is_active && $user.isAdmin"
                   >Restore</button>
                 </td>
                 <td>{{ merchant.category }}</td>
@@ -61,6 +61,7 @@
                     data-toggle="modal"
                     data-target="#modal-details"
                     @click="showModal(merchant)"
+                    v-if="false"
                   >Transactions</div>
                 </td>
                 <td>{{ merchant.is_active ? 'Active' : 'Suspended' }}</td>

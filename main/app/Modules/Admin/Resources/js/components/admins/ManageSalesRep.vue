@@ -45,6 +45,7 @@
                   <router-link
                     class="badge badge-info"
                     :to="{name: 'admin.cards.sales-rep.list', 'params': {'rep': user.id}}"
+                    v-if="false"
                   >View Assigned Cards</router-link>
                 </td>
               </tr>
