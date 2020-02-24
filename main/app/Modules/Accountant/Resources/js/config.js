@@ -5,7 +5,5 @@ export const CONSTANTS = {
 const baseUrl = '/accountant/'
 const apiBaseUrl = `${baseUrl}api/`
 
-export const adminLoginEndpoint = baseUrl + 'login'
-export const adminViewAdmins = apiBaseUrl + 'admins'
-export const adminCreateAdmin = apiBaseUrl + 'admin/create'
 export const adminAdminPermissions = id => apiBaseUrl + 'admin/' + id + '/permissions'
+export const accountantConfirmDebitCardRequestPayment = id => apiBaseUrl + 'debit-card-request/' + id + '/paid/confirm'

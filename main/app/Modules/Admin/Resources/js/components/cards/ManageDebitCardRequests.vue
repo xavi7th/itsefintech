@@ -145,10 +145,8 @@
 </template>
 
 <script>
-  import {
-    adminViewDebitCardRequests,
-    adminConfirmDebitCardRequestPayment
-  } from "@admin-assets/js/config";
+  import { adminViewDebitCardRequests } from "@admin-assets/js/config";
+  import { accountantConfirmDebitCardRequestPayment } from "@accountant-assets/js/config";
   import { cardAdminUpdateDebitCardRequestStatus } from "@cardAdmin-assets/js/config";
   import { cardAdminAllocateDebitCardToRequest } from "@cardAdmin-assets/js/config";
   import { cardAdminMarkDebitCardRequestAsPaid } from "@cardAdmin-assets/js/config";
@@ -221,7 +219,7 @@
           text: "processing ..."
         });
         axios
-          .put(adminConfirmDebitCardRequestPayment(debitCardRequest.id))
+          .put(accountantConfirmDebitCardRequestPayment(debitCardRequest.id))
           .then(({ status }) => {
             if (status === 204) {
               debitCardRequest.is_payment_confirmed = true;

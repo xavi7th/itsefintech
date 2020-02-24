@@ -52,6 +52,17 @@ class DebitCardRequest extends Model
 		return $query->where('sales_rep_id', null);
 	}
 
+	/**
+	 * Scope a query to only include card requests that have not been confirmed by the accountant.
+	 *
+	 * @param  \Illuminate\Database\Eloquent\Builder  $query
+	 * @return \Illuminate\Database\Eloquent\Builder
+	 */
+	public function scopePendingAccountantConfirmation($query)
+	{
+		return $query->where('is_payment_confirmed', false)->where('is_paid', true);
+	}
+
 	static function cardAdminRoutes()
 	{
 		Route::group(['namespace' => '\App\Modules\CardUser\Models', 'prefix' => 'api'], function () {
@@ -63,13 +74,18 @@ class DebitCardRequest extends Model
 		});
 	}
 
+	static function accountantRoutes()
+	{
+		Route::group(['namespace' => '\App\Modules\CardUser\Models', 'prefix' => 'api'], function () {
+			Route::put('debit-card-request/{debit_card_request}/paid/confirm', 'DebitCardRequest@confirmRequestPayment')->middleware('auth:accountant');
+		});
+	}
+
 	static function adminRoutes()
 	{
 		Route::group(['namespace' => '\App\Modules\CardUser\Models'], function () {
 
-			Route::get('debit-card-requests', 'DebitCardRequest@getDebitCardRequests')->middleware('auth:admin,card_admin');
-
-			Route::put('debit-card-request/{debit_card_request}/paid/confirm', 'DebitCardRequest@confirmRequestPayment')->middleware('auth:admin');
+			Route::get('debit-card-requests', 'DebitCardRequest@getDebitCardRequests')->middleware('auth:admin,card_admin,accountant');
 
 			Route::delete('debit-card-request/{debit_card_request}/delete', 'DebitCardRequest@deleteCardRequest')->middleware('auth:admin');
 		});
@@ -84,6 +100,9 @@ class DebitCardRequest extends Model
 			return (new AdminDebitCardRequestTransformer)->collectionTransformer(DebitCardRequest::withTrashed()->get(), 'transformForAdminViewDebitCardRequests');
 		} else if (auth('card_admin')->check()) {
 			$pending_card_requests = DebitCardRequest::remoteRequests()->get();
+			return (new AdminDebitCardRequestTransformer)->collectionTransformer($pending_card_requests, 'transformForAdminViewDebitCardRequests');
+		} else if (auth('accountant')->check()) {
+			$pending_card_requests = DebitCardRequest::pendingAccountantConfirmation()->get();
 			return (new AdminDebitCardRequestTransformer)->collectionTransformer($pending_card_requests, 'transformForAdminViewDebitCardRequests');
 		}
 	}

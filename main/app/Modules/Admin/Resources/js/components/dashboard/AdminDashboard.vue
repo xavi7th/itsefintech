@@ -133,49 +133,6 @@
             resize: true
           });
         });
-      },
-      requestStock() {
-        swal
-          .fire({
-            title: "Enter Number of Cards",
-            input: "number",
-            inputAttributes: {
-              autocapitalize: "off",
-              required: true
-            },
-            showCancelButton: true,
-            confirmButtonText: "Make Request",
-            showLoaderOnConfirm: true,
-            preConfirm: num => {
-              return axios
-                .post(requestCardStock, {
-                  num
-                })
-                .then(response => {
-                  if (response.status !== 204) {
-                    throw new Error(response.statusText);
-                  }
-                  return { rsp: true };
-                })
-                .catch(error => {
-                  if (error.response.status === 423) {
-                    swal.showValidationMessage("Unassigned Card");
-                  } else {
-                    swal.showValidationMessage(`Request failed: ${error}`);
-                  }
-                });
-            },
-            allowOutsideClick: () => !swal.isLoading()
-          })
-          .then(result => {
-            if (result.value) {
-              swal.fire({
-                title: `Sent`,
-                text: "Your request has been sent!",
-                icon: "success"
-              });
-            }
-          });
       }
     }
   };

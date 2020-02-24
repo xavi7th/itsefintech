@@ -100,7 +100,6 @@ export const adminEditDebitCardType = id => `${apiBaseUrl}debit-card-type/${id}`
 
 
 export const adminViewDebitCardRequests = apiBaseUrl + 'debit-card-requests'
-export const adminConfirmDebitCardRequestPayment = id => apiBaseUrl + 'debit-card-request/' + id + '/paid/confirm'
 
 
 export const adminViewDebitCardStockRequests = apiBaseUrl + 'stock-requests'

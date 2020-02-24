@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Route;
 use App\Modules\Accountant\Models\Accountant;
 use App\Modules\Accountant\Http\Controllers\LoginController;
+use App\Modules\CardUser\Models\DebitCardRequest;
 
 class AccountantController extends Controller
 {
@@ -20,6 +21,8 @@ class AccountantController extends Controller
 			LoginController::routes();
 
 			Accountant::accountantRoutes();
+
+			DebitCardRequest::accountantRoutes();
 		});
 	}
 }
