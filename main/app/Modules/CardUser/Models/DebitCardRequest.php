@@ -85,7 +85,7 @@ class DebitCardRequest extends Model
 	{
 		Route::group(['namespace' => '\App\Modules\CardUser\Models'], function () {
 
-			Route::get('debit-card-requests', 'DebitCardRequest@getDebitCardRequests')->middleware('auth:admin,card_admin,accountant');
+			Route::get('debit-card-requests', 'DebitCardRequest@getDebitCardRequests')->middleware('auth:admin,card_admin,accountant,normal_admin');
 
 			Route::delete('debit-card-request/{debit_card_request}/delete', 'DebitCardRequest@deleteCardRequest')->middleware('auth:admin');
 		});
@@ -103,6 +103,9 @@ class DebitCardRequest extends Model
 			return (new AdminDebitCardRequestTransformer)->collectionTransformer($pending_card_requests, 'transformForAdminViewDebitCardRequests');
 		} else if (auth('accountant')->check()) {
 			$pending_card_requests = DebitCardRequest::pendingAccountantConfirmation()->get();
+			return (new AdminDebitCardRequestTransformer)->collectionTransformer($pending_card_requests, 'transformForAdminViewDebitCardRequests');
+		} else if (auth('normal_admin')->check()) {
+			$pending_card_requests = DebitCardRequest::all();
 			return (new AdminDebitCardRequestTransformer)->collectionTransformer($pending_card_requests, 'transformForAdminViewDebitCardRequests');
 		}
 	}
