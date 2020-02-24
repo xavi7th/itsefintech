@@ -47,7 +47,7 @@ class LoginController extends Controller
 	static function routes()
 	{
 		Route::get('login', 'LoginController@showLoginForm')->name('salesrep.login');
-		Route::post('login', 'LoginController@login')->middleware('throttle:5,1');
+		Route::post('login', 'LoginController@login')->middleware('throttle:5,1')->middleware('verified_sales_reps');;
 		Route::post('first-time', 'LoginController@resetPassword')->middleware('throttle:5,1');
 		Route::post('logout', 'LoginController@logout')->name('salesrep.logout');
 	}

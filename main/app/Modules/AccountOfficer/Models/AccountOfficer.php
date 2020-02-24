@@ -74,8 +74,10 @@ class AccountOfficer extends User
 	static function accountOfficerRoutes()
 	{
 		Route::group(['middleware' => ['auth:account_officer', 'account_officers'], 'namespace' => '\App\Modules\AccountOfficer\Models'], function () {
+			Route::group(['prefix' => 'api'], function () {
 
-			Route::post('test-route-permission', 'AccountOfficer@testRoutePermission')->prefix('api');
+				Route::post('test-route-permission', 'AccountOfficer@testRoutePermission');
+			});
 
 			Route::get('/{subcat?}', 'AccountOfficer@loadAccountOfficerApplication')->name('accountofficer.dashboard')->where('subcat', '^((?!(api)).)*');
 		});
