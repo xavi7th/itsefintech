@@ -31,7 +31,7 @@
                   <div
                     class="badge badge-success badge-shadow pointer"
                     @click="markAsProcessed(debit_card_funding_request)"
-                    v-if="!debit_card_funding_request.is_processed"
+                    v-if="!debit_card_funding_request.is_processed && $user.isAccountant"
                   >Mark as Processed</div>
                 </td>
               </tr>

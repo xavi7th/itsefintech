@@ -40,7 +40,7 @@ class DebitCardFundingRequest extends Model
 	static function adminRoutes()
 	{
 		Route::group(['namespace' => '\App\Modules\CardUser\Models'], function () {
-			Route::get('debit-card-funding-requests', 'DebitCardFundingRequest@getAllFundingRequests')->middleware('auth:admin');
+			Route::get('debit-card-funding-requests', 'DebitCardFundingRequest@getAllFundingRequests')->middleware('auth:admin,normal_admin');
 			Route::put('debit-card-funding-request/{funding_request}/process', 'DebitCardFundingRequest@markProcessed')->middleware('auth:admin');
 		});
 	}
@@ -92,7 +92,11 @@ class DebitCardFundingRequest extends Model
 	 */
 	public function getAllFundingRequests()
 	{
-		return (new AdminDebitCardFundingRequestTransformer)->collectionTransformer(DebitCardFundingRequest::withTrashed()->dontRemember()->get(), 'transformForViewAllRequests');
+		if (auth('admin')->check()) {
+			return (new AdminDebitCardFundingRequestTransformer)->collectionTransformer(DebitCardFundingRequest::withTrashed()->dontRemember()->get(), 'transformForViewAllRequests');
+		} else if (auth('normal_admin')->check()) {
+			return (new AdminDebitCardFundingRequestTransformer)->collectionTransformer(DebitCardFundingRequest::dontRemember()->get(), 'transformForViewAllRequests');
+		}
 	}
 
 	public function markProcessed(DebitCardFundingRequest $funding_request)
