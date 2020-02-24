@@ -50,7 +50,7 @@ class LoanTransaction extends Model
 	static function adminRoutes()
 	{
 		Route::group(['namespace' => '\App\Modules\CardUser\Models'], function () {
-			Route::get('loan-transactions', 'LoanTransaction@showAllLoanTransactions')->middleware('auth:admin');
+			Route::get('loan-transactions', 'LoanTransaction@showAllLoanTransactions')->middleware('auth:admin,normal_admin');
 		});
 	}
 
