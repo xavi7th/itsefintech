@@ -169,7 +169,7 @@ class DebitCard extends Model
 	{
 		Route::group(['namespace' => '\App\Modules\CardUser\Models'], function () {
 
-			Route::get('debit-cards', 'DebitCard@getDebitCards')->middleware('auth:admin,sales_rep,card_admin');
+			Route::get('debit-cards', 'DebitCard@getDebitCards')->middleware('auth:admin,sales_rep,card_admin,normal_admin');
 
 			Route::post('debit-card/create', 'DebitCard@createDebitCard')->middleware('auth:admin');
 
@@ -272,6 +272,8 @@ class DebitCard extends Model
 			$debit_cards = auth('sales_rep')->user()->assigned_debit_cards()->get();
 		} else if (auth('card_admin')->check()) {
 			$debit_cards = DebitCard::pendingAdminActivation()->get();
+		} else if (auth('normal_admin')->check()) {
+			$debit_cards = DebitCard::all();
 		} else {
 			$debit_cards = collect([]);
 		}

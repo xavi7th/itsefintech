@@ -44,17 +44,17 @@
                   <div
                     class="fs-11 btn btn-bold badge badge-primary pointer"
                     @click="toggleDebitCardSuspension(debitCard)"
-                    v-if="debitCard.is_admin_activated && debitCard.is_user_activated && !debitCard.is_suspended && $user.isAdmin"
+                    v-if="debitCard.is_admin_activated && debitCard.is_user_activated && !debitCard.is_suspended && $user.isCardAdmin"
                   >Suspend Card</div>
                   <div
                     class="fs-11 btn btn-bold badge badge-purple pointer"
                     @click="toggleDebitCardSuspension(debitCard)"
-                    v-if="debitCard.is_suspended"
+                    v-if="debitCard.is_suspended && $user.isCardAdmin"
                   >Unsuspend Card</div>
                   <div
                     class="fs-11 btn btn-bold badge badge-purple pointer"
                     @click="assignCard(debitCard)"
-                    v-if="!debitCard.sales_rep && $user.isAdmin"
+                    v-if="!debitCard.sales_rep && $user.isNormalAdmin"
                   >Assign Card</div>
 
                   <div
