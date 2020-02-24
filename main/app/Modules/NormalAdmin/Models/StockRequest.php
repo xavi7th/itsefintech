@@ -28,7 +28,7 @@ class StockRequest extends Model
 	{
 		Route::group(['namespace' => '\App\Modules\NormalAdmin\Models'], function () {
 
-			Route::get('stock-requests', 'StockRequest@adminViewStockRequests')->middleware('auth:admin');
+			Route::get('stock-requests', 'StockRequest@adminViewStockRequests')->middleware('auth:admin,normal_admin');
 
 			Route::put('stock-request/{stock_request}/processed', 'StockRequest@markStockRequestAsProcessed')->middleware('auth:admin');
 
@@ -74,7 +74,11 @@ class StockRequest extends Model
 	 */
 	public function adminViewStockRequests()
 	{
-		return (new AdminStockRequestTransformer)->collectionTransformer(StockRequest::withTrashed()->get(), 'transformForAdminViewStockRequests');
+		if (auth('admin')->check()) {
+			return (new AdminStockRequestTransformer)->collectionTransformer(StockRequest::withTrashed()->get(), 'transformForAdminViewStockRequests');
+		} else if (auth('normal_admin')->check()) {
+			return (new AdminStockRequestTransformer)->collectionTransformer(StockRequest::all(), 'transformForAdminViewStockRequests');
+		}
 	}
 
 	public function markStockRequestAsProcessed(StockRequest $stock_request)

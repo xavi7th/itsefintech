@@ -4,7 +4,7 @@
     <div class="content">
       <!-- table basic -->
       <div class="card">
-        <div class="card-title" v-if="$user.isAdmin">
+        <div class="card-title" v-if="$user.isNormalAdmin">
           <button
             type="button"
             class="btn btn-bold btn-pure btn-twitter btn-shadow"
@@ -99,11 +99,10 @@
                               class="form-control form-control-pill"
                               id="form-full-name"
                               v-model="details.card_number"
-                              v-validate="'required'"
+                              v-validate="'required|credit_card'"
                               data-vv-as="credit card number"
                               name="card_number"
                             />
-                            <!-- v-validate="'required|credit_card'" -->
                             <span>{{ errors.first('card_number') }}</span>
                           </div>
                           <div class="row">
@@ -233,10 +232,12 @@
 <script>
   import {
     adminViewDebitCards,
-    adminAssignDebitCard,
-    toggleDebitCardSuspension,
-    adminCreateDebitCard
+    toggleDebitCardSuspension
   } from "@admin-assets/js/config";
+  import {
+    normalAdminCreateDebitCard,
+    normalAdminAssignDebitCard
+  } from "@normalAdmin-assets/js/config";
   import { cardAdminActivateDebitCard } from "@cardAdmin-assets/js/config";
   import { salesRepAllocateDebitCardToCardUser } from "@salesRep-assets/js/config";
   import PreLoader from "@admin-components/misc/PageLoader";
@@ -326,7 +327,7 @@
             });
 
             axios
-              .post(adminCreateDebitCard, {
+              .post(normalAdminCreateDebitCard, {
                 ...this.details
               })
               .then(({ status, data: { rsp } }) => {
@@ -366,7 +367,7 @@
             showLoaderOnConfirm: true,
             preConfirm: email => {
               return axios
-                .put(adminAssignDebitCard(debitCardDetails.id), {
+                .put(normalAdminAssignDebitCard(debitCardDetails.id), {
                   email
                 })
                 .then(response => {

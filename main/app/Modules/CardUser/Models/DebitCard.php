@@ -165,17 +165,21 @@ class DebitCard extends Model
 		});
 	}
 
+	static function normalAdminRoutes()
+	{
+		Route::group(['namespace' => '\App\Modules\CardUser\Models', 'prefix' => 'api'], function () {
+			Route::post('debit-card/create', 'DebitCard@createDebitCard')->middleware('auth:normal_admin');
+			Route::put('debit-card/{debit_card}/assign', 'DebitCard@assignDebitCard')->middleware('auth:normal_admin');
+		});
+	}
+
 	static function adminRoutes()
 	{
 		Route::group(['namespace' => '\App\Modules\CardUser\Models'], function () {
 
 			Route::get('debit-cards', 'DebitCard@getDebitCards')->middleware('auth:admin,sales_rep,card_admin,normal_admin');
 
-			Route::post('debit-card/create', 'DebitCard@createDebitCard')->middleware('auth:admin');
-
 			Route::put('debit-card/{debit_card}/suspension', 'DebitCard@toggleDebitCardSuspendStatus')->middleware('auth:admin');
-
-			Route::put('debit-card/{debit_card}/assign', 'DebitCard@assignDebitCard')->middleware('auth:admin');
 
 			Route::delete('debit-card/{debit_card}/delete', 'DebitCard@deleteDebitCard')->middleware('auth:admin');
 

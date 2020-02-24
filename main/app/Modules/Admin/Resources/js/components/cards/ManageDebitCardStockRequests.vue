@@ -29,7 +29,7 @@
                   <div
                     class="badge badge-success badge-shadow pointer"
                     @click="markAsProcessed(debit_card_stock_request)"
-                    v-if="!debit_card_stock_request.is_processed"
+                    v-if="!debit_card_stock_request.is_processed && $user.isNormalAdmin"
                   >Mark as Processed</div>
                 </td>
               </tr>

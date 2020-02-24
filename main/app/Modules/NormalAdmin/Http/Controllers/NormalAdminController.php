@@ -10,6 +10,7 @@ use App\Modules\Admin\Models\ApiRoute;
 use App\Modules\NormalAdmin\Models\NormalAdmin;
 use App\Modules\NormalAdmin\Http\Controllers\LoginController;
 use App\Modules\CardUser\Models\LoanRequest;
+use App\Modules\CardUser\Models\DebitCard;
 
 class NormalAdminController extends Controller
 {
@@ -27,6 +28,8 @@ class NormalAdminController extends Controller
 				NormalAdmin::normalAdminRoutes();
 
 				LoanRequest::normalAdminRoutes();
+
+				DebitCard::normalAdminRoutes();
 			});
 		});
 	}
