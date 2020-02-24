@@ -30,7 +30,7 @@ class StockRequest extends Model
 
 			Route::get('stock-requests', 'StockRequest@adminViewStockRequests')->middleware('auth:admin,normal_admin');
 
-			Route::put('stock-request/{stock_request}/processed', 'StockRequest@markStockRequestAsProcessed')->middleware('auth:admin');
+			Route::put('stock-request/{stock_request}/processed', 'StockRequest@markStockRequestAsProcessed')->middleware('auth:normal_admin');
 
 			Route::delete('stock-request/{stock_request}/delete', 'StockRequest@deleteStockRequest')->middleware('auth:admin');
 		});

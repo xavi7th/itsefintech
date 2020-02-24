@@ -34,16 +34,17 @@
                     data-toggle="modal"
                     data-target="#modal-cards"
                     @click="showCardsModal(user)"
+                    v-if="$user.isAccountOfficer"
                   >View Cards</div>
                   <div
                     class="badge btn-bold btn-warning pointer"
                     @click="restoreCardUser(user)"
-                    v-if="user.is_suspended"
+                    v-if="user.is_suspended && $user.isAccountOfficer"
                   >Restore User</div>
                   <div
                     class="badge btn-bold btn-danger pointer"
                     @click="suspendCardUser(user)"
-                    v-else
+                    v-else-if="!user.is_suspended && $user.isAccountOfficer"
                   >Suspend User</div>
                 </td>
               </tr>
@@ -134,7 +135,7 @@
                     class="btn btn-bold btn-info btn-danger"
                     @click="adminSetCardUserCreditLimit(userDetails)"
                     data-dismiss="modal"
-                    v-if="!userDetails.is_suspended"
+                    v-if="!userDetails.is_suspended && $user.isAccountOfficer"
                   >Set User's Credit Limit</button>
 
                   <button
@@ -142,7 +143,7 @@
                     class="btn btn-bold btn-purple btn-danger"
                     @click="adminSetCardUserMerchantLimit(userDetails)"
                     data-dismiss="modal"
-                    v-if="!userDetails.is_suspended"
+                    v-if="!userDetails.is_suspended && $user.isAccountOfficer"
                   >Set Merchant Limit</button>
                 </div>
               </div>
@@ -380,9 +381,9 @@
           .fire({
             title: "Enter an amount",
             html: `<div class="d-flex">
-                      										<input id="merchant-amount-input" class="swal2-input" required placeholder="Enter merchant limit">
-                      										<input id="merchant-interest-input" class="swal2-input" required placeholder="Enter interest">
-                      									</div>`,
+                        										<input id="merchant-amount-input" class="swal2-input" required placeholder="Enter merchant limit">
+                        										<input id="merchant-interest-input" class="swal2-input" required placeholder="Enter interest">
+                        									</div>`,
             showCancelButton: true,
             confirmButtonText: "Set Merchant Limit",
             allowEscapeKey: false,
@@ -442,9 +443,9 @@
           .fire({
             title: "Enter an amount",
             html: `<div class="d-flex">
-                      										<input id="amount-input" class="swal2-input" required placeholder="Enter credit limit">
-                      										<input id="interest-input" class="swal2-input" required placeholder="Enter interest">
-                      									</div>`,
+                        										<input id="amount-input" class="swal2-input" required placeholder="Enter credit limit">
+                        										<input id="interest-input" class="swal2-input" required placeholder="Enter interest">
+                        									</div>`,
             showCancelButton: true,
             confirmButtonText: "Set Credit Limit",
             allowEscapeKey: false,

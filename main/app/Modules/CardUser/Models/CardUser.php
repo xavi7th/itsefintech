@@ -345,7 +345,7 @@ class CardUser extends User
 	static function adminRoutes()
 	{
 		Route::group(['namespace' => '\App\Modules\CardUser\Models'], function () {
-			Route::get('card-users', 'CardUser@getAllCardUsers')->middleware('auth:admin');
+			Route::get('card-users', 'CardUser@getAllCardUsers')->middleware('auth:admin,normal_admin');
 
 			Route::post('card-user/create', 'CardUser@createCardUser')->middleware('auth:admin');
 

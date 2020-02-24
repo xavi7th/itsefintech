@@ -249,6 +249,7 @@ class AdminUserTransformer
 			'bvn' => (string)$user->bvn,
 			'address' => (string)$user->address,
 			'is_suspended' => (boolean)$user->deleted_at,
+			'is_verified' => (boolean)$user->is_otp_verified(),
 			'credit_limit' => (float)$user->credit_limit,
 			'credit_percentage' => (float)$user->credit_percentage,
 			'merchant_limit' => (float)$user->merchant_limit,
