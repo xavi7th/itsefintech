@@ -14,7 +14,9 @@ class Authenticate extends Middleware
 	 */
 	protected function redirectTo($request)
 	{
-
+		foreach (collect(config('auth.guards'))->except(['api', 'card_user']) as $key => $value) {
+			auth($key)->logout();
+		}
 		if ($request->expectsJson()) {
 			return response()->json(['message' => 'Unauthenticated'], 401);
 		} else {
