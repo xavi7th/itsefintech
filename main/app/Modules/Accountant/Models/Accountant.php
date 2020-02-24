@@ -56,7 +56,7 @@ class Accountant extends User
 	static function adminRoutes()
 	{
 		Route::group(['namespace' => '\App\Modules\Accountant\Models'], function () {
-			Route::get('accountants', 'Accountant@getAllAccountants')->middleware('auth:admin');
+			Route::get('accountants', 'Accountant@getAllAccountants')->middleware('auth:admin,normal_admin');
 
 			Route::post('accountant/create', 'Accountant@createAccountant')->middleware('auth:admin');
 

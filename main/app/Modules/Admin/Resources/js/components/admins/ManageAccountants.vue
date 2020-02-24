@@ -1,10 +1,10 @@
-<template>
+ <template>
   <main>
     <page-header pageTitle="Manage Accountants"></page-header>
     <div class="content">
       <!-- table basic -->
       <div class="card">
-        <div class="card-title">
+        <div class="card-title" v-if="$user.isAdmin">
           <button
             type="button"
             class="btn btn-bold btn-pure btn-twitter btn-shadow"
@@ -41,6 +41,7 @@
                     data-toggle="modal"
                     data-target="#modal-perm"
                     @click="showPermModal(user)"
+                    v-if="$user.isAdmin"
                   >Permissions</div>
                 </td>
               </tr>
@@ -115,13 +116,13 @@
                     type="button"
                     class="btn btn-bold btn-pure btn-warning"
                     @click="restoreAccountant"
-                    v-if="userDetails.is_suspended"
+                    v-if="userDetails.is_suspended && $user.isAdmin"
                   >Restore Account</button>
                   <button
                     type="button"
                     class="btn btn-bold btn-pure btn-danger"
                     @click="suspendAccountant"
-                    v-else
+                    v-else-if="!userDetails.is_suspended && $user.isAdmin"
                   >Suspend Account</button>
                 </div>
               </div>
