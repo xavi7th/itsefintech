@@ -86,7 +86,6 @@ export const adminViewDebitCards = id => !id ? `${apiBaseUrl}debit-cards` : `${a
 export const adminCreateDebitCard = `${apiBaseUrl}debit-card/create`
 export const adminAssignDebitCard = id => `${apiBaseUrl}debit-card/${id}/assign`
 export const toggleDebitCardSuspension = id => apiBaseUrl + 'debit-card/' + id + '/suspension'
-export const adminActivateDebitCard = id => apiBaseUrl + 'debit-card/' + id + '/activate'
 export const adminShowFullPANNumber = id => apiBaseUrl + 'debit-card/' + id + '/pan'
 
 

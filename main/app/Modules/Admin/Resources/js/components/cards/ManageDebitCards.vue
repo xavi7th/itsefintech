@@ -30,7 +30,7 @@
               <tr v-for="debitCard in debitCards" :key="debitCard.id">
                 <td>{{ debitCard.id }}</td>
                 <td>{{ !debitCard.card_user ? 'Unallocated' : debitCard.card_user.email }}</td>
-                <td>{{ !debitCard.sales_rep ? 'Unassigned' : debitCard.sales_rep.email }}</td>
+                <td>{{ debitCard.sales_rep ? debitCard.sales_rep.email : debitCard.is_user_activated ? 'Via Request' : 'Unassigned' }}</td>
                 <td>{{ debitCard.card_number }}</td>
                 <td>{{ debitCard.card_type }}</td>
                 <td>{{ debitCard.amount | Naira }}</td>
@@ -39,12 +39,12 @@
                   <div
                     class="fs-11 btn btn-bold badge badge-success badge-shadow pointer"
                     @click="activateDebitCard(debitCard)"
-                    v-if="!debitCard.is_admin_activated && debitCard.is_user_activated"
+                    v-if="!debitCard.is_admin_activated && debitCard.is_user_activated && $user.isCardAdmin"
                   >Activate Card</div>
                   <div
                     class="fs-11 btn btn-bold badge badge-primary pointer"
                     @click="toggleDebitCardSuspension(debitCard)"
-                    v-if="debitCard.is_admin_activated && debitCard.is_user_activated && !debitCard.is_suspended"
+                    v-if="debitCard.is_admin_activated && debitCard.is_user_activated && !debitCard.is_suspended && $user.isAdmin"
                   >Suspend Card</div>
                   <div
                     class="fs-11 btn btn-bold badge badge-purple pointer"
@@ -233,11 +233,11 @@
 <script>
   import {
     adminViewDebitCards,
-    adminActivateDebitCard,
     adminAssignDebitCard,
     toggleDebitCardSuspension,
     adminCreateDebitCard
   } from "@admin-assets/js/config";
+  import { cardAdminActivateDebitCard } from "@cardAdmin-assets/js/config";
   import { salesRepAllocateDebitCardToCardUser } from "@salesRep-assets/js/config";
   import PreLoader from "@admin-components/misc/PageLoader";
   export default {
@@ -458,7 +458,7 @@
         //   text: "updating card status ..."
         // });
         axios
-          .put(adminActivateDebitCard(debit_card.id), {
+          .put(cardAdminActivateDebitCard(debit_card.id), {
             permitted_routes: this.permitted_routes
           })
           .then(({ status }) => {

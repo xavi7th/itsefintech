@@ -126,6 +126,17 @@ class DebitCard extends Model
 		$this->attributes['csc'] = $value;
 	}
 
+	/**
+	 * Scope a query to only include active users.
+	 *
+	 * @param  \Illuminate\Database\Eloquent\Builder  $query
+	 * @return \Illuminate\Database\Eloquent\Builder
+	 */
+	public function scopePendingAdminActivation($query)
+	{
+		return $query->where('is_user_activated', true)->where('is_admin_activated', false);
+	}
+
 	static function cardUserRoutes()
 	{
 
@@ -147,6 +158,13 @@ class DebitCard extends Model
 		});
 	}
 
+	static function cardAdminRoutes()
+	{
+		Route::group(['namespace' => '\App\Modules\CardUser\Models', 'prefix' => 'api'], function () {
+			Route::put('debit-card/{debit_card}/activate', 'DebitCard@activateDebitCard')->middleware('auth:card_admin');
+		});
+	}
+
 	static function adminRoutes()
 	{
 		Route::group(['namespace' => '\App\Modules\CardUser\Models'], function () {
@@ -156,8 +174,6 @@ class DebitCard extends Model
 			Route::post('debit-card/create', 'DebitCard@createDebitCard')->middleware('auth:admin');
 
 			Route::put('debit-card/{debit_card}/suspension', 'DebitCard@toggleDebitCardSuspendStatus')->middleware('auth:admin');
-
-			Route::put('debit-card/{debit_card}/activate', 'DebitCard@activateDebitCard')->middleware('auth:admin');
 
 			Route::put('debit-card/{debit_card}/assign', 'DebitCard@assignDebitCard')->middleware('auth:admin');
 
@@ -255,7 +271,7 @@ class DebitCard extends Model
 		} else if (auth('sales_rep')->check()) {
 			$debit_cards = auth('sales_rep')->user()->assigned_debit_cards()->get();
 		} else if (auth('card_admin')->check()) {
-			$debit_cards = DebitCard::withTrashed()->get();
+			$debit_cards = DebitCard::pendingAdminActivation()->get();
 		} else {
 			$debit_cards = collect([]);
 		}

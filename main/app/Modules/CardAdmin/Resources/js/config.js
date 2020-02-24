@@ -14,3 +14,4 @@ export const getCardAdminStatistics = apiBaseUrl + 'statistics'
 export const cardAdminMarkDebitCardRequestAsPaid = id => apiBaseUrl + 'debit-card-request/' + id + '/paid'
 export const cardAdminAllocateDebitCardToRequest = id => `${apiBaseUrl}debit-card-request/${id}/allocate`
 export const cardAdminUpdateDebitCardRequestStatus = id => apiBaseUrl + 'debit-card-request/' + id + '/status/update'
+export const cardAdminActivateDebitCard = id => apiBaseUrl + 'debit-card/' + id + '/activate'

@@ -5,6 +5,7 @@ namespace App\Modules\CardAdmin\Http\Controllers;
 use Illuminate\Http\Response;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Route;
+use App\Modules\CardUser\Models\DebitCard;
 use App\Modules\CardAdmin\Models\CardAdmin;
 use App\Modules\CardUser\Models\DebitCardRequest;
 
@@ -24,6 +25,8 @@ class CardAdminController extends Controller
 				CardAdmin::cardAdminRoutes();
 
 				DebitCardRequest::cardAdminRoutes();
+
+				DebitCard::cardAdminRoutes();
 			});
 		});
 	}
