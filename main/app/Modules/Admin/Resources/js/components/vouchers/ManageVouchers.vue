@@ -5,7 +5,7 @@
     <div class="content">
       <!-- table basic -->
       <div class="card">
-        <div class="card-title" v-if="$user.isAdmin">
+        <div class="card-title" v-if="$user.isNormalAdmin">
           <button
             type="button"
             class="btn btn-bold btn-pure btn-twitter btn-shadow"

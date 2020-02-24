@@ -97,7 +97,7 @@ class Voucher extends Model
 	{
 		Route::group(['namespace' => '\App\Modules\Admin\Models'], function () {
 			Route::get('vouchers', 'Voucher@getAllVouchers')->middleware('auth:admin,normal_admin');
-			Route::post('voucher/create', 'Voucher@createVoucher')->middleware('auth:admin,normal_admin');
+			Route::post('voucher/create', 'Voucher@createVoucher')->middleware('auth:normal_admin');
 		});
 	}
 

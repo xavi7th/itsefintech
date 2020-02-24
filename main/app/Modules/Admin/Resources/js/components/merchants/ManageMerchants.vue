@@ -11,6 +11,7 @@
             class="btn btn-bold btn-pure btn-twitter btn-shadow"
             data-toggle="modal"
             data-target="#modal-merchant"
+            v-if="$user.isAdmin"
           >Create Merchant</button>
         </div>
         <div class="card-body">
