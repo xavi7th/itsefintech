@@ -75,7 +75,9 @@ class Accountant extends User
 	static function accountantRoutes()
 	{
 		Route::group(['middleware' => ['auth:accountant', 'accountants'], 'namespace' => '\App\Modules\Accountant\Models'], function () {
-			Route::post('test-route-permission', 'Accountant@testRoutePermission')->prefix('api');
+			Route::group(['prefix' => 'api'], function () {
+				Route::post('test-route-permission', 'Accountant@testRoutePermission');
+			});
 			Route::get('/{subcat?}', 'Accountant@loadAccountantApplication')->name('accountant.dashboard')->where('subcat', '^((?!(api)).)*');
 		});
 	}
