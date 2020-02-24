@@ -212,7 +212,6 @@ class DebitCard extends Model
 
 	public function activateCardUserDebitCard(CardActivationValidation $request)
 	{
-
 		$debit_card = DebitCard::find($request->card_id);
 		if ($debit_card->is_card_activated) {
 			return generate_422_error(['card_activation' => 'Card already activated']);
@@ -223,7 +222,7 @@ class DebitCard extends Model
 		// if (Hash::check($request->csc, $debit_card->csc)) {
 		if ($request->csc == $debit_card->csc) {
 			$debit_card->is_user_activated = true;
-			$debit_card->debit_card_request->debit_card_request_status_id = DebitCardRequestStatus::orderByDesc('id')->first()->id;
+			$debit_card->debit_card_request->debit_card_request_status_id = DebitCardRequestStatus::delivered_id();
 			$debit_card->debit_card_request->save();
 			$debit_card->save();
 

@@ -60,7 +60,7 @@ class User extends Authenticatable implements JWTSubject
 		} else if (Auth::salesRep()) {
 			return 'salesrep.dashboard';
 		} else if (Auth::cardAdmin()) {
-			return 'salesrep.dashboard';
+			return 'cardadmin.dashboard';
 		} else {
 			return 'home';
 		}

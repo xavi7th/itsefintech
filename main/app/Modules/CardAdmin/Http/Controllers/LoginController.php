@@ -111,7 +111,7 @@ class LoginController extends Controller
 	protected function authenticated(Request $request, $user)
 	{
 		if (CardAdmin::canAccess()) {
-			if (Auth::accountOfficer()->is_verified()) {
+			if (Auth::cardAdmin()->is_verified()) {
 				return response()->json(['status' => true], 202);
 			} else {
 				$this->guard()->logout();
