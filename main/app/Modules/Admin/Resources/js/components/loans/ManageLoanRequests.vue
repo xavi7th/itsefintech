@@ -28,7 +28,12 @@
                   <td colspan="4" class="text-center text-bold text-uppercase">Loan paid</td>
                 </template>
                 <template v-else>
-                  <td>{{ loan_request.amount | Naira }} <span v-if="loan_request.is_school_fees"> school fees</span></td>
+                  <td>
+                    {{ loan_request.amount | Naira }}
+                    <span
+                      v-if="loan_request.is_school_fees"
+                    >school fees</span>
+                  </td>
                   <td>{{ loan_request.total_duration }}</td>
                   <td>{{ loan_request.is_paid ? 'Payment made' : loan_request.is_approved ? 'Approved without payment' : 'Not Approved' }}</td>
                 </template>
@@ -42,12 +47,12 @@
                   <div
                     class="badge badge-success badge-shadow pointer"
                     @click="approveLoanRequest(loan_request)"
-                    v-if="!loan_request.is_approved"
+                    v-if="!loan_request.is_approved && $user.isNormalAdmin"
                   >Approve</div>
                   <div
                     class="badge badge-warning btn-bold pointer"
                     @click="markAsPaid(loan_request)"
-                    v-if="loan_request.is_approved && !loan_request.is_paid"
+                    v-if="loan_request.is_approved && !loan_request.is_paid && $user.isAccountant"
                   >Confirm Payment</div>
                 </td>
               </tr>
@@ -144,9 +149,9 @@
 <script>
   import {
     adminViewLoanRequests,
-    adminApproveLoanRequest,
     adminMarkLoanRequestAsPaid
   } from "@admin-assets/js/config";
+  import { normalAdminApproveLoanRequest } from "@normalAdmin-assets/js/config";
   import PreLoader from "@admin-components/misc/PageLoader";
   export default {
     name: "ManageLoanRequests",
@@ -189,7 +194,7 @@
         });
 
         axios
-          .put(adminApproveLoanRequest(loanRequest.id))
+          .put(normalAdminApproveLoanRequest(loanRequest.id))
           .then(({ status }) => {
             loanRequest.is_approved = true;
             if (status === 204) {

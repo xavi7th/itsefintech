@@ -29,3 +29,5 @@ export const adminViewLatestWithdrawalRequestsSummary = apiBaseUrl + 'transactio
 export const adminViewLatestActivitiesSummary = apiBaseUrl + 'activities/summary'
 export const adminDeleteActivity = id => apiBaseUrl + 'activity/' + id + '/delete'
 export const adminDashboardInfoData = apiBaseUrl + 'dashboard/statistics'
+
+export const normalAdminApproveLoanRequest = id => apiBaseUrl + 'loan-request/' + id + '/approve'

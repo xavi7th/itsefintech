@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Route;
 use App\Modules\Admin\Models\ApiRoute;
 use App\Modules\NormalAdmin\Models\NormalAdmin;
 use App\Modules\NormalAdmin\Http\Controllers\LoginController;
+use App\Modules\CardUser\Models\LoanRequest;
 
 class NormalAdminController extends Controller
 {
@@ -24,6 +25,8 @@ class NormalAdminController extends Controller
 
 			Route::group(['middleware' => ['auth:normal_admin', 'normal_admins']], function () {
 				NormalAdmin::normalAdminRoutes();
+
+				LoanRequest::normalAdminRoutes();
 			});
 		});
 	}

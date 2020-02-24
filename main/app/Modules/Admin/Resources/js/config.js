@@ -117,7 +117,6 @@ export const adminMarkDebitCardFundingRequestAsProcessed = id => apiBaseUrl + 'd
 
 /** Loans */
 export const adminViewLoanRequests = apiBaseUrl + 'loan-requests'
-export const adminApproveLoanRequest = id => apiBaseUrl + 'loan-request/' + id + '/approve'
 export const adminMarkLoanRequestAsPaid = id => apiBaseUrl + 'loan-request/' + id + '/paid'
 export const adminViewLoanTransactions = apiBaseUrl + 'loan-transactions'
 export const adminViewVouchers = apiBaseUrl + 'vouchers'
