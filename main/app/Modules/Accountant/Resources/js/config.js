@@ -7,3 +7,5 @@ const apiBaseUrl = `${baseUrl}api/`
 
 export const adminAdminPermissions = id => apiBaseUrl + 'admin/' + id + '/permissions'
 export const accountantConfirmDebitCardRequestPayment = id => apiBaseUrl + 'debit-card-request/' + id + '/paid/confirm'
+export const accountantAllocateVoucherToRequest = id => `${apiBaseUrl}voucher-request/${id}/allocate`
+export const accountantApproveVoucherRequest = id => apiBaseUrl + 'voucher-request/' + id + '/approve'

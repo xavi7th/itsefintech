@@ -32,7 +32,7 @@ class VoucherRequested extends Notification
 	 */
 	public function via($card_user)
 	{
-		return ['mail', 'database', SMSSolutionsMessage::class];
+		return ['database', SMSSolutionsMessage::class];
 	}
 
 	/**
@@ -76,7 +76,7 @@ class VoucherRequested extends Notification
 	{
 
 		return (new SMSSolutionsMessage)
-			->sms_message('Dear ' . $card_user->full_name . ', we received your merchant credit request of ' . $this->amount . '.')
+			->sms_message('Dear ' . $card_user->full_name . ', we received your merchant credit request of ' . $card_user->merchant_limit  . '.')
 			->to($card_user->phone);
 	}
 }

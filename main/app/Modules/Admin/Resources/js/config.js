@@ -122,10 +122,8 @@ export const adminViewLoanTransactions = apiBaseUrl + 'loan-transactions'
 export const adminViewVouchers = apiBaseUrl + 'vouchers'
 export const adminCreateVoucher = apiBaseUrl + 'voucher/create'
 export const adminViewVoucherRequests = apiBaseUrl + 'voucher-requests'
-export const adminApproveVoucherRequest = id => apiBaseUrl + 'voucher-request/' + id + '/approve'
 export const adminMarkVoucherRequestAsPaid = id => apiBaseUrl + 'voucher-request/' + id + '/paid'
 export const adminViewVoucherTransactions = apiBaseUrl + 'voucher-transactions'
-export const adminAllocateVoucherToRequest = id => `${apiBaseUrl}voucher-request/${id}/allocate`
 
 
 
