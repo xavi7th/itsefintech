@@ -5,17 +5,17 @@
         <div class="logo">
           <div class="logo-type">
             <router-link :to="{name:'cardAdmin.root'}">
-              <img src="/img/logo-round-small.png" alt="ItseFinTech Unique Logo" class="loader-img" />
-              <span id="logo-caption">
+              <img src="/img/logowhite.png" alt="CapitalX Logo" class="loader-img" />
+              <!-- <span id="logo-caption">
                 itse
                 <span>fintech</span>
-              </span>
+              </span> -->
             </router-link>
           </div>
         </div>
       </div>
       <ul class="menu">
-        <li class="menu-category">ADMIN</li>
+        <li class="menu-category">CARD ADMINS</li>
 
         <li
           v-for="(item, index) in routes.filter(x => x.path !== '*')"
@@ -69,11 +69,14 @@
 </script>
 
 <style lang="scss" scoped>
+  .main-navigation {
+    background-color: #101010;
+  }
   .logo-caption {
     color: #24adef;
   }
   .loader-img {
-    margin: 55px auto 15px;
+    margin: 55px auto 50px;
     height: 60px;
   }
 </style>

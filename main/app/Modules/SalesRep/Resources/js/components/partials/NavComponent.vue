@@ -5,11 +5,7 @@
         <div class="logo">
           <div class="logo-type">
             <router-link :to="{name:'salesRep.root'}">
-              <img src="/img/basicsite/logor.png" alt="Logo" class="loader-img" />
-              <span id="logo-caption">
-                Capital
-                <span>X</span>
-              </span>
+              <img src="/img/logowhite.png" alt="CapitalX Logo" class="loader-img" />
             </router-link>
           </div>
         </div>
@@ -69,11 +65,14 @@
 </script>
 
 <style lang="scss" scoped>
+  .main-navigation {
+    background-color: #101010;
+  }
   .logo-caption {
     color: #24adef;
   }
   .loader-img {
-    margin: 55px auto 15px;
+    margin: 55px auto 50px;
     height: 60px;
   }
 </style>
