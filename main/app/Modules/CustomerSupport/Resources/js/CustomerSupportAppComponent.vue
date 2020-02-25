@@ -5,8 +5,8 @@
     </transition>
   </div>
   <div class="wrapper" v-else>
-    <account-officer-nav></account-officer-nav>
-    <account-officer-header v-on:logout-user="logoutUser()" v-if="!is404"></account-officer-header>
+    <customer-support-nav></customer-support-nav>
+    <customer-support-header v-on:logout-user="logoutUser()" v-if="!is404"></customer-support-header>
 
     <transition name="fade" :duration="{ enter: 1300, leave: 200 }">
       <pre-loader v-if="isLoading"></pre-loader>
@@ -15,26 +15,26 @@
       <router-view @page-loaded="pageLoaded" @is-loading="toggleLoadState" />
     </transition>
 
-    <account-officer-footer v-if="!is404"></account-officer-footer>
+    <customer-support-footer v-if="!is404"></customer-support-footer>
   </div>
 </template>
 
 <script>
   import PreLoader from "@admin-components/misc/PageLoader";
-  import CardAdminNav from "@accountOfficer-components/partials/NavComponent";
-  import CardAdminHeader from "@accountOfficer-components/partials/HeaderComponent";
-  import CardAdminFooter from "@admin-components/partials/FooterComponent";
+  import CustomerSupportNav from "@customerSupport-components/partials/NavComponent";
+  import CustomerSupportHeader from "@customerSupport-components/partials/HeaderComponent";
+  import CustomerSupportFooter from "@admin-components/partials/FooterComponent";
 
   export default {
-    name: "CardAdminApp",
+    name: "CustomerSupportApp",
     data: () => ({
       freshLoad: true,
       isLoading: true
     }),
     components: {
-      CardAdminHeader,
-      CardAdminFooter,
-      CardAdminNav,
+      CustomerSupportHeader,
+      CustomerSupportFooter,
+      CustomerSupportNav,
       PreLoader
     },
     computed: {

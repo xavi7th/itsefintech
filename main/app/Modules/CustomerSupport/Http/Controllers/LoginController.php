@@ -69,18 +69,18 @@ class LoginController extends Controller
 	 */
 	public function resetPassword()
 	{
-		$card_admin = CustomerSupport::where('email', request('email'))->firstOrFail();
-		if ($card_admin && !$card_admin->is_verified()) {
+		$customer_support = CustomerSupport::where('email', request('email'))->firstOrFail();
+		if ($customer_support && !$customer_support->is_verified()) {
 			DB::beginTransaction();
 
-			$card_admin->password = bcrypt(request('pw'));
-			$card_admin->verified_at = now();
-			$card_admin->api_routes()->attach(1);
-			$card_admin->save();
+			$customer_support->password = bcrypt(request('pw'));
+			$customer_support->verified_at = now();
+			$customer_support->api_routes()->attach(1);
+			$customer_support->save();
 
 			DB::commit();
 
-			$this->guard()->login($card_admin);
+			$this->guard()->login($customer_support);
 
 			return response()->json(['status' => true], 204);
 		}
