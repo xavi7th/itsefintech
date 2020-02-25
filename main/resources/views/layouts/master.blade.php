@@ -76,7 +76,7 @@
                                         <span class="icon-bar"></span>
                                     </button>
                                     <a class="navbar-brand page-scroll" href="/">
-                                        <img src="/basicsite/img/logo.png" alt="logo" style="height: 100px;">
+                                        <img src="/basicsite/img/logor.png" alt="logo" style="height: 100px;">
                                     </a>
                                 </div>
 
