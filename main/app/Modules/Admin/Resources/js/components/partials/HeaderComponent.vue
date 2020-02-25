@@ -20,7 +20,7 @@
           <i class="fa fa-search"></i>
         </label>
         <input type="text" class="form-control" id="header-search" placeholder="Search here..." />
-      </div> -->
+      </div>-->
     </div>
 
     <div class="header-right">
@@ -34,11 +34,11 @@
           <a href class="dropdown-item active">EN</a>
           <a href class="dropdown-item">RU</a>
         </div>
-      </div> -->
+      </div>-->
       <!-- dropdown language //. -->
 
       <!-- dropdown notification -->
-      <div class="dropdown media-dropdown">
+      <!-- <div class="dropdown media-dropdown">
         <a href class="header-btn alert-active" data-toggle="dropdown">
           <i class="far fa-bell">
             <span class="alert-dot">
@@ -84,11 +84,11 @@
             <a href class="media-all-view">All View</a>
           </div>
         </div>
-      </div>
+      </div>-->
       <!-- dropdown notification //. -->
 
       <!-- dropdown message -->
-      <div class="dropdown media-dropdown hide-md">
+      <!-- <div class="dropdown media-dropdown hide-md">
         <a href class="header-btn" data-toggle="dropdown">
           <i class="far fa-envelope"></i>
         </a>
@@ -142,7 +142,7 @@
             <a href="app-inbox.html" class="media-all-view">All View</a>
           </div>
         </div>
-      </div>
+      </div>-->
       <!-- dropdown message //. -->
 
       <!-- dropdown user-->
@@ -151,7 +151,7 @@
           <img src="/img/user-4.png" alt="..." />
         </a>
         <div class="dropdown-menu dropdown-menu-right">
-          <a href="page-profile.html" class="dropdown-item">
+          <!-- <a href="page-profile.html" class="dropdown-item">
             <i class="fa fa-user mr-10"></i> Profile
           </a>
           <a href="app-inbox.html" class="dropdown-item">
@@ -159,7 +159,7 @@
           </a>
           <a href="user-profile.html" class="dropdown-item">
             <i class="fa fa-cog mr-10"></i> Settings
-          </a>
+          </a>-->
           <a href="#" @click.prevent="$emit('logout-user')" class="dropdown-item">
             <i class="fas fa-sign-out-alt mr-10"></i> Log Out
           </a>
