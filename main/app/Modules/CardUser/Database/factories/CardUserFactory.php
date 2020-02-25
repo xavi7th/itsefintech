@@ -22,7 +22,7 @@ $factory->define(CardUser::class, function (Faker $faker) {
 		'first_name' => $faker->firstName,
 		'last_name' => $faker->lastName,
 		'email' => $faker->unique()->safeEmail,
-		'card_user_category_id' => 1,
+		// 'card_user_category_id' => 1,
 		'otp_verified_at' => now(),
 		'password' => 'pass',
 		'phone' => $faker->phoneNumber,

@@ -16,15 +16,15 @@ class UsersTableSeeder extends Seeder
 	 */
 	public function run()
 	{
-		DB::table('users')->insert([
-			'name' => 'Mitchell Howell Christensen',
-			'email' => 'itse@admin.com',
-			'password' => bcrypt('pass'),
-			'verified_at' => '2019-04-26 07:56:11',
-			'country' => 'Canada',
-			'phone' => '378809875463456',
-			'currency' => 'JPY'
-		]);
+		// DB::table('users')->insert([
+		// 	'name' => 'Mitchell Howell Christensen',
+		// 	'email' => 'itse@admin.com',
+		// 	'password' => bcrypt('pass'),
+		// 	'verified_at' => '2019-04-26 07:56:11',
+		// 	'country' => 'Canada',
+		// 	'phone' => '378809875463456',
+		// 	'currency' => 'JPY'
+		// ]);
 
 		factory(CardUser::class, 5)->create()->each(function ($user) {
 			// $user->transactions()->save(factory(Transaction::class)->make());

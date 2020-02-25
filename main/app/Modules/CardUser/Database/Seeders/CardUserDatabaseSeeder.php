@@ -16,7 +16,7 @@ class CardUserDatabaseSeeder extends Seeder
 	{
 		Model::unguard();
 
-		$this->call(UsersTableSeeder::class);
 		$this->call(DebitCardRequestStatusesTableSeeder::class);
+		$this->call(UsersTableSeeder::class);
 	}
 }
