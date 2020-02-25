@@ -217,7 +217,6 @@
 
   .btn-primary.btn-shadow {
     box-shadow: 0 3px 10px rgba(235, 27, 27, 0.5);
-    // box-shadow: 0 3px 10px rgba(27, 151, 235, 0.5);
   }
 
   .btn-primary {
@@ -226,6 +225,10 @@
   }
 
   .btn.btn-round {
+    border-radius: 3px;
+  }
+
+  .form-control {
     border-radius: 3px;
   }
 

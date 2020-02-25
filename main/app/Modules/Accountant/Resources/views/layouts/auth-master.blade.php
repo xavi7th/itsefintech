@@ -21,7 +21,7 @@
                 justify-content: center;
                 align-items: center;
                 padding: 20px;
-                background: #24adef;
+                background: #000000;
                 transition: .3s all ease;
             }
 
@@ -85,7 +85,7 @@
         <div class="preloader">
             <div class="preloader-body">
                 <p>
-                    <img src="/img/logo-round-small.png" alt="Itse Fintech Logo" class="loader-img" />
+                    <img src="/img/logo2.png" alt="CapitalX Logo" class="loader-img" />
                     <span>Accountants Page Loading ...</span>
                 </p>
                 <p></p>
