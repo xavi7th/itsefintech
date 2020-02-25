@@ -121,6 +121,9 @@ export const adminMarkVoucherRequestAsPaid = id => apiBaseUrl + 'voucher-request
 export const adminViewVoucherTransactions = apiBaseUrl + 'voucher-transactions'
 
 
+export const adminViewActivities = apiBaseUrl + 'activity-logs'
+
+
 
 export const adminViewUsers = apiBaseUrl + 'users'
 export const adminDeleteUser = id => apiBaseUrl + 'user/' + id + '/delete'

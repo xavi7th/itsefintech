@@ -49,6 +49,15 @@ class ApiRoutesTableSeeder extends Seeder
 				}',
 					'description' => 'View Auth Logs',
 				],
+				[
+					'path' => '/logs/activity-logs',
+					'name' => 'admin.logs',
+					'meta' => '{title: APP_NAME + \' | Activity Logs\',
+					iconClass: \'home\',
+					menuName: \'Activity Logs\'
+				}',
+					'description' => 'View Activity Logs',
+				],
 
 				[
 					'path' => '/card-users',

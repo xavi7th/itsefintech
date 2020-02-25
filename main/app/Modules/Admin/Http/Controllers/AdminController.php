@@ -28,6 +28,7 @@ use App\Modules\CustomerSupport\Models\CustomerSupport;
 use App\Modules\CardUser\Models\DebitCardFundingRequest;
 use App\Modules\SalesRep\Transformers\SalesRepDebitCardRequestTransformer;
 use App\Modules\Admin\Transformers\AdminUserTransformer;
+use App\Modules\Admin\Models\ActivityLog;
 
 class AdminController extends Controller
 {
@@ -96,6 +97,8 @@ class AdminController extends Controller
 				DebitCardFundingRequest::adminRoutes();
 
 				MerchantCategory::adminRoutes();
+
+				ActivityLog::adminRoutes();
 			});
 
 			Route::group(['middleware' => ['auth:admin', 'admins']], function () {

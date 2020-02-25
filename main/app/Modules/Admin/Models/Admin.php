@@ -41,7 +41,7 @@ class Admin extends User
 
 	public function activities()
 	{
-		return $this->morphMany(ActivityLog::class, 'user');
+		return $this->morphMany(ActivityLog::class, 'user')->latest();
 	}
 
 	protected static function boot()

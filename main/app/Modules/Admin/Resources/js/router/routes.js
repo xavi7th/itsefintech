@@ -44,29 +44,39 @@ const salesRepView = function ( name ) {
     }
 }
 
-const APP_NAME = 'Itse FinTech Admin'
+const APP_NAME = 'Capital X'
 
 export const allRoutes = [
 
     {
         path: '/logs',
-        component: {
-            render: h => h( 'router-view' )
-        },
+        component: adminView( 'EmptyComponent' ),
         meta: {
             iconClass: 'home',
             menuName: 'View Activity Logs'
         },
-        children: [ {
-            path: '/logs/auth-attempts', //log failed attempts or all attempts for admin to be able to know if too many people are trying to access it
-            component: adminView( 'dashboard/ManageActivityLogs' ),
-            name: 'admin.logs.auth',
-            meta: {
-                title: APP_NAME + ' | Auth Logs',
-                iconClass: 'home',
-                menuName: 'Auth Logs'
-            },
-        } ]
+        children: [
+            // {
+            //       path: '/logs/auth-attempts', //log failed attempts or all attempts for admin to be able to know if too many people are trying to access it
+            //       component: adminView( 'logs/ManageAuthActivityLogs' ),
+            //       name: 'admin.logs.auth',
+            //       meta: {
+            //           title: APP_NAME + ' | Auth Logs',
+            //           iconClass: 'home',
+            //           menuName: 'Auth Logs'
+            //       },
+            //   },
+            {
+                path: '/logs/activities',
+                component: adminView( 'logs/ManageActivityLogs' ),
+                name: 'admin.logs',
+                meta: {
+                    title: APP_NAME + ' | Activities',
+                    iconClass: 'home',
+                    menuName: 'View Activities'
+                },
+            }
+        ]
     },
     {
         path: '/loans',
