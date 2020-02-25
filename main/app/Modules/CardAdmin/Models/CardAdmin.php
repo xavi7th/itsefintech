@@ -127,7 +127,7 @@ class CardAdmin extends User
 
 			DB::commit();
 
-			ActivityLog::logAdminActivity(auth()->user()->email . ' created an card admin account for ' . $card_admin->email);
+			ActivityLog::notifyAdmins(auth()->user()->email . ' created an card admin account for ' . $card_admin->email);
 
 			return response()->json(['rsp' => $card_admin], 201);
 		} catch (Throwable $e) {
@@ -155,14 +155,14 @@ class CardAdmin extends User
 	{
 		$card_admin->api_routes()->sync(request('permitted_routes'));
 
-		ActivityLog::logAdminActivity(auth()->user()->email . ' edited the account permissions for ' . $card_admin->email);
+		ActivityLog::notifyAdmins(auth()->user()->email . ' edited the account permissions for ' . $card_admin->email);
 
 		return response()->json(['rsp' => true], 204);
 	}
 
 	public function suspendCardAdmin(CardAdmin $card_admin)
 	{
-		ActivityLog::logAdminActivity(auth()->user()->email . ' suspended the account of ' . $card_admin->email);
+		ActivityLog::notifyAdmins(auth()->user()->email . ' suspended the account of ' . $card_admin->email);
 
 		$card_admin->delete();
 
@@ -175,14 +175,14 @@ class CardAdmin extends User
 
 		$card_admin->restore();
 
-		ActivityLog::logAdminActivity(auth()->user()->email . ' restored the account of ' . $card_admin->email);
+		ActivityLog::notifyAdmins(auth()->user()->email . ' restored the account of ' . $card_admin->email);
 
 		return response()->json(['rsp' => true], 204);
 	}
 
 	public function deleteCardAdmin(CardAdmin $card_admin)
 	{
-		ActivityLog::logAdminActivity(auth()->user()->email . ' permanently deleted the account of ' . $card_admin->email);
+		ActivityLog::notifyAdmins(auth()->user()->email . ' permanently deleted the account of ' . $card_admin->email);
 
 		$card_admin->forceDelete();
 

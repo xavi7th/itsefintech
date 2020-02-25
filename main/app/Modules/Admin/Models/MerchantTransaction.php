@@ -125,6 +125,8 @@ class MerchantTransaction extends Model
 		$mer->save();
 
 		ActivityLog::logUserActivity(auth()->user()->email . ' approves voucher debit from ' . optional($mer->merchant)->name . '. Voucher Number: ' . optional($mer->voucher)->code);
+		ActivityLog::notifyAccountOfficers(auth()->user()->email . ' approves voucher debit from ' . optional($mer->merchant)->name . '. Voucher Number: ' . optional($mer->voucher)->code);
+		ActivityLog::notifyAdmins(auth()->user()->email . ' approves voucher debit from ' . optional($mer->merchant)->name . '. Voucher Number: ' . optional($mer->voucher)->code);
 
 		auth('card_user')->user()->notify(new VoucherApproved($mer->name));
 
@@ -142,6 +144,10 @@ class MerchantTransaction extends Model
 		]);
 
 		ActivityLog::logUserActivity(auth()->user()->email . ' repays merchant credit. Voucher Number: ' . $voucher->code . '. Amount: ' . $request->amount);
+		ActivityLog::notifyAccountants(auth()->user()->email . ' repays merchant credit. Voucher Number: ' . $voucher->code . '. Amount: ' . $request->amount);
+		ActivityLog::notifyAccountOfficers(auth()->user()->email . ' repays merchant credit. Voucher Number: ' . $voucher->code . '. Amount: ' . $request->amount);
+		ActivityLog::notifyAdmins(auth()->user()->email . ' repays merchant credit. Voucher Number: ' . $voucher->code . '. Amount: ' . $request->amount);
+		ActivityLog::notifyNormalAdmins(auth()->user()->email . ' repays merchant credit. Voucher Number: ' . $voucher->code . '. Amount: ' . $request->amount);
 
 		auth('card_user')->user()->notify(new VoucherPaid($request->amount));
 

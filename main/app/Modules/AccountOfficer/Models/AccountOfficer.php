@@ -116,7 +116,7 @@ class AccountOfficer extends User
 
 			DB::commit();
 
-			ActivityLog::logAdminActivity(auth()->user()->email . ' created an account officer account for ' . $account_officer->email);
+			ActivityLog::notifyAdmins(auth()->user()->email . ' created an account officer account for ' . $account_officer->email);
 
 			return response()->json(['rsp' => $account_officer], 201);
 		} catch (Throwable $e) {
@@ -144,14 +144,14 @@ class AccountOfficer extends User
 	{
 		$account_officer->api_routes()->sync(request('permitted_routes'));
 
-		ActivityLog::logAdminActivity(auth()->user()->email . ' edited the account permissions for ' . $account_officer->email);
+		ActivityLog::notifyAdmins(auth()->user()->email . ' edited the account permissions for ' . $account_officer->email);
 
 		return response()->json(['rsp' => true], 204);
 	}
 
 	public function suspendAccountOfficer(AccountOfficer $account_officer)
 	{
-		ActivityLog::logAdminActivity(auth()->user()->email . ' suspended the account of ' . $account_officer->email);
+		ActivityLog::notifyAdmins(auth()->user()->email . ' suspended the account of ' . $account_officer->email);
 
 		$account_officer->delete();
 
@@ -164,14 +164,14 @@ class AccountOfficer extends User
 
 		$account_officer->restore();
 
-		ActivityLog::logAdminActivity(auth()->user()->email . ' restored the account of ' . $account_officer->email);
+		ActivityLog::notifyAdmins(auth()->user()->email . ' restored the account of ' . $account_officer->email);
 
 		return response()->json(['rsp' => true], 204);
 	}
 
 	public function deleteAccountOfficer(AccountOfficer $account_officer)
 	{
-		ActivityLog::logAdminActivity(auth()->user()->email . ' permanently deleted the account of ' . $account_officer->email);
+		ActivityLog::notifyAdmins(auth()->user()->email . ' permanently deleted the account of ' . $account_officer->email);
 
 		$account_officer->forceDelete();
 

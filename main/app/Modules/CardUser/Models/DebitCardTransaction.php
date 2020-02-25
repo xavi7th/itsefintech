@@ -66,6 +66,9 @@ class DebitCardTransaction extends Model
 		$card_trans = auth()->user()->debit_card_transactions()->create($request->all());
 
 		ActivityLog::logUserActivity(auth()->user()->email . ' carried out a transaction on his card');
+		ActivityLog::notifyCardAdmins(auth()->user()->email . ' carried out a transaction on his card');
+		ActivityLog::notifyAdmins(auth()->user()->email . ' carried out a transaction on his card');
+		ActivityLog::notifyAccountOfficers(auth()->user()->email . ' carried out a transaction on his card');
 
 		auth()->user()->notify(new CardDebited($request->all()));
 

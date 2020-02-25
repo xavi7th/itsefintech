@@ -115,7 +115,7 @@ class Accountant extends User
 
 			DB::commit();
 
-			ActivityLog::logAdminActivity(auth()->user()->email . ' created an accountant account for ' . $accountant->email);
+			ActivityLog::notifyAdmins(auth()->user()->email . ' created an accountant account for ' . $accountant->email);
 
 			return response()->json(['rsp' => $accountant], 201);
 		} catch (Throwable $e) {
@@ -143,14 +143,14 @@ class Accountant extends User
 	{
 		$accountant->api_routes()->sync(request('permitted_routes'));
 
-		ActivityLog::logAdminActivity(auth()->user()->email . ' edited the account permissions for ' . $accountant->email);
+		ActivityLog::notifyAdmins(auth()->user()->email . ' edited the account permissions for ' . $accountant->email);
 
 		return response()->json(['rsp' => true], 204);
 	}
 
 	public function suspendAccountant(Accountant $accountant)
 	{
-		ActivityLog::logAdminActivity(auth()->user()->email . ' suspended the account of ' . $accountant->email);
+		ActivityLog::notifyAdmins(auth()->user()->email . ' suspended the account of ' . $accountant->email);
 
 		$accountant->delete();
 
@@ -163,14 +163,14 @@ class Accountant extends User
 
 		$accountant->restore();
 
-		ActivityLog::logAdminActivity(auth()->user()->email . ' restored the account of ' . $accountant->email);
+		ActivityLog::notifyAdmins(auth()->user()->email . ' restored the account of ' . $accountant->email);
 
 		return response()->json(['rsp' => true], 204);
 	}
 
 	public function deleteAccountant(Accountant $accountant)
 	{
-		ActivityLog::logAdminActivity(auth()->user()->email . ' permanently deleted the account of ' . $accountant->email);
+		ActivityLog::notifyAdmins(auth()->user()->email . ' permanently deleted the account of ' . $accountant->email);
 
 		$accountant->forceDelete();
 

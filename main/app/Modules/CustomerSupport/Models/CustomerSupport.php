@@ -115,7 +115,7 @@ class CustomerSupport extends User
 
 			DB::commit();
 
-			ActivityLog::logAdminActivity(auth()->user()->email . ' created an account officer account for ' . $customer_support->email);
+			ActivityLog::notifyAdmins(auth()->user()->email . ' created an account officer account for ' . $customer_support->email);
 
 			return response()->json(['rsp' => $customer_support], 201);
 		} catch (Throwable $e) {
@@ -143,14 +143,14 @@ class CustomerSupport extends User
 	{
 		$customer_support->api_routes()->sync(request('permitted_routes'));
 
-		ActivityLog::logAdminActivity(auth()->user()->email . ' edited the account permissions for ' . $customer_support->email);
+		ActivityLog::notifyAdmins(auth()->user()->email . ' edited the account permissions for ' . $customer_support->email);
 
 		return response()->json(['rsp' => true], 204);
 	}
 
 	public function suspendCustomerSupport(CustomerSupport $customer_support)
 	{
-		ActivityLog::logAdminActivity(auth()->user()->email . ' suspended the account of ' . $customer_support->email);
+		ActivityLog::notifyAdmins(auth()->user()->email . ' suspended the account of ' . $customer_support->email);
 
 		$customer_support->delete();
 
@@ -163,14 +163,14 @@ class CustomerSupport extends User
 
 		$customer_support->restore();
 
-		ActivityLog::logAdminActivity(auth()->user()->email . ' restored the account of ' . $customer_support->email);
+		ActivityLog::notifyAdmins(auth()->user()->email . ' restored the account of ' . $customer_support->email);
 
 		return response()->json(['rsp' => true], 204);
 	}
 
 	public function deleteCustomerSupport(CustomerSupport $customer_support)
 	{
-		ActivityLog::logAdminActivity(auth()->user()->email . ' permanently deleted the account of ' . $customer_support->email);
+		ActivityLog::notifyAdmins(auth()->user()->email . ' permanently deleted the account of ' . $customer_support->email);
 
 		$customer_support->forceDelete();
 

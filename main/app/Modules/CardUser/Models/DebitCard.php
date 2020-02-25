@@ -220,11 +220,16 @@ class DebitCard extends Model
 		$debit_card_type = DebitCardType::find($request->debit_card_type_id);
 
 		ActivityLog::logUserActivity(auth()->user()->email . ' made a debit card request');
+		ActivityLog::notifyCardAdmins(auth()->user()->email . ' made a debit card request');
+		ActivityLog::notifyAdmins(auth()->user()->email . ' made a debit card request');
+		ActivityLog::notifyAccountOfficers(auth()->user()->email . ' made a debit card request');
+		ActivityLog::notifyNormalAdmins(auth()->user()->email . ' made a debit card request');
 
 		try {
 			auth()->user()->notify(new DebitCardRequested($debit_card_type));
 		} catch (\Throwable $th) {
-			Log::alert('New Debit Card request alert not sent to ' . auth()->user()->email);
+			ActivityLog::notifyAdmins('New Debit Card request alert not sent to ' . auth()->user()->email . ' because ' . $th->getMessage());
+			ActivityLog::notifyNormalAdmins('New Debit Card request alert not sent to ' . auth()->user()->email . ' because ' . $th->getMessage());
 		}
 
 		return response()->json($card_request, 201);
@@ -247,6 +252,13 @@ class DebitCard extends Model
 			$debit_card->save();
 
 			ActivityLog::logUserActivity(auth()->user()->email . ' has just successfully activated his new credit card');
+			ActivityLog::notifyCardAdmins(auth()->user()->email . ' has just successfully activated his new credit card');
+			ActivityLog::notifyAccountOfficers(auth()->user()->email . ' has just successfully activated his new credit card');
+			if (!is_null($debit_card->sales_rep_id)) {
+				$debit_card->sales_rep->activities->create([
+					'activity' => auth()->user()->email . ' has just successfully activated his new credit card'
+				]);
+			}
 			auth()->user()->notify(new DebitCardActivated);
 
 			return response()->json(['message' => 'Card Activated'], 204);
@@ -296,7 +308,7 @@ class DebitCard extends Model
 
 			$debit_card = $user->debit_cards()->create($request->all());
 
-			ActivityLog::logAdminActivity(auth()->user()->email . ' created new Debit card ' . $debit_card->card_number);
+			ActivityLog::notifyAdmins(auth()->user()->email . ' created new Debit card ' . $debit_card->card_number);
 
 			DB::commit();
 			return response()->json(['rsp' => $debit_card], 201);
@@ -313,7 +325,7 @@ class DebitCard extends Model
 		$debit_card->is_suspended = !$debit_card->is_suspended;
 		$debit_card->save();
 
-		ActivityLog::logAdminActivity(auth()->user()->email . ' changed the suspension state of debit card ' . $debit_card->card_number);
+		ActivityLog::notifyAdmins(auth()->user()->email . ' changed the suspension state of debit card ' . $debit_card->card_number);
 
 		return response()->json([], 204);
 	}
@@ -325,7 +337,7 @@ class DebitCard extends Model
 			$debit_card->activated_at = now();
 			$debit_card->save();
 
-			ActivityLog::logAdminActivity(auth()->user()->email . ' activated debit card ' . $debit_card->card_number);
+			ActivityLog::notifyAdmins(auth()->user()->email . ' activated debit card ' . $debit_card->card_number);
 
 			return response()->json([], 204);
 		} else {
@@ -353,7 +365,7 @@ class DebitCard extends Model
 		$debit_card->assigned_by = auth()->id();
 		$debit_card->save();
 
-		ActivityLog::logAdminActivity(auth()->user()->email . ' assigned debit card ' . $debit_card->card_number . ' to ' . $sales_rep->email);
+		ActivityLog::notifyAdmins(auth()->user()->email . ' assigned debit card ' . $debit_card->card_number . ' to ' . $sales_rep->email);
 
 		return response()->json([], 204);
 	}
@@ -407,7 +419,7 @@ class DebitCard extends Model
 		]);
 
 		/** record activity */
-		ActivityLog::logAdminActivity(auth()->user()->email . ' allocated card ' . $debit_card->card_number . ' to user: ' . $card_user->email);
+		ActivityLog::notifyAdmins(auth()->user()->email . ' allocated card ' . $debit_card->card_number . ' to user: ' . $card_user->email);
 
 		return response()->json([], 204);
 	}
@@ -421,7 +433,7 @@ class DebitCard extends Model
 
 	public function showFullPANNumber(DebitCard $debit_card)
 	{
-		ActivityLog::logAdminActivity(auth()->user()->email . ' accessed the full PAN number of card ' . $debit_card->card_number);
+		ActivityLog::notifyAdmins(auth()->user()->email . ' accessed the full PAN number of card ' . $debit_card->card_number);
 
 		return response()->json(['full_pan' => $debit_card->full_pan_number], 200);
 	}

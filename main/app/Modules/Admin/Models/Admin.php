@@ -89,7 +89,7 @@ class Admin extends User
 				]
 			]));
 
-			ActivityLog::logAdminActivity(auth()->user()->email . ' created a new admin account for ' . $admin->email);
+			ActivityLog::notifyAdmins(auth()->user()->email . ' created a new admin account for ' . $admin->email);
 
 			DB::commit();
 			return response()->json(['rsp' => $admin], 201);
@@ -118,7 +118,7 @@ class Admin extends User
 	{
 		$admin->api_routes()->sync(request('permitted_routes'));
 
-		ActivityLog::logAdminActivity(auth()->user()->email . ' edited the route permissions for ' . $admin->email);
+		ActivityLog::notifyAdmins(auth()->user()->email . ' edited the route permissions for ' . $admin->email);
 
 		return response()->json(['rsp' => true], 204);
 	}
@@ -129,7 +129,7 @@ class Admin extends User
 			return response()->json(['rsp' => false], 403);
 		}
 		$admin->delete();
-		ActivityLog::logAdminActivity(auth()->user()->email . ' suspended the account of ' . $admin->email);
+		ActivityLog::notifyAdmins(auth()->user()->email . ' suspended the account of ' . $admin->email);
 		return response()->json(['rsp' => true], 204);
 	}
 
@@ -138,7 +138,7 @@ class Admin extends User
 		$admin = Admin::withTrashed()->find($id);
 		$admin->restore();
 
-		ActivityLog::logAdminActivity(auth()->user()->email . ' restored the account of ' . $admin->email);
+		ActivityLog::notifyAdmins(auth()->user()->email . ' restored the account of ' . $admin->email);
 
 		return response()->json(['rsp' => true], 204);
 	}
@@ -149,7 +149,7 @@ class Admin extends User
 			return response()->json(['rsp' => false], 403);
 		}
 		/** log the activity before deleting */
-		ActivityLog::logAdminActivity(auth()->user()->email . ' permanently deleted the account of ' . $admin->email);
+		ActivityLog::notifyAdmins(auth()->user()->email . ' permanently deleted the account of ' . $admin->email);
 
 		$admin->forceDelete();
 

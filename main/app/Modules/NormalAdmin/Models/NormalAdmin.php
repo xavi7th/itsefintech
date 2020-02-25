@@ -121,7 +121,7 @@ class NormalAdmin extends User
 
 			DB::commit();
 
-			ActivityLog::logAdminActivity(auth()->user()->email . ' created a normal admin account for ' . $admin->email);
+			ActivityLog::notifyAdmins(auth()->user()->email . ' created a normal admin account for ' . $admin->email);
 
 			return response()->json(['rsp' => $admin], 201);
 		} catch (\Throwable $e) {
@@ -149,7 +149,7 @@ class NormalAdmin extends User
 	{
 		$admin->api_routes()->sync(request('permitted_routes'));
 
-		ActivityLog::logAdminActivity(auth()->user()->email . ' edited account permissions for ' . $admin->email);
+		ActivityLog::notifyAdmins(auth()->user()->email . ' edited account permissions for ' . $admin->email);
 
 		return response()->json(['rsp' => true], 204);
 	}
@@ -161,7 +161,7 @@ class NormalAdmin extends User
 		}
 		$admin->delete();
 
-		ActivityLog::logAdminActivity(auth()->user()->email . ' suspended the normal admin account for ' . $admin->email);
+		ActivityLog::notifyAdmins(auth()->user()->email . ' suspended the normal admin account for ' . $admin->email);
 
 		return response()->json(['rsp' => true], 204);
 	}
@@ -171,7 +171,7 @@ class NormalAdmin extends User
 		$admin = NormalAdmin::withTrashed()->find($id);
 		$admin->restore();
 
-		ActivityLog::logAdminActivity(auth()->user()->email . ' restored the normal admin account for ' . $admin->email);
+		ActivityLog::notifyAdmins(auth()->user()->email . ' restored the normal admin account for ' . $admin->email);
 
 		return response()->json(['rsp' => true], 204);
 	}
@@ -182,7 +182,7 @@ class NormalAdmin extends User
 			return response()->json(['rsp' => false], 403);
 		}
 
-		ActivityLog::logAdminActivity(auth()->user()->email . ' permanently deleted the normal admin account for ' . $admin->email);
+		ActivityLog::notifyAdmins(auth()->user()->email . ' permanently deleted the normal admin account for ' . $admin->email);
 
 		$admin->forceDelete();
 		return response()->json(['rsp' => true], 204);

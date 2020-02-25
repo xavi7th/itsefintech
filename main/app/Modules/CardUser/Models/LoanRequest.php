@@ -138,9 +138,17 @@ class LoanRequest extends Model
 
 		if ($is_school_fees_loan) {
 			ActivityLog::logUserActivity(auth()->user()->email . ' made a school fees loan request of ' . $request->input('amount'));
+			ActivityLog::notifyAccountOfficers(auth()->user()->email . ' made a school fees loan request of ' . $request->input('amount'));
+			ActivityLog::notifyAccountants(auth()->user()->email . ' made a school fees loan request of ' . $request->input('amount'));
+			ActivityLog::notifyAdmins(auth()->user()->email . ' made a school fees loan request of ' . $request->input('amount'));
+			ActivityLog::notifyNormalAdmins(auth()->user()->email . ' made a school fees loan request of ' . $request->input('amount'));
 			auth()->user()->notify(new LoanRequested($request->input('amount'), true));
 		} else {
 			ActivityLog::logUserActivity(auth()->user()->email . ' made a loan request of ' . $request->input('amount'));
+			ActivityLog::notifyAccountOfficers(auth()->user()->email . ' made a loan request of ' . $request->input('amount'));
+			ActivityLog::notifyAccountants(auth()->user()->email . ' made a loan request of ' . $request->input('amount'));
+			ActivityLog::notifyAdmins(auth()->user()->email . ' made a loan request of ' . $request->input('amount'));
+			ActivityLog::notifyNormalAdmins(auth()->user()->email . ' made a loan request of ' . $request->input('amount'));
 			auth()->user()->notify(new LoanRequested($request->input('amount')));
 		}
 		return response()->json((array)$loan_request->breakdownStatistics(), 201);
@@ -170,7 +178,10 @@ class LoanRequest extends Model
 		$loan_request->approved_by = auth()->id();
 		$loan_request->save();
 
-		ActivityLog::logAdminActivity(auth()->user()->email . ' approved a loan request of ' . $loan_request->amount . ' for ' . $card_user->email);
+		ActivityLog::notifyAccountOfficers(auth()->user()->email . ' approved a loan request of ' . $loan_request->amount . ' for ' . $card_user->email);
+		ActivityLog::notifyAccountants(auth()->user()->email . ' approved a loan request of ' . $loan_request->amount . ' for ' . $card_user->email);
+		ActivityLog::notifyAdmins(auth()->user()->email . ' approved a loan request of ' . $loan_request->amount . ' for ' . $card_user->email);
+		ActivityLog::notifyNormalAdmins(auth()->user()->email . ' approved a loan request of ' . $loan_request->amount . ' for ' . $card_user->email);
 
 		$card_user->notify(new LoanApproved($loan_request->amount, $loan_request->is_school_fees));
 
@@ -199,7 +210,10 @@ class LoanRequest extends Model
 			]
 		);
 
-		ActivityLog::logAdminActivity(auth()->user()->email . ' marked ' .  $card_user->email . '\'s loan request of ' . $loan_request->amount . ' as paid.');
+		ActivityLog::notifyAccountOfficers(auth()->user()->email . ' marked ' .  $card_user->email . '\'s loan request of ' . $loan_request->amount . ' as paid.');
+		ActivityLog::notifyAccountants(auth()->user()->email . ' marked ' .  $card_user->email . '\'s loan request of ' . $loan_request->amount . ' as paid.');
+		ActivityLog::notifyAdmins(auth()->user()->email . ' marked ' .  $card_user->email . '\'s loan request of ' . $loan_request->amount . ' as paid.');
+		ActivityLog::notifyNormalAdmins(auth()->user()->email . ' marked ' .  $card_user->email . '\'s loan request of ' . $loan_request->amount . ' as paid.');
 
 		DB::commit();
 

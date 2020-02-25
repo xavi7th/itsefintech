@@ -164,7 +164,8 @@ class DebitCardRequest extends Model
 		$debit_card->save();
 
 		/** Create activity */
-		ActivityLog::logAdminActivity(auth()->user()->email . ' allocated debit card ' . $debit_card->card_number . ' to ' . $debit_card_request->card_user->email . '\'s card request');
+		ActivityLog::notifyAdmins(auth()->user()->email . ' allocated debit card ' . $debit_card->card_number . ' to ' . $debit_card_request->card_user->email . '\'s card request');
+		ActivityLog::notifyCardAdmins(auth()->user()->email . ' allocated debit card ' . $debit_card->card_number . ' to ' . $debit_card_request->card_user->email . '\'s card request');
 
 		DB::commit();
 		return response()->json([], 204);
@@ -175,7 +176,9 @@ class DebitCardRequest extends Model
 		$debit_card_request->is_paid = true;
 		$debit_card_request->save();
 
-		ActivityLog::logAdminActivity(auth()->user()->email . ' marked ' . $debit_card_request->card_user->email . '\'s card request as paid.');
+		ActivityLog::notifyAdmins(auth()->user()->email . ' marked ' . $debit_card_request->card_user->email . '\'s card request as paid.');
+		ActivityLog::notifyAccountOfficers(auth()->user()->email . ' marked ' . $debit_card_request->card_user->email . '\'s card request as paid.');
+		ActivityLog::notifyAccountants(auth()->user()->email . ' marked ' . $debit_card_request->card_user->email . '\'s card request as paid.');
 
 		return response()->json([], 204);
 	}
@@ -188,7 +191,9 @@ class DebitCardRequest extends Model
 		// $debit_card_request->last_updater_user_type = get_class(auth()->user());
 		$debit_card_request->save();
 
-		ActivityLog::logAdminActivity(auth()->user()->email . ' marked ' . $debit_card_request->card_user->email . '\'s card request payment as confirmed.');
+		ActivityLog::notifyAccountants(auth()->user()->email . ' marked ' . $debit_card_request->card_user->email . '\'s card request payment as confirmed.');
+		ActivityLog::notifyAdmins(auth()->user()->email . ' marked ' . $debit_card_request->card_user->email . '\'s card request payment as confirmed.');
+		ActivityLog::notifyAccountOfficers(auth()->user()->email . ' marked ' . $debit_card_request->card_user->email . '\'s card request payment as confirmed.');
 
 		return response()->json([], 204);
 	}
@@ -202,7 +207,9 @@ class DebitCardRequest extends Model
 		$debit_card_request->debit_card_request_status_id = request('details.debit_card_request_status_id');
 		$debit_card_request->save();
 
-		ActivityLog::logAdminActivity(auth()->user()->email . ' updated the delivery status ' . $debit_card_request->card_user->email . '\'s card request.');
+		ActivityLog::notifyCardAdmins(auth()->user()->email . ' updated the delivery status ' . $debit_card_request->card_user->email . '\'s card request.');
+		ActivityLog::notifyAdmins(auth()->user()->email . ' updated the delivery status ' . $debit_card_request->card_user->email . '\'s card request.');
+		ActivityLog::notifyAccountOfficers(auth()->user()->email . ' updated the delivery status ' . $debit_card_request->card_user->email . '\'s card request.');
 
 		return response()->json(['new_status' => DebitCardRequestStatus::find(request('details.debit_card_request_status_id'))->name], 203);
 	}

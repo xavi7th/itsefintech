@@ -54,7 +54,9 @@ class MerchantCategory  extends Model
 	{
 		$merchant_category = MerchantCategory::create(request()->all());
 
-		ActivityLog::logAdminActivity(auth()->user()->email . ' created new merchant category ' . $merchant_category->name);
+		ActivityLog::notifyAdmins(auth()->user()->email . ' created new merchant category ' . $merchant_category->name);
+		ActivityLog::notifyAccountOfficers(auth()->user()->email . ' created new merchant category ' . $merchant_category->name);
+		ActivityLog::notifyNormalAdmins(auth()->user()->email . ' created new merchant category ' . $merchant_category->name);
 
 		return response()->json(['merchant_category' => $merchant_category], 201);
 	}
@@ -64,7 +66,9 @@ class MerchantCategory  extends Model
 		$merchant_category->name = request('name');
 		$merchant_category->save();
 
-		ActivityLog::logAdminActivity(auth()->user()->email . ' created merchant category ' . $merchant_category->name . ' details');
+		ActivityLog::notifyAdmins(auth()->user()->email . ' created merchant category ' . $merchant_category->name . ' details');
+		ActivityLog::notifyAccountOfficers(auth()->user()->email . ' created merchant category ' . $merchant_category->name . ' details');
+		ActivityLog::notifyNormalAdmins(auth()->user()->email . ' created merchant category ' . $merchant_category->name . ' details');
 
 		return response()->json([], 204);
 	}

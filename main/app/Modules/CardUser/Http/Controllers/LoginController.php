@@ -11,6 +11,7 @@ use App\Modules\CardUser\Models\CardUser;
 use App\Modules\CardUser\Http\Requests\LoginValidation;
 use App\Modules\CardUser\Transformers\CardUserTransformer;
 use App\Modules\CardUser\Notifications\LoginAttempt;
+use App\Modules\Admin\Models\ActivityLog;
 
 /**
  *
@@ -58,7 +59,7 @@ class LoginController extends Controller
 		try {
 			auth('card_user')->user()->notify(new LoginAttempt);
 		} catch (\Throwable $th) {
-			Log::alert('Login notification not sent to ' . auth('card_user')->user()->email);
+			ActivityLog::notifyAccountOfficers(auth('card_user')->user()->email . ' was not sent a login attempt email because ' . $th->getMessage());
 		}
 
 		return $this->respondWithToken($token);
