@@ -2,8 +2,9 @@
 
 namespace App\Modules\CustomerSupport\Transformers;
 
-use App\Modules\CustomerSupport\Models\SupportTicket;
+use Illuminate\Support\Str;
 use App\Modules\Admin\Models\Department;
+use App\Modules\CustomerSupport\Models\SupportTicket;
 
 class SupportTicketTransformer
 {
@@ -73,6 +74,7 @@ class SupportTicketTransformer
 			'channel' => (string)$support_ticket->channel,
 			'description' => (string)$support_ticket->description,
 			'department' => (string)$support_ticket->department->display_name,
+			'department_slug' => (string)Str::snake($support_ticket->department->name),
 			'started_at' => (string)$support_ticket->assigned_at,
 			'started_by' => (string)optional($support_ticket->assignee)->full_name,
 			'resolved_at' => (string)$support_ticket->resolved_at,

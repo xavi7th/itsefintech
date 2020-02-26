@@ -314,7 +314,7 @@ export const allRoutes = [
         meta: {
             title: APP_NAME + ' | Customer Service',
             iconClass: 'home',
-            menuName: 'Manage Tickets'
+            menuName: 'Tickets'
         },
     },
 

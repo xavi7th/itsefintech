@@ -7,7 +7,7 @@
         <div class="card-title" v-if="$user.isCustomerSupport">
           <button
             type="button"
-            class="btn btn-bold btn-pure btn-twitter btn-shadow"
+            class="btn btn-bold btn-pure btn-rss btn-shadow"
             data-toggle="modal"
             data-target="#modal-create-ticket"
           >Create Ticket</button>
@@ -35,17 +35,17 @@
                 <td>{{ supportTicket.status }}</td>
                 <td>
                   <div
-                    class="fs-11 btn btn-bold badge badge-success badge-shadow pointer"
+                    class="fs-11 btn btn-bold badge badge-warning badge-shadow pointer"
                     @click="activatesupportTicket(supportTicket)"
-                    v-if="!supportTicket.is_started && $user.type == supportTicket.department"
+                    v-if="!supportTicket.is_started && $user.type == supportTicket.department_slug"
                   >Accept Ticket</div>
                   <div
-                    class="fs-11 btn btn-bold badge badge-primary pointer"
+                    class="fs-11 btn btn-bold badge badge-success pointer"
                     @click="togglesupportTicketSuspension(supportTicket)"
-                    v-if="supportTicket.is_started && !supportTicket.is_resolved && $user.type == supportTicket.department"
+                    v-if="supportTicket.is_started && !supportTicket.is_resolved && $user.type == supportTicket.department_slug"
                   >Mark Resolved</div>
                   <div
-                    class="badge badge-success badge-shadow pointer"
+                    class="badge btn btn-bold badge-info badge-shadow pointer"
                     data-toggle="modal"
                     data-target="#modal-details"
                     @click="showModal(supportTicket)"
