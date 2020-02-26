@@ -8,7 +8,6 @@ use App\Modules\Accountant\Models\Accountant;
 use App\Modules\AccountOfficer\Models\AccountOfficer;
 use App\Modules\CardAdmin\Models\CardAdmin;
 use App\Modules\SalesRep\Models\SalesRep;
-use App\Modules\DispatchAdmin\Models\DispatchAdmin;
 use App\Modules\CustomerSupport\Models\CustomerSupport;
 use App\Modules\Admin\Models\Merchant;
 
@@ -75,10 +74,6 @@ return [
 		'customer_support' => [
 			'driver' => 'session',
 			'provider' => 'customer_supports',
-		],
-		'dispatch_admin' => [
-			'driver' => 'session',
-			'provider' => 'dispatch_admins',
 		],
 		'sales_rep' => [
 			'driver' => 'session',
@@ -147,10 +142,6 @@ return [
 		'customer_supports' => [
 			'driver' => 'eloquent',
 			'model' => CustomerSupport::class,
-		],
-		'dispatch_admins' => [
-			'driver' => 'eloquent',
-			'model' => DispatchAdmin::class,
 		],
 		'sales_reps' => [
 			'driver' => 'eloquent',

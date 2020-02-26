@@ -151,16 +151,6 @@ class ApiRoutesTableSeeder extends Seeder
 				],
 
 				[
-					'path' => '/dispatch-admins',
-					'name' => 'admin.dispatch-admins.view',
-					'meta' => '{title: APP_NAME + \' | View Dispatch Admins\',
-					iconClass: \'user\',
-					menuName: \'View Dispatch Admins\'
-				}',
-					'description' => 'View Dispatch Admins',
-				],
-
-				[
 					'path' => '/sales-reps',
 					'name' => 'admin.sales-reps.view',
 					'meta' => '{title: APP_NAME + \' | View Sales Reps\',

@@ -9,8 +9,8 @@
             </div>
           </div>
         </div>
-        
-        <form @submit.prevent="loginDispatch">
+
+        <form @submit.prevent="loginSalesRep">
           <div class="form-group mb-20" :class="{'has-error': errors.has('email')}">
             <label for="form-mail">
               <strong>E-Mail</strong>
@@ -70,7 +70,7 @@
       details: {}
     }),
     methods: {
-      loginDispatch() {
+      loginSalesRep() {
         this.$validator.validateAll().then(result => {
           if (!result) {
             Toast.fire({

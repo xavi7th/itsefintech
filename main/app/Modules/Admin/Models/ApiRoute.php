@@ -9,7 +9,6 @@ use App\Modules\Accountant\Models\Accountant;
 use App\Modules\AccountOfficer\Models\AccountOfficer;
 use App\Modules\CardAdmin\Models\CardAdmin;
 use App\Modules\CustomerSupport\Models\CustomerSupport;
-use App\Modules\DispatchAdmin\Models\DispatchAdmin;
 use App\Modules\SalesRep\Models\SalesRep;
 
 class ApiRoute extends Model
@@ -46,11 +45,6 @@ class ApiRoute extends Model
 	public function customer_supports()
 	{
 		return $this->morphedByMany(CustomerSupport::class, 'user', 'api_routes_permissions', 'api_route_id');
-	}
-
-	public function dispatch_admins()
-	{
-		return $this->morphedByMany(DispatchAdmin::class, 'user', 'api_routes_permissions', 'api_route_id');
 	}
 
 	public function sales_reps()
