@@ -2,9 +2,11 @@
 
 namespace App\Modules\CustomerSupport\Models;
 
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Database\Eloquent\Model;
 use App\Modules\Admin\Models\Department;
+use App\Modules\Admin\Models\ActivityLog;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Modules\CustomerSupport\Models\CustomerSupport;
 use App\Modules\CustomerSupport\Transformers\SupportTicketTransformer;
@@ -121,35 +123,101 @@ class SupportTicket extends Model
 	 */
 	public function createSupportTicket(CreateSupportTicketValidation $request)
 	{
+		DB::beginTransaction();
+
 		$ticket = auth()->user()->support_tickets()->create($request->all());
+
+		ActivityLog::notifyAdmins(auth()->user()->email . ' created a new ' . $ticket->ticket_type . ' support ticket ' . $ticket->id);
+		ActivityLog::notifyCustomerSupports(auth()->user()->email . ' created a new ' . $ticket->ticket_type . ' support ticket ' . $ticket->id);
+
+		if ($ticket->department_id == Department::cardAdminId()) {
+			ActivityLog::notifyCardAdmins(auth()->user()->email . ' created a new ' . $ticket->ticket_type . ' support ticket ' . $ticket->id);
+		} else if ($ticket->department_id == Department::accountantsId()) {
+			ActivityLog::notifyAccountants(auth()->user()->email . ' created a new ' . $ticket->ticket_type . ' support ticket ' . $ticket->id);
+		} else if ($ticket->department_id == Department::accountOfficersId()) {
+			ActivityLog::notifyAccountOfficers(auth()->user()->email . ' created a new ' . $ticket->ticket_type . ' support ticket ' . $ticket->id);
+		} else if ($ticket->department_id == Department::normalAdminId()) {
+			ActivityLog::notifyNormalAdmins(auth()->user()->email . ' created a new ' . $ticket->ticket_type . ' support ticket ' . $ticket->id);
+		} else if ($ticket->department_id == Department::salesRepsId()) {
+			ActivityLog::notifySalesReps(auth()->user()->email . ' created a new ' . $ticket->ticket_type . ' support ticket ' . $ticket->id);
+		}
+
+		DB::commit();
 		return response()->json((new SupportTicketTransformer)->transformForCustomerSupport($ticket), 201);
 	}
 
 
 	public function acceptSupportTicket(SupportTicket $support_ticket)
 	{
+		DB::beginTransaction();
+
 		$support_ticket->assigned_at = now();
 		$support_ticket->assignee_id = auth()->user()->id;
 		$support_ticket->assignee_type = get_class(auth()->user());
 		$support_ticket->save();
 
+
+		ActivityLog::notifyAdmins(auth()->user()->email . ' has started working on ticket ' . $support_ticket->id);
+		ActivityLog::notifyCustomerSupports(auth()->user()->email . ' has started working on ticket ' . $support_ticket->id);
+
+		if ($support_ticket->department_id == Department::cardAdminId()) {
+			ActivityLog::notifyCardAdmins(auth()->user()->email . ' has started working on ticket ' . $support_ticket->id);
+		} else if ($support_ticket->department_id == Department::accountantsId()) {
+			ActivityLog::notifyAccountants(auth()->user()->email . ' has started working on ticket ' . $support_ticket->id);
+		} else if ($support_ticket->department_id == Department::accountOfficersId()) {
+			ActivityLog::notifyAccountOfficers(auth()->user()->email . ' has started working on ticket ' . $support_ticket->id);
+		} else if ($support_ticket->department_id == Department::normalAdminId()) {
+			ActivityLog::notifyNormalAdmins(auth()->user()->email . ' has started working on ticket ' . $support_ticket->id);
+		} else if ($support_ticket->department_id == Department::salesRepsId()) {
+			ActivityLog::notifySalesReps(auth()->user()->email . ' has started working on ticket ' . $support_ticket->id);
+		}
+
+
+		DB::commit();
 		return response()->json(['rsp' => true], 204);
 	}
 
 	public function markSupportTicketAsResolved(SupportTicket $support_ticket)
 	{
+		DB::beginTransaction();
+
 		$support_ticket->resolved_at = now();
 		$support_ticket->resolver_id = auth()->user()->id;
 		$support_ticket->resolver_type = get_class(auth()->user());
 		$support_ticket->save();
+
+
+		ActivityLog::notifyAdmins(auth()->user()->email . ' has resolved ticket ' . $support_ticket->id);
+		ActivityLog::notifyCustomerSupports(auth()->user()->email . ' has resolved ticket ' . $support_ticket->id);
+
+		if ($support_ticket->department_id == Department::cardAdminId()) {
+			ActivityLog::notifyCardAdmins(auth()->user()->email . ' has resolved ticket ' . $support_ticket->id);
+		} else if ($support_ticket->department_id == Department::accountantsId()) {
+			ActivityLog::notifyAccountants(auth()->user()->email . ' has resolved ticket ' . $support_ticket->id);
+		} else if ($support_ticket->department_id == Department::accountOfficersId()) {
+			ActivityLog::notifyAccountOfficers(auth()->user()->email . ' has resolved ticket ' . $support_ticket->id);
+		} else if ($support_ticket->department_id == Department::normalAdminId()) {
+			ActivityLog::notifyNormalAdmins(auth()->user()->email . ' has resolved ticket ' . $support_ticket->id);
+		} else if ($support_ticket->department_id == Department::salesRepsId()) {
+			ActivityLog::notifySalesReps(auth()->user()->email . ' has resolved ticket ' . $support_ticket->id);
+		}
+
+		DB::commit();
 
 		return response()->json(['rsp' => true], 204);
 	}
 
 	public function closeSupportTicket(SupportTicket $support_ticket)
 	{
+		DB::beginTransaction();
+
 		$support_ticket->deleted_at = now();
 		$support_ticket->save();
+
+		ActivityLog::notifyAdmins(auth()->user()->email . ' has closed ticket ' . $support_ticket->id);
+		ActivityLog::notifyCustomerSupports(auth()->user()->email . ' has closed ticket ' . $support_ticket->id);
+
+		DB::commit();
 
 		return response()->json(['rsp' => true], 204);
 	}
