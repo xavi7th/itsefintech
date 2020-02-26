@@ -78,6 +78,7 @@ class SupportTicket extends Model
 	{
 		Route::group(['namespace' => '\App\Modules\CustomerSupport\Models', 'prefix' => 'api'], function () {
 			Route::post('support-ticket/create', 'SupportTicket@createSupportTicket')->middleware('auth:customer_support');
+			Route::put('support-ticket/{support_ticket}/accept', 'SupportTicket@acceptSupportTicket')->middleware('auth:admin,sales_rep,card_admin,normal_admin,customer_support,accountant,account_officer');
 		});
 	}
 
@@ -111,6 +112,16 @@ class SupportTicket extends Model
 		} else if (auth('normal_admin')->check()) {
 			return response()->json((new SupportTicketTransformer)->collectionTransformer(SupportTicket::normalAdmins()->get(), 'transformForCustomerSupport'), 200);
 		}
+	}
+
+	public function acceptSupportTicket(SupportTicket $support_ticket)
+	{
+		$support_ticket->assigned_at = now();
+		$support_ticket->assignee_id = auth()->user()->id;
+		$support_ticket->assignee_type = get_class(auth()->user());
+		$support_ticket->save();
+
+		return response()->json(['rsp' => true], 204);
 	}
 
 

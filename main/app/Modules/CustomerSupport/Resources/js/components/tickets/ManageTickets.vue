@@ -36,12 +36,12 @@
                 <td>
                   <div
                     class="fs-11 btn btn-bold badge badge-warning badge-shadow pointer"
-                    @click="activatesupportTicket(supportTicket)"
+                    @click="acceptSupportTicket(supportTicket)"
                     v-if="!supportTicket.is_started && $user.type == supportTicket.department_slug"
                   >Accept Ticket</div>
                   <div
                     class="fs-11 btn btn-bold badge badge-success pointer"
-                    @click="togglesupportTicketSuspension(supportTicket)"
+                    @click="markSupportTicketAsResolved(supportTicket)"
                     v-if="supportTicket.is_started && !supportTicket.is_resolved && $user.type == supportTicket.department_slug"
                   >Mark Resolved</div>
                   <div
@@ -448,8 +448,7 @@
                   icon: "success"
                 })
                 .then(() => {
-                  supportTicketDetails.status = "started";
-                  // location.reload();
+                  location.reload();
                 });
             }
           });
@@ -481,8 +480,7 @@
                   icon: "success"
                 })
                 .then(() => {
-                  supportTicketDetails.status = "resolved";
-                  // location.reload();
+                  location.reload();
                 });
             }
           });
