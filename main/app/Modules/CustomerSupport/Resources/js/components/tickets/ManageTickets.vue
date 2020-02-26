@@ -161,119 +161,107 @@
                     <div class="card-body py-0">
                       <div class="card-row">
                         <form class="m-25" @submit.prevent="createSupportTicket">
-                          <div
-                            class="form-group mb-5"
-                            :class="{'has-error': errors.has('card_number')}"
-                          >
-                            <label for="form-full-name">
-                              <strong>Card Number</strong>
-                            </label>
-                            <input
-                              type="text"
-                              class="form-control form-control-pill"
-                              id="form-full-name"
-                              v-model="details.card_number"
-                              v-validate="'required|credit_card'"
-                              data-vv-as="credit card number"
-                              name="card_number"
-                            />
-                            <span>{{ errors.first('card_number') }}</span>
-                          </div>
                           <div class="row">
-                            <div class="col-4">
+                            <div class="col-6">
                               <div
                                 class="form-group mb-5"
-                                :class="{'has-error': errors.has('exp_year')}"
+                                :class="{'has-error': errors.has('ticket_type')}"
                               >
-                                <label for="form-year">
-                                  <strong>Year</strong>
+                                <label for="form-ticket-type">
+                                  <strong>Ticket Type</strong>
                                 </label>
                                 <select
                                   class="form-control"
-                                  id="form-year"
-                                  name="exp_year"
+                                  id="form-ticket-type"
+                                  name="ticket_type"
                                   v-validate="'required'"
-                                  data-vv-as="expiry year"
-                                  v-model="details.year"
+                                  data-vv-as="ticket type"
+                                  v-model="details.ticket_type"
                                 >
-                                  <option value>Pick a Year</option>
-                                  <option v-for="n in range(2021, 2099)" :key="n">{{ n }}</option>
+                                  <option :value="null">Ticket Type</option>
+                                  <option v-for="n in ['complaint', 'request']" :key="n">{{ n }}</option>
                                 </select>
-                              </div>
-                            </div>
-                            <div class="col-4">
-                              <div
-                                class="form-group mb-5"
-                                :class="{'has-error': errors.has('exp_month')}"
-                              >
-                                <label for="form-year">
-                                  <strong>Month</strong>
-                                </label>
-                                <select
-                                  class="form-control"
-                                  id="form-year"
-                                  name="exp_month"
-                                  v-validate="'required'"
-                                  data-vv-as="expiry month"
-                                  v-model="details.month"
-                                >
-                                  <option value>Pick a Month</option>
-                                  <option v-for="n in range(1, 12)" :key="n">{{ n }}</option>
-                                </select>
-                              </div>
-                            </div>
-                            <div class="col-4">
-                              <div
-                                class="form-group mb-5"
-                                :class="{'has-error': errors.has('csc')}"
-                              >
-                                <label for="form-full-name">
-                                  <strong>CSC/CVV</strong>
-                                </label>
-                                <input
-                                  type="text"
-                                  class="form-control form-control-pill"
-                                  id="form-full-name"
-                                  v-model="details.csc"
-                                  v-validate="'required|numeric'"
-                                  data-vv-as="card security code"
-                                  name="csc"
-                                />
                               </div>
                             </div>
 
-                            <span class="text-danger">{{ errors.first('csc') }}</span>
-                            <span class="text-danger">{{ errors.first('exp_year') }}</span>
-                            <span class="text-danger">{{ errors.first('exp_month') }}</span>
+                            <div class="col-6">
+                              <div
+                                class="form-group mb-5"
+                                :class="{'has-error': errors.has('channel')}"
+                              >
+                                <label for="form-channel">
+                                  <strong>Channel</strong>
+                                </label>
+                                <select
+                                  class="form-control"
+                                  id="form-channel"
+                                  name="channel"
+                                  v-validate="'required'"
+                                  data-vv-as="channel ticket came through"
+                                  v-model="details.channel"
+                                >
+                                  <option :value="null">Channel</option>
+                                  <option
+                                    v-for="n in ['phone call', 'email', 'sms', 'whatsapp', 'others']"
+                                    :key="n"
+                                  >{{ n }}</option>
+                                </select>
+                              </div>
+                            </div>
+
+                            <span class="text-danger">{{ errors.first('ticket_type') }}</span>
+                            <span class="text-danger">{{ errors.first('channel') }}</span>
                           </div>
+
                           <div class="row">
                             <div class="col-12">
                               <div
                                 class="form-group mb-5"
-                                :class="{'has-error': errors.has('debit_card_type')}"
+                                :class="{'has-error': errors.has('department')}"
                               >
                                 <label for="form-year">
-                                  <strong>Month</strong>
+                                  <strong>Department</strong>
                                 </label>
                                 <select
                                   class="form-control"
                                   id="form-year"
-                                  name="debit_card_type"
+                                  name="department"
                                   v-validate="'required'"
-                                  data-vv-as="debit card type"
-                                  v-model="details.debit_card_type_id"
+                                  data-vv-as="affected department"
+                                  v-model="details.department_id"
                                 >
-                                  <option :value="null">Card Type</option>
+                                  <option :value="null">Concerned Department</option>
                                   <option
-                                    v-for="card_type in departments"
-                                    :key="card_type.id"
-                                    :value="card_type.id"
-                                  >{{ card_type.card_type_name }}</option>
+                                    v-for="department in departments"
+                                    :key="department.id"
+                                    :value="department.id"
+                                  >{{ department.display_name }}</option>
                                 </select>
                               </div>
                             </div>
 
-                            <span class="text-danger">{{ errors.first('debit_card_type') }}</span>
+                            <span class="text-danger">{{ errors.first('department') }}</span>
+                          </div>
+
+                          <div
+                            class="form-group mb-5"
+                            :class="{'has-error': errors.has('description')}"
+                          >
+                            <label for="form-description">
+                              <strong>Detailed Description</strong>
+                            </label>
+
+                            <textarea
+                              class="form-control"
+                              id="form-description"
+                              rows="7"
+                              v-model="details.description"
+                              v-validate="'required'"
+                              name="description"
+                              placeholder="for example: user_email@capitalx.cards complained that... OR user_email@capitalx.cards requests for..."
+                            ></textarea>
+
+                            <span>{{ errors.first('description') }}</span>
                           </div>
 
                           <div class="form-group mt-20">
@@ -318,7 +306,11 @@
       supportTicketDetails: {},
       departments: [],
       sectionLoading: false,
-      details: {}
+      details: {
+        department_id: null,
+        ticket_type: null,
+        channel: null
+      }
     }),
     components: {
       PreLoader
@@ -348,8 +340,9 @@
         });
         axios
           .get(adminViewSupportTickets)
-          .then(({ data: { support_tickets } }) => {
+          .then(({ data: { support_tickets, departments } }) => {
             this.supportTickets = support_tickets;
+            this.departments = departments;
 
             if (this.$isDesktop) {
               this.$nextTick(() => {
@@ -399,10 +392,11 @@
               .post(adminCreateSupportTicket, {
                 ...this.details
               })
-              .then(({ status, data: { rsp } }) => {
+              .then(({ status, data: support_ticket }) => {
                 if (undefined !== status && status == 201) {
                   this.details = {};
                   this.supportTicketDetails = {};
+                  this.supportTickets.push(support_ticket);
                   Toast.fire({
                     title: "Created",
                     text: `Members of the relevant department will see it on next login`,
@@ -492,18 +486,6 @@
                 });
             }
           });
-      },
-
-      hasExpired(date) {
-        return new Date(date) < Date.now();
-      },
-      range(start, end) {
-        return _.range(start, end);
-      }
-    },
-    computed: {
-      saleRepId() {
-        return this.$route.params.rep;
       }
     }
   };

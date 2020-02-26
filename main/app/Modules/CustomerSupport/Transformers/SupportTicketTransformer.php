@@ -3,6 +3,7 @@
 namespace App\Modules\CustomerSupport\Transformers;
 
 use App\Modules\CustomerSupport\Models\SupportTicket;
+use App\Modules\Admin\Models\Department;
 
 class SupportTicketTransformer
 {
@@ -30,7 +31,8 @@ class SupportTicketTransformer
 			return [
 				'support_tickets' => $collection->map(function ($v) use ($transformerMethod) {
 					return $this->$transformerMethod($v);
-				})
+				}),
+				'departments' => Department::get(['display_name', 'id'])
 			];
 		}
 	}

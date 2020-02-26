@@ -4,16 +4,19 @@ namespace App\Modules\CustomerSupport\Models;
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Database\Eloquent\Model;
+use App\Modules\Admin\Models\Department;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Modules\CustomerSupport\Models\CustomerSupport;
 use App\Modules\CustomerSupport\Transformers\SupportTicketTransformer;
-use App\Modules\Admin\Models\Department;
+use App\Modules\CustomerSupport\Http\Requests\CreateSupportTicketValidation;
 
 class SupportTicket extends Model
 {
 	use SoftDeletes;
 
-	protected $fillable = [];
+	protected $fillable = [
+		'channel', 'department_id', 'description', 'ticket_type'
+	];
 
 
 	public function assignee()
@@ -40,7 +43,7 @@ class SupportTicket extends Model
 	static function customerSupportRoutes()
 	{
 		Route::group(['namespace' => '\App\Modules\CustomerSupport\Models', 'prefix' => 'api'], function () {
-			Route::get('support-tickets', 'SupportTicket@getSupportTickets')->middleware('auth:admin,sales_rep,card_admin,normal_admin');
+			Route::post('support-ticket/create', 'SupportTicket@createSupportTicket')->middleware('auth:customer_support');
 		});
 	}
 
@@ -53,10 +56,20 @@ class SupportTicket extends Model
 
 
 	/**
-	 * ! Card User route methods
+	 * ! Admin route methods
 	 */
 	public function getSupportTickets()
 	{
 		return response()->json((new SupportTicketTransformer)->collectionTransformer(SupportTicket::withTrashed()->get(), 'transformForCustomerSupport'), 200);
+	}
+
+
+	/**
+	 * ! Customer Support methods
+	 */
+	public function createSupportTicket(CreateSupportTicketValidation $request)
+	{
+		$ticket = auth()->user()->support_tickets()->create($request->all());
+		return response()->json((new SupportTicketTransformer)->transformForCustomerSupport($ticket), 201);
 	}
 }

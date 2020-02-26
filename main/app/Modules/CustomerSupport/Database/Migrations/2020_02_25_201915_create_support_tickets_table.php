@@ -17,8 +17,8 @@ class CreateSupportTicketsTable extends Migration
 			$table->bigIncrements('id');
 			$table->bigInteger('customer_support_id')->unsigned();
 			$table->foreign('customer_support_id')->references('id')->on('customer_supports')->onDelete('cascade');
-			$table->enum('ticket_type', ['complaints', 'request']);
-			$table->enum('channel', ['phone call', 'email', 'sms']);
+			$table->enum('ticket_type', ['complaint', 'request']);
+			$table->enum('channel', ['phone call', 'email', 'sms', 'whatsapp', 'others']);
 			$table->text('description');
 			$table->bigInteger('department_id')->unsigned();
 			$table->foreign('department_id')->references('id')->on('departments')->onDelete('cascade');
