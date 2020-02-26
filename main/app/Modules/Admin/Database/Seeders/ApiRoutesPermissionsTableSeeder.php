@@ -466,6 +466,13 @@ class ApiRoutesPermissionsTableSeeder extends Seeder
 				'api_route_id' => 5,
 				'user_type' => 'App\\Modules\\CustomerSupport\\Models\\CustomerSupport',
 			),
+			64 =>
+			array(
+				'id' => 66,
+				'user_id' => 1,
+				'api_route_id' => 5,
+				'user_type' => 'App\\Modules\\SalesRep\\Models\\SalesRep',
+			),
 		));
 	}
 }
