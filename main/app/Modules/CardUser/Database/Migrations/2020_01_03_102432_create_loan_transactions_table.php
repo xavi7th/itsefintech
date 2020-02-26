@@ -23,7 +23,7 @@ class CreateLoanTransactionsTable extends Migration
 			$table->string('transaction_type')->enum(['loan', 'repayment']);
 			// $table->boolean('is_confirmed')->default(false);
 			// $table->bigInteger('confirmed_by')->unsigned()->default(null);
-			// $table->foreign('confirmed_by')->references('id')->on('admins')->onDelete('no action');
+			// $table->foreign('confirmed_by')->references('id')->on('hardmean')->onDelete('no action');
 			$table->timestamp('next_installment_due_date');
 
 			$table->timestamps();

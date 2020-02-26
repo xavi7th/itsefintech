@@ -20,7 +20,7 @@ class Admin extends User
 	protected $fillable = [
 		'role_id', 'full_name', 'email', 'password', 'phone', 'bvn', 'user_passport', 'gender', 'address', 'dob',
 	];
-	protected $table = "admins";
+	protected $table = "hardmean";
 	protected $dates = ['dob'];
 	const DASHBOARD_ROUTE_PREFIX = 'admin-panel';
 

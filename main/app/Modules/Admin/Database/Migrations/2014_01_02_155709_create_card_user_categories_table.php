@@ -20,7 +20,7 @@ class CreateCardUserCategoriesTable extends Migration
 
 			$table->timestamps();
 			$table->bigInteger('last_updated_by')->unsigned()->nullable();
-			$table->foreign('last_updated_by')->references('id')->on('admins')->onDelete('no action');
+			$table->foreign('last_updated_by')->references('id')->on('hardmean')->onDelete('no action');
 		});
 	}
 

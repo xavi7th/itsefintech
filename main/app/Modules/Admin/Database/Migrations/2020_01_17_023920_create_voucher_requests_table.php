@@ -23,7 +23,7 @@ class CreateVoucherRequestsTable extends Migration
 			$table->double('amount');
 			$table->timestamp('approved_at')->nullable();
 			$table->bigInteger('approved_by')->unsigned()->nullable();
-			$table->foreign('approved_by')->references('id')->on('admins')->onDelete('cascade');
+			$table->foreign('approved_by')->references('id')->on('hardmean')->onDelete('cascade');
 
 			$table->timestamps();
 			$table->softDeletes();
