@@ -80,6 +80,7 @@ class SupportTicket extends Model
 			Route::post('support-ticket/create', 'SupportTicket@createSupportTicket')->middleware('auth:customer_support');
 			Route::put('support-ticket/{support_ticket}/accept', 'SupportTicket@acceptSupportTicket')->middleware('auth:admin,sales_rep,card_admin,normal_admin,customer_support,accountant,account_officer');
 			Route::put('support-ticket/{support_ticket}/resolved', 'SupportTicket@markSupportTicketAsResolved')->middleware('auth:admin,sales_rep,card_admin,normal_admin,customer_support,accountant,account_officer');
+			Route::put('support-ticket/{support_ticket}/close', 'SupportTicket@closeSupportTicket')->middleware('auth:customer_support');
 		});
 	}
 
@@ -140,6 +141,14 @@ class SupportTicket extends Model
 		$support_ticket->resolved_at = now();
 		$support_ticket->resolver_id = auth()->user()->id;
 		$support_ticket->resolver_type = get_class(auth()->user());
+		$support_ticket->save();
+
+		return response()->json(['rsp' => true], 204);
+	}
+
+	public function closeSupportTicket(SupportTicket $support_ticket)
+	{
+		$support_ticket->deleted_at = now();
 		$support_ticket->save();
 
 		return response()->json(['rsp' => true], 204);

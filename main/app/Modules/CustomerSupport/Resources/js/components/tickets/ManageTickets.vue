@@ -45,6 +45,11 @@
                     v-if="supportTicket.is_started && !supportTicket.is_resolved && $user.type == supportTicket.department_slug"
                   >Mark Resolved</div>
                   <div
+                    class="fs-11 btn btn-bold badge badge-danger pointer"
+                    @click="closeTicket(supportTicket)"
+                    v-if="!supportTicket.is_closed && $user.isCustomerSupport"
+                  >Close ticket</div>
+                  <div
                     class="badge btn btn-bold badge-info badge-shadow pointer"
                     data-toggle="modal"
                     data-target="#modal-details"
@@ -294,9 +299,10 @@
 <script>
   import { adminViewSupportTickets } from "@admin-assets/js/config";
   import {
-    adminCreateSupportTicket,
+    customerSupportCreateSupportTicket,
     adminAcceptSupportTicket,
-    adminMarkSupportTicketResolved
+    adminMarkSupportTicketResolved,
+    customerSupportCloseTicket
   } from "@customerSupport-assets/js/config";
   import PreLoader from "@admin-components/misc/PageLoader";
   export default {
@@ -389,7 +395,7 @@
             });
 
             axios
-              .post(adminCreateSupportTicket, {
+              .post(customerSupportCreateSupportTicket, {
                 ...this.details
               })
               .then(({ status, data: support_ticket }) => {
@@ -463,6 +469,38 @@
             preConfirm: () => {
               return axios
                 .put(adminMarkSupportTicketResolved(supportTicketDetails.id))
+                .then(rsp => {
+                  if (rsp.status !== 204) {
+                    throw new Error(rsp.statusText);
+                  }
+                  return { rsp: true };
+                });
+            }
+          })
+          .then(result => {
+            if (result.value) {
+              swal
+                .fire({
+                  title: `Success`,
+                  text: "Ticket marked as resolved by you!",
+                  icon: "success"
+                })
+                .then(() => {
+                  location.reload();
+                });
+            }
+          });
+      },
+      closeTicket(supportTicketDetails) {
+        swalPreconfirm
+          .fire({
+            text:
+              "This ticket will become marked as closed and will no longer be viewable by the concerned department.",
+            showCloseButton: true,
+            confirmButtonText: "yes, close ticket",
+            preConfirm: () => {
+              return axios
+                .put(customerSupportCloseTicket(supportTicketDetails.id))
                 .then(rsp => {
                   if (rsp.status !== 204) {
                     throw new Error(rsp.statusText);
