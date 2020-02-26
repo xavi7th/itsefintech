@@ -79,6 +79,7 @@ class SupportTicket extends Model
 		Route::group(['namespace' => '\App\Modules\CustomerSupport\Models', 'prefix' => 'api'], function () {
 			Route::post('support-ticket/create', 'SupportTicket@createSupportTicket')->middleware('auth:customer_support');
 			Route::put('support-ticket/{support_ticket}/accept', 'SupportTicket@acceptSupportTicket')->middleware('auth:admin,sales_rep,card_admin,normal_admin,customer_support,accountant,account_officer');
+			Route::put('support-ticket/{support_ticket}/resolved', 'SupportTicket@markSupportTicketAsResolved')->middleware('auth:admin,sales_rep,card_admin,normal_admin,customer_support,accountant,account_officer');
 		});
 	}
 
@@ -114,6 +115,16 @@ class SupportTicket extends Model
 		}
 	}
 
+	/**
+	 * ! Customer Support methods
+	 */
+	public function createSupportTicket(CreateSupportTicketValidation $request)
+	{
+		$ticket = auth()->user()->support_tickets()->create($request->all());
+		return response()->json((new SupportTicketTransformer)->transformForCustomerSupport($ticket), 201);
+	}
+
+
 	public function acceptSupportTicket(SupportTicket $support_ticket)
 	{
 		$support_ticket->assigned_at = now();
@@ -124,13 +135,13 @@ class SupportTicket extends Model
 		return response()->json(['rsp' => true], 204);
 	}
 
-
-	/**
-	 * ! Customer Support methods
-	 */
-	public function createSupportTicket(CreateSupportTicketValidation $request)
+	public function markSupportTicketAsResolved(SupportTicket $support_ticket)
 	{
-		$ticket = auth()->user()->support_tickets()->create($request->all());
-		return response()->json((new SupportTicketTransformer)->transformForCustomerSupport($ticket), 201);
+		$support_ticket->resolved_at = now();
+		$support_ticket->resolver_id = auth()->user()->id;
+		$support_ticket->resolver_type = get_class(auth()->user());
+		$support_ticket->save();
+
+		return response()->json(['rsp' => true], 204);
 	}
 }

@@ -81,8 +81,8 @@ class SupportTicketTransformer
 			'is_resolved' => (bool)$support_ticket->resolved_at,
 			'resolved_at' => (string)$support_ticket->resolved_at,
 			'resolved_by' => (string)optional($support_ticket->resolver)->full_name,
-			'closed_at' => (string)$support_ticket->deleted_at,
 			'status' => (string)$status,
+			'closed_at' => (string)$support_ticket->deleted_at,
 		];
 	}
 }

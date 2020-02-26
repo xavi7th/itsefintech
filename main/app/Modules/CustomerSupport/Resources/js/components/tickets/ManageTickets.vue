@@ -81,7 +81,7 @@
                             <div class="flex-sh-0 ln-18">
                               <div
                                 class="fs-16 fw-500 text-danger"
-                              >{{ supportTicketDetails.asignee || 'Not Started' }}</div>
+                              >{{ supportTicketDetails.started_by || 'Not Started' }}</div>
                               <span class="fs-12 text-light">
                                 <!-- <i class="far fa-clock"></i> -->
                                 Started By
@@ -90,7 +90,7 @@
                             <div class="flex-sh-0 ln-18">
                               <div
                                 class="fs-16 fw-500 text-warning"
-                              >{{ supportTicketDetails.resolver || 'Not Resolved' }}</div>
+                              >{{ supportTicketDetails.resolved_by || 'Not Resolved' }}</div>
                               <span class="fs-12 text-light">
                                 <!-- <i class="far fa-clock"></i> -->
                                 Resolved By
