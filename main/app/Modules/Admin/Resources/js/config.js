@@ -123,6 +123,8 @@ export const adminViewVoucherTransactions = apiBaseUrl + 'voucher-transactions'
 
 export const adminViewActivities = apiBaseUrl + 'activity-logs'
 
+export const adminViewSupportTickets = apiBaseUrl + 'support-tickets'
+
 
 
 export const adminViewUsers = apiBaseUrl + 'users'

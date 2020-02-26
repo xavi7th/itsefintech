@@ -308,15 +308,26 @@ export const allRoutes = [
     },
 
     {
-        path: '/messages',
-        component: adminView( 'dashboard/ManageMessages' ),
-        name: 'admin.messages',
+        path: '/tickets',
+        component: customerSupportView( 'tickets/ManageTickets' ),
+        name: 'customerSupport.tickets',
         meta: {
-            title: APP_NAME + ' | Messages',
+            title: APP_NAME + ' | Customer Service',
             iconClass: 'home',
-            menuName: 'Messages'
+            menuName: 'Manage Tickets'
         },
-    }
+    },
+
+    // {
+    //     path: '/messages',
+    //     component: adminView( 'dashboard/ManageMessages' ),
+    //     name: 'admin.messages',
+    //     meta: {
+    //         title: APP_NAME + ' | Messages',
+    //         iconClass: 'home',
+    //         menuName: 'Messages'
+    //     },
+    // }
 ]
 
 export const authRoutes = [ {

@@ -5,7 +5,6 @@ export const CONSTANTS = {
 const baseUrl = '/customer-supports/'
 const apiBaseUrl = `${baseUrl}api/`
 
-export const adminLoginEndpoint = baseUrl + 'login'
-export const adminViewAdmins = apiBaseUrl + 'admins'
-export const adminCreateAdmin = apiBaseUrl + 'admin/create'
-export const adminAdminPermissions = id => apiBaseUrl + 'admin/' + id + '/permissions'
+export const adminCreateSupportTicket = apiBaseUrl + 'support-tickets/create'
+export const adminAcceptSupportTicket = id => apiBaseUrl + 'support-ticket/' + id + 'accept '
+export const adminMarkSupportTicketResolved = id => apiBaseUrl + 'support-ticket/' + id + 'resolved'

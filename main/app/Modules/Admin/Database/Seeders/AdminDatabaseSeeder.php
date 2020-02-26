@@ -18,6 +18,7 @@ class AdminDatabaseSeeder extends Seeder
 	{
 		Model::unguard();
 
+		$this->call(DepartmentsTableSeeder::class);
 		$this->call(ApiRoutesTableSeeder::class);
 		$this->call(AdminsTableSeeder::class);
 		$this->call(MerchantCategoriesTableSeeder::class);

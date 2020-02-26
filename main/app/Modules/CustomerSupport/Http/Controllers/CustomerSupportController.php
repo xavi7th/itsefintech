@@ -7,7 +7,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Route;
 use App\Modules\Admin\Models\ApiRoute;
 use App\Modules\CustomerSupport\Models\CustomerSupport;
-
+use App\Modules\CustomerSupport\Models\SupportTicket;
 
 class CustomerSupportController extends Controller
 {
@@ -21,6 +21,8 @@ class CustomerSupportController extends Controller
 			LoginController::routes();
 
 			CustomerSupport::customerSupportRoutes();
+
+			SupportTicket::customerSupportRoutes();
 		});
 	}
 }

@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Route;
 use App\Modules\Admin\Models\ApiRoute;
 use App\Modules\Admin\Models\ActivityLog;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Modules\CustomerSupport\Models\SupportTicket;
 use App\Modules\Admin\Transformers\AdminUserTransformer;
 
 class CustomerSupport extends User
@@ -40,6 +41,21 @@ class CustomerSupport extends User
 	public function activities()
 	{
 		return $this->morphMany(ActivityLog::class, 'user');
+	}
+
+	public function support_tickets()
+	{
+		return $this->hasMany(SupportTicket::class);
+	}
+
+	public function assigned_tickets()
+	{
+		return $this->morphMany(SupportTicket::class, 'asignee');
+	}
+
+	public function resolved_tickets()
+	{
+		return $this->morphMany(SupportTicket::class, 'resolver');
 	}
 
 	protected static function boot()
@@ -74,8 +90,9 @@ class CustomerSupport extends User
 	static function customerSupportRoutes()
 	{
 		Route::group(['middleware' => ['auth:customer_support', 'customer_supports'], 'namespace' => '\App\Modules\CustomerSupport\Models'], function () {
-
-			Route::post('test-route-permission', 'CustomerSupport@testRoutePermission')->prefix('api');
+			Route::group(['prefix' => 'api'], function () {
+				Route::post('test-route-permission', 'CustomerSupport@testRoutePermission');
+			});
 
 			Route::get('/{subcat?}', 'CustomerSupport@loadCustomerSupportApplication')->name('customersupport.dashboard')->where('subcat', '^((?!(api)).)*');
 		});

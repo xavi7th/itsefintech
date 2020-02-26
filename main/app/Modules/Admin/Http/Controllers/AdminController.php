@@ -10,6 +10,7 @@ use App\Modules\Admin\Models\Voucher;
 use Illuminate\Support\Facades\Route;
 use App\Modules\Admin\Models\ApiRoute;
 use App\Modules\Admin\Models\Merchant;
+use App\Modules\Admin\Models\ActivityLog;
 use App\Modules\CardUser\Models\CardUser;
 use App\Modules\SalesRep\Models\SalesRep;
 use App\Modules\CardUser\Models\DebitCard;
@@ -24,11 +25,11 @@ use App\Modules\CardUser\Models\LoanTransaction;
 use App\Modules\NormalAdmin\Models\StockRequest;
 use App\Modules\CardUser\Models\DebitCardRequest;
 use App\Modules\AccountOfficer\Models\AccountOfficer;
+use App\Modules\CustomerSupport\Models\SupportTicket;
 use App\Modules\CustomerSupport\Models\CustomerSupport;
+use App\Modules\Admin\Transformers\AdminUserTransformer;
 use App\Modules\CardUser\Models\DebitCardFundingRequest;
 use App\Modules\SalesRep\Transformers\SalesRepDebitCardRequestTransformer;
-use App\Modules\Admin\Transformers\AdminUserTransformer;
-use App\Modules\Admin\Models\ActivityLog;
 
 class AdminController extends Controller
 {
@@ -99,6 +100,8 @@ class AdminController extends Controller
 				MerchantCategory::adminRoutes();
 
 				ActivityLog::adminRoutes();
+
+				SupportTicket::adminRoutes();
 			});
 
 			Route::group(['middleware' => ['auth:admin', 'admins']], function () {

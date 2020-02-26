@@ -58,6 +58,15 @@ class ApiRoutesTableSeeder extends Seeder
 				}',
 					'description' => 'View Activity Logs',
 				],
+				[
+					'path' => '/tickets',
+					'name' => 'customerSupport.tickets',
+					'meta' => '{title: APP_NAME + \' | View Tickets\',
+					iconClass: \'home\',
+					menuName: \'View Tickets\'
+				}',
+					'description' => 'Manage Tickets',
+				],
 
 				[
 					'path' => '/card-users',
