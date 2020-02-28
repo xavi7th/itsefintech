@@ -51,6 +51,7 @@ class MerchantTransaction extends Model
 			Route::get('merchant-transactions', 'MerchantTransaction@merchantViewTransactions'); //->middleware('auth.basic:merchant');
 			Route::get('merchant-transactions/pending', 'MerchantTransaction@viewPendingVoucherDebitTransaction')->middleware('auth:card_user');
 			Route::put('merchant-transaction/{merchant_transaction}/approve', 'MerchantTransaction@approveVoucherDebitTransaction')->middleware('auth:card_user');
+			Route::delete('merchant-transaction/{merchant_transaction}/cancel', 'MerchantTransaction@cancelVoucherDebitTransaction')->middleware('auth:card_user');
 			Route::post('merchant-loan/repay', 'MerchantTransaction@repayVoucherLoan')->middleware('auth:card_user');
 		});
 	}
@@ -129,6 +130,16 @@ class MerchantTransaction extends Model
 		ActivityLog::notifyAdmins(auth()->user()->email . ' approves voucher debit from ' . optional($mer->merchant)->name . '. Voucher Number: ' . optional($mer->voucher)->code);
 
 		auth('card_user')->user()->notify(new VoucherApproved($mer->name));
+
+		return response()->json([], 204);
+	}
+
+	public function cancelVoucherDebitTransaction($merchant_transaction)
+	{
+		/**
+		 * ! check if its a pending transaction first
+		 */
+		$mer = MerchantTransaction::destroy($merchant_transaction);
 
 		return response()->json([], 204);
 	}
