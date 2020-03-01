@@ -446,7 +446,7 @@ class CardUser extends User
 
 	public function updateUserProfile(CardUserUpdateProfileValidation $request)
 	{
-		auth('card_user')->user()->update($request->except(['email', 'bvn', 'phone']));
+		auth('card_user')->user()->update($request->except(['email', 'phone']));
 
 		auth()->user()->notify(new ProfileEdited);
 
