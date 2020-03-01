@@ -44,5 +44,12 @@ return [
 		'account_sid' => env('TWILIO_ACCOUNT_SID'),
 		'from' => env('TWILIO_FROM'), // optional
 	],
+	'termii_sms' => [
+		'endpoint' => 'https://termii.com/api/sms/send', // optional when using auth token
+		'username' => env('TERMII_EMAIL'), // optional when using auth token
+		'password' => env('TERMII_PASSWORD'), // optional when using auth token
+		'api_key' => env('TERMII_API_KEY'), // optional when using username and password
+		'from' => env('TERMII_SENDER_ID'), // optional
+	],
 
 ];

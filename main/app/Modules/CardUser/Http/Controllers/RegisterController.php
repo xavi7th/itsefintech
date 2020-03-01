@@ -74,7 +74,7 @@ class RegisterController extends Controller
 		$token = (string)auth('card_user')->login($card_user);
 
 
-		// DB::commit();
+		DB::commit();
 
 		return $this->respondWithToken($token);
 	}
@@ -106,8 +106,7 @@ class RegisterController extends Controller
 			'card_user_category_id' => $data['card_user_category_id'],
 			'email' => $data['email'],
 			'password' => $data['password'],
-			'phone' => $phone_number,
-			'bvn' => $data['bvn']
+			'phone' => $phone_number
 		]);
 
 		return $card_user;
