@@ -46,8 +46,8 @@ class DebitCardType extends Model
 
 	static function cardUserRoutes()
 	{
-		Route::group(['namespace' => '\App\Modules\CardUser\Models', 'middleware' => ['verified_card_users']], function () {
-			Route::get('debit-card-type/{debit_card_type}/price', 'DebitCardType@getPrice')->middleware('auth:card_user');
+		Route::group(['namespace' => '\App\Modules\CardUser\Models'], function () {
+			Route::get('debit-card-type/{debit_card_type}/price', 'DebitCardType@getPrice');
 		});
 	}
 
