@@ -24,7 +24,7 @@ class AxiosValidationExceptionBuilder extends Exception
 	public function render()
 	{
 
-		if (request()->ajax()) {
+		if (request()->ajax() || request()->expectsJson()) {
 			return response()->json(
 				// implode(',', $this->validator->errors()->all()),
 				$this->validator->errors()->first(),
