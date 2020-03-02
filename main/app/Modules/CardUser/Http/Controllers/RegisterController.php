@@ -64,11 +64,14 @@ class RegisterController extends Controller
 
 		event(new Registered($card_user = $this->create($request->all())));
 
+		$card_user->otp_verified_at = now();
+		$card_user->save();
+
 		/** Create OTP */
-		$otp = $card_user->createOTP();
+		// $otp = $card_user->createOTP();
 
 		/** Send OTP code */
-		$card_user->notify(new SendOTP($otp));
+		// $card_user->notify(new SendOTP($otp));
 
 		/** Log the user in */
 		$token = (string)auth('card_user')->login($card_user);
