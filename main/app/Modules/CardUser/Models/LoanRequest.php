@@ -84,8 +84,8 @@ class LoanRequest extends Model
 	static function adminRoutes()
 	{
 		Route::group(['namespace' => '\App\Modules\CardUser\Models'], function () {
-			Route::get('loan-requests/', 'LoanRequest@showAllLoanRequests')->middleware('auth:admin,normal_admin');
-			Route::put('loan-request/{loan_request}/paid', 'LoanRequest@markLoanRequestAsPaid')->middleware('auth:admin');
+			Route::get('loan-requests/', 'LoanRequest@showAllLoanRequests')->middleware('auth:admin,normal_admin,accountant');
+			Route::put('loan-request/{loan_request}/paid', 'LoanRequest@markLoanRequestAsPaid')->middleware('auth:accountant');
 		});
 	}
 
@@ -166,6 +166,8 @@ class LoanRequest extends Model
 			$loan_requests = LoanRequest::withTrashed()->get();
 		} else if (auth('normal_admin')->check()) {
 			$loan_requests = LoanRequest::where('approved_at', null)->get();
+		} else if (auth('accountant')->check()) {
+			$loan_requests = LoanRequest::where('approved_at', '<>', null)->get();
 		}
 		return (new AdminLoanRequestTransformer)->collectionTransformer($loan_requests, 'transformForAdminViewLoanRequests');
 	}
