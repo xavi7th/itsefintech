@@ -34,7 +34,7 @@
                     data-toggle="modal"
                     data-target="#modal-cards"
                     @click="showCardsModal(user)"
-                    v-if="$user.isAccountOfficer"
+                    v-if="$user.isAccountOfficer || $user.isAdmin"
                   >View Cards</div>
                   <div
                     class="badge btn-bold btn-warning pointer"
