@@ -249,7 +249,10 @@ class CardUser extends User
 
 	public function pending_debit_card_requests()
 	{
-		return $this->hasOne(DebitCardRequest::class)->where('debit_card_request_status_id', '<>', DebitCardRequestStatus::delivered_id())->orWhere('debit_card_id', null);
+		return $this->hasOne(DebitCardRequest::class)->where(function ($query) {
+			$query->where('debit_card_request_status_id', '<>', DebitCardRequestStatus::delivered_id())
+				->orWhere('debit_card_id', null);
+		});
 	}
 
 	public function last_debit_card_request()
