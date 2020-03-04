@@ -28,7 +28,10 @@ Route::domain('pay.itsefintech.test')->group(function () {
 
 Route::prefix('')->group(function () {
 	Route::get('/', 'CardUserController@index');
-	Route::get('/cards', 'CardUserController@cards');
-	Route::get('/merchant-pay', 'CardUserController@merchantPay');
-	Route::post('/contact-us', 'CardUserController@contactUs');
+	Route::get('/cards', 'CardUserController@index');
+	Route::get('/merchants', 'CardUserController@index');
+	Route::get('/faqs', 'CardUserController@index');
+	Route::get('/how-it-works', 'CardUserController@index');
+	// Route::get('/merchant-pay', 'CardUserController@merchantPay');
+	// Route::post('/contact-us', 'CardUserController@contactUs');
 });

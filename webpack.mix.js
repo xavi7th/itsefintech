@@ -1,4 +1,4 @@
-const mix = require('laravel-mix');
+const mix = require( 'laravel-mix' );
 mix.setPublicPath( './public_html' )
 
 
@@ -38,32 +38,11 @@ mix
 		],
 	} )
 	.extract( [ 'vue', 'sweetalert2', 'axios', 'lodash', 'vue-plugin-load-script', 'vue-router' ] )
-	.version()
+	.version();
+
+mix.copyDirectory( __dirname + '/main/resources/site-assets/', 'public_html/basicsite' );
 
 
 if ( !mix.inProduction() ) {
 	mix.sourceMaps();
 }
-
-
-
-// mix.webpackConfig( {
-// 	devtool: 'source-map',
-// } )
-
-// mix.browserSync( {
-// 	injectChanges: true,
-// 	ghostMode: {
-// 		clicks: false,
-// 		forms: false,
-// 		scroll: false,
-// 	},
-// 	proxy: {
-// 		target: 'localhost:8000',
-// 		reqHeaders: function () {
-// 			return {
-// 				host: 'localhost:3000',
-// 			}
-// 		},
-// 	},
-// } )

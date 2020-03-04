@@ -12,6 +12,7 @@ use App\Modules\CardUser\Models\DebitCardRequest;
 use App\Modules\Admin\Http\Requests\EditDebitCardTypeValidation;
 use App\Modules\Admin\Transformers\AdminDebitCardTypeTransformer;
 use App\Modules\Admin\Http\Requests\DebitCardTypeCreationValidation;
+use App\Modules\CardUser\Transformers\DebitCardTypeTransformer;
 
 class DebitCardType extends Model
 {
@@ -56,7 +57,7 @@ class DebitCardType extends Model
 	 */
 	public function getPrice(DebitCardType $debit_card_type)
 	{
-		return $debit_card_type;
+		return (new DebitCardTypeTransformer)->transform($debit_card_type);
 	}
 
 	/**
