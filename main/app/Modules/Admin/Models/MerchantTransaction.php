@@ -2,6 +2,7 @@
 
 namespace App\Modules\Admin\Models;
 
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Modules\Admin\Models\Voucher;
 use Illuminate\Support\Facades\Route;
@@ -9,10 +10,12 @@ use App\Modules\Admin\Models\Merchant;
 use Illuminate\Database\Eloquent\Model;
 use App\Modules\Admin\Models\ActivityLog;
 use App\Modules\CardUser\Models\CardUser;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Modules\CardUser\Notifications\VoucherPaid;
 use App\Modules\CardUser\Notifications\VoucherApproved;
 use App\Modules\Admin\Http\Requests\MerchantDebitVoucherValidation;
+use App\Modules\CardUser\Exceptions\AxiosValidationExceptionBuilder;
 use App\Modules\CardUser\Http\Requests\MakeVoucherRepaymentValidation;
 use App\Modules\CardUser\Transformers\CardUserMerchantTransactionTransformer;
 
@@ -46,8 +49,13 @@ class MerchantTransaction extends Model
 
 	static function merchantRoutes()
 	{
+		Route::group(['namespace' => '\App\Modules\Admin\Models', 'middleware' => 'web'], function () {
+			Route::get('/merchant-login', 'MerchantTransaction@merchantLogin')->name('merchants.login');
+			Route::post('/validate-merchant-code', 'MerchantTransaction@validateMerchantCode');
+			Route::post('merchant-transaction/create', 'MerchantTransaction@merchantDebitVoucher');
+			Route::match(['get', 'post'], '/process-merchant-transaction/{trans_id}', 'MerchantTransaction@processMerchantTransaction');
+		});
 		Route::group(['namespace' => '\App\Modules\Admin\Models', 'prefix' => 'api/v1'], function () {
-			Route::post('merchant-transaction/create', 'MerchantTransaction@merchantDebitVoucher')->middleware('web'); //->middleware('auth.basic:merchant');
 			Route::get('merchant-transactions', 'MerchantTransaction@merchantViewTransactions'); //->middleware('auth.basic:merchant');
 			Route::get('merchant-transactions/pending', 'MerchantTransaction@viewPendingVoucherDebitTransaction')->middleware('auth:card_user');
 			Route::put('merchant-transaction/{merchant_transaction}/approve', 'MerchantTransaction@approveVoucherDebitTransaction')->middleware('auth:card_user');
@@ -57,12 +65,60 @@ class MerchantTransaction extends Model
 	}
 
 
+	public function merchantLogin()
+	{
+		return view('merchants');
+	}
+
+	public function validateMerchantCode(Request $request)
+	{
+		$validator = Validator::make($request->all(), [
+			'merchant_code' => 'required|alpha_dash|exists:merchants,unique_code',
+		]);
+
+		if ($validator->fails()) {
+			return response()->json($validator->errors()->first(), 422);
+		}
+
+		return response()->json('', 204);
+	}
+
+	public function processMerchantTransaction($trans_id)
+	{
+		if (request()->isMethod('GET')) {
+			$merchant_transaction = MerchantTransaction::findOrFail($trans_id);
+			return view('process-merchant-transaction', compact('merchant_transaction'));
+		} else if (request()->isMethod('POST')) {
+			$merchant_transaction = MerchantTransaction::find($trans_id);
+			if (is_null($merchant_transaction)) {
+				return response()->json('', 205);
+			} else {
+				if ($merchant_transaction->trans_type == 'debit') {
+					return response()->json('', 201);
+				} else {
+					return response()->json('', 200);
+				}
+			}
+		}
+	}
+
+
 	/**
 	 * ! Merchant Routes
 	 */
 
-	public function merchantDebitVoucher(MerchantDebitVoucherValidation $request)
+	public function merchantDebitVoucher(Request $request)
 	{
+
+
+		$validator = Validator::make($request->all(), [
+			'voucher_code' => 'required|alpha_dash|exists:vouchers,code',
+			'amount' => 'required|numeric',
+		]);
+
+		if ($validator->fails()) {
+			return response()->json($validator->errors()->first(), 422);
+		}
 		// return $request->voucher_code;
 		/** Find the voucher */
 		$voucher = Voucher::where('code', $request->voucher_code)->firstOrFail();
@@ -70,11 +126,11 @@ class MerchantTransaction extends Model
 
 		/** Check if the Voucher is assigned */
 		if (intval($voucher->card_user_id) <= 0) {
-			abort(403, 'Invalid voucher selected');
+			return response()->json('Invalid voucher selected', 422);
 		}
 		/**Check the balance and the amount */
 		if ($voucher->amount < $request->amount) {
-			return response()->json(['message' => 'Insufficient balance in your voucher'], 422);
+			return response()->json('Insufficient balance in your voucher', 422);
 		}
 		/** Use the voucher code to create a new transaction */
 		$trans = $voucher->merchant_transactions()->create([
@@ -84,10 +140,11 @@ class MerchantTransaction extends Model
 			'trans_type' => 'debit request'
 		]);
 
-		// ActivityLog::logUserActivity($merchant->name . ' requests voucher debit from ' . optional($voucher->card_user)->email . '. Voucher Number: ' . $voucher->code);
+		ActivityLog::notifyAdmins($merchant->name . ' requests voucher debit from ' . optional($voucher->card_user)->email . '. Voucher Number: ' . $voucher->code);
 
-		if ($request->ajax()) {
-			return (new CardUserMerchantTransactionTransformer)->transform($trans, 'transform');
+		if ($request->ajax() || $request->expectsJson()) {
+			// return (new CardUserMerchantTransactionTransformer)->transform($trans);
+			return response()->json((new CardUserMerchantTransactionTransformer)->transform($trans), 201);
 		} else {
 			return back()->withSuccess('Debit request created');
 		}

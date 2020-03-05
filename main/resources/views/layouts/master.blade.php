@@ -6,6 +6,7 @@
         <title>Capital X</title>
         <base href="/">
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="csrf-token" content="{{ csrf_token() }}">
         <link rel="apple-touch-icon" href="/img/apple-touch-icon.png">
         <link rel="stylesheet" href="/basicsite/assets/css/bootstrap.css" />
         <link rel="shortcut icon" href="/img/favicon.png" type="image/png">

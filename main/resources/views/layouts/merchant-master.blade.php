@@ -8,6 +8,7 @@
         <link rel="stylesheet" href="/basicsite/assets/css/reset.css">
         <link rel="stylesheet" href="/basicsite/assets/css/unsemantic-grid-responsive-tablet.css">
         <link rel="stylesheet" href="/basicsite/assets/css/custom2.css">
+        <meta name="csrf-token" content="{{ csrf_token() }}">
         <title>Capital X | Merchant Pay</title>
         @yield('customCSS')
     </head>

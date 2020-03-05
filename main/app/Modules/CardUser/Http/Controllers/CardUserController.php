@@ -3,21 +3,23 @@
 namespace App\Modules\CardUser\Http\Controllers;
 
 use Illuminate\Http\Response;
+use Nexmo\Client\Exception\Request;
 use App\Http\Controllers\Controller;
+use App\Modules\Admin\Models\Voucher;
 use Illuminate\Support\Facades\Route;
+use App\Modules\Admin\Models\Merchant;
 use App\Modules\CardUser\Models\CardUser;
+use Illuminate\Support\Facades\Validator;
 use App\Modules\CardUser\Models\DebitCard;
+use App\Modules\Admin\Models\VoucherRequest;
 use App\Modules\CardUser\Models\LoanRequest;
+use App\Modules\CardUser\Models\Notification;
 use App\Modules\CardUser\Models\DebitCardType;
 use App\Modules\CardUser\Models\LoanTransaction;
+use App\Modules\CardUser\Models\DebitCardTransaction;
+use App\Modules\CardUser\Models\DebitCardFundingRequest;
 use App\Modules\CardUser\Http\Controllers\LoginController;
 use App\Modules\CardUser\Http\Controllers\RegisterController;
-use App\Modules\Admin\Models\VoucherRequest;
-use App\Modules\Admin\Models\Voucher;
-use App\Modules\CardUser\Models\DebitCardFundingRequest;
-use App\Modules\CardUser\Models\DebitCardTransaction;
-use App\Modules\Admin\Models\Merchant;
-use App\Modules\CardUser\Models\Notification;
 
 class CardUserController extends Controller
 {
@@ -68,16 +70,6 @@ class CardUserController extends Controller
 	public function index()
 	{
 		return view('index');
-	}
-
-	public function merchantLogin()
-	{
-		return view('merchants');
-	}
-
-	public function processMerchantTransaction()
-	{
-		return view('process-merchant-transaction');
 	}
 
 	public function contactUs()

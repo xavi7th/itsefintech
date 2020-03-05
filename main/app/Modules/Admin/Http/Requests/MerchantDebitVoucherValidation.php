@@ -20,7 +20,7 @@ class MerchantDebitVoucherValidation extends FormRequest
 		return [
 			'amount' => 'required|numeric',
 			'voucher_code' => 'required|alpha_dash|exists:vouchers,code',
-			'merchant_code' => 'required|alpha_dash|exists:merchants,unique_code'
+			// 'merchant_code' => 'required|alpha_dash|exists:merchants,unique_code'
 		];
 	}
 
@@ -62,6 +62,7 @@ class MerchantDebitVoucherValidation extends FormRequest
 		 * * And handle there. That will help for reuse. Handling here for compactness purposes
 		 * ? Who knows they might ask for a different format for the enxt validation
 		 */
-		throw new AxiosValidationExceptionBuilder($validator);
+		return response()->json($validator->errors()->first(), 422);
+		// throw new AxiosValidationExceptionBuilder($validator);
 	}
 }
