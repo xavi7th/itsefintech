@@ -32,6 +32,8 @@ Route::prefix('')->group(function () {
 	Route::get('/merchants', 'CardUserController@index');
 	Route::get('/faqs', 'CardUserController@index');
 	Route::get('/how-it-works', 'CardUserController@index');
-	// Route::get('/merchant-pay', 'CardUserController@merchantPay');
+	Route::get('/merchant-login', 'CardUserController@merchantLogin')->name('merchants.login');
+	Route::get('/process-merchant-transaction', 'CardUserController@processMerchantTransaction');
+	Route::get('/process-merchant-transaction', 'CardUserController@processMerchantTransaction');
 	// Route::post('/contact-us', 'CardUserController@contactUs');
 });

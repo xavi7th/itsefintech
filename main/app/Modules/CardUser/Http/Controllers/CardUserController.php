@@ -70,14 +70,14 @@ class CardUserController extends Controller
 		return view('index');
 	}
 
-	public function merchantPay()
+	public function merchantLogin()
 	{
 		return view('merchants');
 	}
 
-	public function cards()
+	public function processMerchantTransaction()
 	{
-		return view('cards');
+		return view('process-merchant-transaction');
 	}
 
 	public function contactUs()
