@@ -2,14 +2,50 @@
 <html lang="en">
 
     <head>
+
+        <!-- Google Tag Manager -->
+        <script>
+            ( function ( w, d, s, l, i ) {
+                w[ l ] = w[ l ] || [];
+                w[ l ].push( {
+                    'gtm.start': new Date().getTime(),
+                    event: 'gtm.js'
+                } );
+                var f = d.getElementsByTagName( s )[ 0 ],
+                    j = d.createElement( s ),
+                    dl = l != 'dataLayer' ? '&l=' + l : '';
+                j.async = true;
+                j.src =
+                    'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
+                f.parentNode.insertBefore( j, f );
+            } )( window, document, 'script', 'dataLayer', 'GTM-M9N8WNW' );
+
+        </script>
+        <!-- End Google Tag Manager -->
+
+        <!-- Global site tag (gtag.js) - Google Analytics -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-95XMCCXT9S"></script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+
+            function gtag() {
+                dataLayer.push( arguments );
+            }
+            gtag( 'js', new Date() );
+
+            gtag( 'config', 'G-95XMCCXT9S' );
+
+        </script>
+
+
         <meta charset="utf-8">
         <title>Capital X</title>
         <base href="/">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
         <link rel="apple-touch-icon" href="/img/apple-touch-icon.png">
-        <link rel="stylesheet" href="/basicsite/assets/css/bootstrap.css" />
         <link rel="shortcut icon" href="/img/favicon.png" type="image/png">
+        <link rel="stylesheet" href="/basicsite/assets/css/bootstrap.css" />
         <link rel="stylesheet" href="/basicsite/assets/css/normalize.css" />
         <link rel="stylesheet" href="/basicsite/assets/css/main.css" />
         <link rel="stylesheet" href="/basicsite/assets/css/media.css" />
@@ -19,6 +55,11 @@
     </head>
 
     <body>
+        <!-- Google Tag Manager (noscript) -->
+        <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-M9N8WNW" height="0" width="0"
+                style="display:none;visibility:hidden"></iframe></noscript>
+        <!-- End Google Tag Manager (noscript) -->
+
         <app-root></app-root>
 
         <script src="/basicsite/assets/js/vendor/modernizr-3.8.0.min.js"></script>
@@ -64,32 +105,16 @@
                     .removeClass( "show-step" ).prev().addClass( "show-step" );
             } );
 
-
-            $( window ).on( 'load', function () {
-                $( '.cp-nav-links' ).append( '<li><a href="/merchant-login">Merchant Login</a></li>' )
-            } )
-
         </script>
 
-        <!-- Google Analytics: change UA-XXXXX-Y to be your site's ID. -->
-        <script>
-            window.ga = function () {
-                ga.q.push( arguments );
-            };
-            ga.q = [];
-            ga.l = +new Date();
-            ga( "create", "UA-XXXXX-Y", "auto" );
-            ga( "set", "transport", "beacon" );
-            ga( "send", "pageview" );
 
-        </script>
         <script src="https://www.google-analytics.com/analytics.js" async></script>
         <script src="/basicsite/runtime-es2015.0811dcefd377500b5b1a.js" type="module"></script>
         <script src="/basicsite/runtime-es5.0811dcefd377500b5b1a.js" nomodule defer></script>
         <script src="/basicsite/polyfills-es5.e94ba732172de6683982.js" nomodule defer></script>
         <script src="/basicsite/polyfills-es2015.442fa3cc45520cc0d518.js" type="module"></script>
-        <script src="/basicsite/main-es2015.a72b5dd0cf337053bc5f.js" type="module"></script>
-        <script src="/basicsite/main-es5.a72b5dd0cf337053bc5f.js" nomodule defer></script>
+        <script src="/basicsite/main-es2015.3face9f60fa2fde3211a.js" type="module"></script>
+        <script src="/basicsite/main-es5.3face9f60fa2fde3211a.js" nomodule defer></script>
     </body>
 
 </html>

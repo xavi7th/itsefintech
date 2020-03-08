@@ -91,7 +91,6 @@
                     if ( error.response ) {
                         // The request was made and the server responded with a status code
                         // that falls out of the range of 2xx
-                        console.log( error.response );
                         Swal.fire( {
                             icon: 'error',
                             title: error.response.statusText,
@@ -151,7 +150,6 @@
                     if ( error.response ) {
                         // The request was made and the server responded with a status code
                         // that falls out of the range of 2xx
-                        console.log( error.response );
                         Swal.fire( {
                             icon: 'error',
                             title: error.response.statusText,

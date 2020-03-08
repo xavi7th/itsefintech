@@ -47,10 +47,11 @@ class DebitCardRequested extends Notification
 		return (new MailMessage)
 			->subject('Card Request!')
 			->greeting('Dear ' . $notifiable->first_name . ',')
-			->line('Thank you for requesting for the '. $this->debit_card_type->card_type_name .' .')
-			->line('Your request will be processed and delivered to your desired address. Delivery takes between 10 - 20 days. You can also track your card delivery update on the app.')
-			->line('Kindly call ' .config('app.phone'). ' for enquiries.')
-			->salutation('Regards.');
+			->line('Thank you for requesting for the ' . $this->debit_card_type->card_type_name . ' Card.')
+			->line('Your request is being processed and your card will be delivered at the address you have provided. You can get updates on your card delivery and activate your card on our app. Click here to download the Capital X app.')
+			->line('Kindly call ' . config('app.phone') . ' for enquiries.')
+			->line('Live your best life with Capital X card.')
+			->salutation('Your friends at Capital X.');
 	}
 
 	/**
@@ -76,7 +77,7 @@ class DebitCardRequested extends Notification
 	{
 
 		return (new SMSSolutionsMessage)
-			->sms_message('We have received your request for a '. $this->debit_card_type->card_type_name . ' Card. Kindly log in our mobile app to track delivery updates. For more enquiries, call ' . config('app.phone'))
+			->sms_message('We have received your request for a ' . $this->debit_card_type->card_type_name . ' Card. Kindly log in our mobile app to track delivery updates. For more enquiries, call ' . config('app.phone'))
 			->to($notifiable->phone);
 	}
 }
