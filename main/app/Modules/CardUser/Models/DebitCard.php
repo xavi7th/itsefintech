@@ -255,7 +255,7 @@ class DebitCard extends Model
 			ActivityLog::notifyCardAdmins(auth()->user()->email . ' has just successfully activated his new credit card');
 			ActivityLog::notifyAccountOfficers(auth()->user()->email . ' has just successfully activated his new credit card');
 			if (!is_null($debit_card->sales_rep_id)) {
-				$debit_card->sales_rep->activities->create([
+				$debit_card->sales_rep->activities()->create([
 					'activity' => auth()->user()->email . ' has just successfully activated his new credit card'
 				]);
 			}
