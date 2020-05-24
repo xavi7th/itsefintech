@@ -1,4 +1,3 @@
-
 Recovery
   Add a page for list of those with loan show (loan amount, amount paid, due date, )
 
@@ -12,14 +11,5 @@ View merchant transactions
 
 view user merchant transaction
 
-user can block card
-  set is_suspended funtionality
-  send mail to them
-  set card to suspended
-  disable suspended cards from user card list
-
-delete user
-  set is_active to false
-  prevent access
 
 admin debit user merchant credit
