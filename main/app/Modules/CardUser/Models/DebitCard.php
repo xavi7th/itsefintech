@@ -218,7 +218,7 @@ class DebitCard extends Model
       ],
       Arr::collapse(
         [
-          $request->all(),
+          $request->validated(),
           [
             'debit_card_request_status_id' => 1,
           ]

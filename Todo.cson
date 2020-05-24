@@ -5,11 +5,11 @@ Email alert customisation
 
 SMS alert not working
 
-Add state to request new debit card request table and parameters
-
 View merchant transactions
 
 view user merchant transaction
 
 
 admin debit user merchant credit
+
+create a nullable field state in the debcard req table
