@@ -37,6 +37,13 @@
                     v-if="$user.isAccountOfficer || $user.isAdmin"
                   >View Cards</div>
                   <div
+                    class="badge btn-warning pointer btn-bold"
+                    data-toggle="modal"
+                    data-target="#modal-merchant-trans"
+                    @click="showMerchantTransModal(user)"
+                    v-if="$user.isAdmin"
+                  >Merchant Transactions</div>
+                  <div
                     class="badge btn-bold btn-warning pointer"
                     @click="restoreCardUser(user)"
                     v-if="user.is_suspended && $user.isAccountOfficer"
@@ -201,6 +208,58 @@
               </div>
             </div>
           </div>
+
+          <div class="modal modal-right fade" id="modal-merchant-trans" tabindex="-1">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h4 class="modal-title">{{ userDetails.full_name }}'s Merchant Transactions</h4>
+                  <button type="button" class="close" data-dismiss="modal">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <pre-loader v-if="sectionLoading" class="section-loader"></pre-loader>
+                  <div class="col-md-12">
+                    <div class="card debit-cards">
+                      <div class="card-body py-0">
+                        <div class="card-row">
+                          <div
+                            class="widget-item pt-20 pb-25"
+                            v-for="value in merchantTransactions"
+                            :key="value.id"
+                          >
+                            <div class="flex j-c-between w-100p flex-wrap">
+                              <h5 class="widget-title mt-2">{{ value.merchant.name }}</h5>
+                              <span class="widget-title mt-2">{{ value.amount | currency('₦')}}</span>
+                              <span class="widget-text-small">{{ value.trans_type }}</span>
+                              <span class="widget-title mt-2">{{ value.description }}</span>
+                              <span class="widget-title mt-2">{{ value.created_at }}</span>
+                              <span
+                                class="widget-title mt-2"
+                              >{{ value.is_merchant_paid ? 'Merchant Paid' : 'Merchant Not Paid' }}</span>
+                            </div>
+                          </div>
+                          <div v-if="!merchantTransactions.length">
+                            <div class="flex j-c-center w-100p flex-wrap">
+                              <h4 class="widget-title mt-2">NO MERCHANT TRANSACTIONS</h4>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button
+                    type="button"
+                    class="btn btn-bold btn-pure btn-secondary"
+                    data-dismiss="modal"
+                  >Close</button>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -227,7 +286,8 @@
       users: [],
       userDetails: {},
       sectionLoading: false,
-      details: {}
+      details: {},
+      merchantTransactions: []
     }),
     components: {
       PreLoader
@@ -276,6 +336,16 @@
         this.userDetails = userDetails;
         this.details.email = userDetails.email;
         this.details.user_id = userDetails.id;
+      },
+      showMerchantTransModal(userDetails) {
+        this.sectionLoading = true;
+        axios
+          .get(`/${userDetails.id}/merchant-transactions`)
+          .then(({ data: trans }) => {
+            this.merchantTransactions = trans;
+            this.userDetails = userDetails;
+            this.sectionLoading = false;
+          });
       },
       slugToString(slug) {
         let words = slug.split("_");
@@ -381,9 +451,9 @@
           .fire({
             title: "Enter an amount",
             html: `<div class="d-flex">
-                        										<input id="merchant-amount-input" class="swal2-input" required placeholder="Enter merchant limit">
-                        										<input id="merchant-interest-input" class="swal2-input" required placeholder="Enter interest">
-                        									</div>`,
+                                                                										<input id="merchant-amount-input" class="swal2-input" required placeholder="Enter merchant limit">
+                                                                										<input id="merchant-interest-input" class="swal2-input" required placeholder="Enter interest">
+                                                                									</div>`,
             showCancelButton: true,
             confirmButtonText: "Set Merchant Limit",
             allowEscapeKey: false,
@@ -443,9 +513,9 @@
           .fire({
             title: "Enter an amount",
             html: `<div class="d-flex">
-                        										<input id="amount-input" class="swal2-input" required placeholder="Enter credit limit">
-                        										<input id="interest-input" class="swal2-input" required placeholder="Enter interest">
-                        									</div>`,
+                                                                										<input id="amount-input" class="swal2-input" required placeholder="Enter credit limit">
+                                                                										<input id="interest-input" class="swal2-input" required placeholder="Enter interest">
+                                                                									</div>`,
             showCancelButton: true,
             confirmButtonText: "Set Credit Limit",
             allowEscapeKey: false,

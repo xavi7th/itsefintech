@@ -8,7 +8,7 @@
         <div class="card-title">
           <button
             type="button"
-            class="btn btn-bold btn-pure btn-twitter btn-shadow"
+            class="btn btn-bold btn-pure btn-primary btn-shadow"
             data-toggle="modal"
             data-target="#modal-merchant"
             v-if="$user.isAdmin"
