@@ -41,7 +41,7 @@
         }
     },
     "autoload": {
-			"files": [
+        "files": [
             "app/helpers.php"
         ],
         "psr-4": {
@@ -60,6 +60,35 @@
     "minimum-stability": "dev",
     "prefer-stable": true,
     "scripts": {
+        "compile": [
+            "@php artisan config:clear",
+            "@php artisan debugbar:clear",
+            "@php artisan route:clear",
+            "@php artisan cache:clear",
+            "@php artisan view:clear",
+            "@php artisan event:clear",
+            "@php artisan key:generate --ansi",
+            "@php artisan storage:link",
+            "@php artisan migrate:fresh --force",
+            "@php artisan module:seed",
+            "@php artisan auth:clear-resets",
+            "@php artisan route:cache",
+            "@php artisan config:cache",
+            "@php artisan optimize",
+            "composer dumpautoload",
+            "npm run prod"
+        ],
+        "reseed": [
+            "@php artisan config:clear",
+            "@php artisan debugbar:clear",
+            "@php artisan route:clear",
+            "@php artisan cache:clear",
+            "@php artisan view:clear",
+            "@php artisan event:clear",
+            "@php artisan migrate:fresh",
+            "@php artisan module:seed",
+            "npm run watch"
+        ],
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
             "@php artisan package:discover --ansi"
