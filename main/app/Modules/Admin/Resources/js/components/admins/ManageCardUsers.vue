@@ -451,9 +451,9 @@
           .fire({
             title: "Enter an amount",
             html: `<div class="d-flex">
-                                                                										<input id="merchant-amount-input" class="swal2-input" required placeholder="Enter merchant limit">
-                                                                										<input id="merchant-interest-input" class="swal2-input" required placeholder="Enter interest">
-                                                                									</div>`,
+                                                                  										<input id="merchant-amount-input" class="swal2-input" required placeholder="Enter merchant limit">
+                                                                  										<input id="merchant-interest-input" class="swal2-input" required placeholder="Enter interest">
+                                                                  									</div>`,
             showCancelButton: true,
             confirmButtonText: "Set Merchant Limit",
             allowEscapeKey: false,
@@ -513,9 +513,9 @@
           .fire({
             title: "Enter an amount",
             html: `<div class="d-flex">
-                                                                										<input id="amount-input" class="swal2-input" required placeholder="Enter credit limit">
-                                                                										<input id="interest-input" class="swal2-input" required placeholder="Enter interest">
-                                                                									</div>`,
+                                                                  										<input id="amount-input" class="swal2-input" required placeholder="Enter credit limit">
+                                                                  										<input id="interest-input" class="swal2-input" required placeholder="Enter interest">
+                                                                  									</div>`,
             showCancelButton: true,
             confirmButtonText: "Set Credit Limit",
             allowEscapeKey: false,

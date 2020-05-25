@@ -49,6 +49,13 @@
                     @click="restoreMerchant(merchant)"
                     v-else-if="!merchant.is_active && $user.isAdmin"
                   >Restore</button>
+                  <div
+                    class="badge btn-warning pointer btn-bold"
+                    data-toggle="modal"
+                    data-target="#modal-merchant-trans"
+                    @click="showMerchantTransModal(merchant)"
+                    v-if="$user.isAdmin"
+                  >Merchant Transactions</div>
                 </td>
                 <td>{{ merchant.category }}</td>
                 <td>{{ merchant.email }}</td>
@@ -311,6 +318,62 @@
               </div>
             </div>
           </div>
+
+          <div class="modal modal-right fade" id="modal-merchant-trans" tabindex="-1">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h4 class="modal-title">{{ merchantDetails.name }}'s Merchant Transactions</h4>
+                  <button type="button" class="close" data-dismiss="modal">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <pre-loader v-if="sectionLoading" class="section-loader"></pre-loader>
+                  <div class="col-md-12">
+                    <div class="card debit-cards">
+                      <div class="card-body py-0">
+                        <div class="card-row">
+                          <div
+                            class="widget-item pt-20 pb-25"
+                            v-for="trans in merchantTransactions"
+                            :key="trans.id"
+                          >
+                            <div class="flex j-c-between w-100p flex-wrap">
+                              <span class="widget-title mt-2">{{ trans.amount | currency('₦')}}</span>
+                              <span class="widget-text-small">{{ trans.trans_type }}</span>
+                              <span class="widget-title mt-2">{{ trans.description }}</span>
+                              <span class="widget-title mt-2">{{ trans.created_at }}</span>
+                              <span
+                                class="widget-title mt-2"
+                              >{{ trans.is_merchant_paid ? 'Merchant Paid' : 'Merchant Not Paid' }}</span>
+                              <button
+                                class="btn btn-pure btn-primary btn-xs btn-bold"
+                                @click="markTransactionAsPaid(trans)"
+                                v-if="!trans.is_merchant_paid && $user.isAdmin"
+                              >Mark Paid</button>
+                            </div>
+                          </div>
+                          <div v-if="!merchantTransactions.length">
+                            <div class="flex j-c-center w-100p flex-wrap">
+                              <h4 class="widget-title mt-2">NO MERCHANT TRANSACTIONS</h4>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button
+                    type="button"
+                    class="btn btn-bold btn-pure btn-secondary"
+                    data-dismiss="modal"
+                  >Close</button>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -330,6 +393,7 @@
     name: "ManageMerchants",
     data: () => ({
       merchants: [],
+      merchantTransactions: [],
       fileUploadName: "upload ID card",
       merchant_categories: [],
       merchantDetails: {},
@@ -541,6 +605,30 @@
               });
           }
         });
+      },
+      showMerchantTransModal(merchantDetails) {
+        axios
+          .get(`/merchants/${merchantDetails.id}/transactions`)
+          .then(({ data: trans }) => {
+            this.merchantTransactions = trans;
+            this.merchantDetails = merchantDetails;
+          });
+      },
+      markTransactionAsPaid(merchantTransaction) {
+        axios
+          .patch(`/merchant-transactions/${merchantTransaction.id}/paid`)
+          .then(({ status }) => {
+            console.log(status);
+            if (status == 204) {
+              Toast.fire({
+                title: "success",
+                text: "Transaction marked as paid",
+                position: "center"
+              }).then(() => {
+                merchantTransaction.is_merchant_paid = true;
+              });
+            }
+          });
       }
     }
   };

@@ -48,10 +48,12 @@ class MerchantTransaction extends Model
   static function merchantRoutes()
   {
     Route::group(['namespace' => '\App\Modules\Admin\Models', 'middleware' => 'web'], function () {
-      Route::get('{user}/merchant-transactions', 'MerchantTransaction@getAllMerchantTransactions')->name('merchants.transactions')->middleware('auth:admin');
+      Route::get('{user}/merchant-transactions', 'MerchantTransaction@getAllCardUserMerchantTransactions')->name('user.merchant-transactions')->middleware('auth:admin');
+      Route::get('merchants/{merchant}/transactions', 'MerchantTransaction@getAllMerchantTransactions')->name('merchant.transactions')->middleware('auth:admin');
       Route::get('/merchant-login', 'MerchantTransaction@merchantLogin')->name('merchants.login');
       Route::post('/validate-merchant-code', 'MerchantTransaction@validateMerchantCode');
       Route::post('merchant-transaction/create', 'MerchantTransaction@merchantDebitVoucher');
+      Route::patch('merchant-transactions/{trans}/paid', 'MerchantTransaction@markMerchantTransactionAsPaid')->middleware('auth:admin');
       Route::match(['get', 'post'], '/process-merchant-transaction/{trans_id}', 'MerchantTransaction@processMerchantTransaction');
     });
 
@@ -69,10 +71,17 @@ class MerchantTransaction extends Model
     return view('merchants');
   }
 
-  public function getAllMerchantTransactions(Request $request, CardUser $user = null)
+  public function getAllCardUserMerchantTransactions(Request $request,  ?CardUser $user)
   {
     if (Auth::admin() && $user) {
       return $user->merchant_transactions->load('merchant:id,name');
+    }
+  }
+
+  public function getAllMerchantTransactions(Request $request,  ?Merchant $merchant)
+  {
+    if (Auth::admin() && $merchant) {
+      return $merchant->merchant_transactions;
     }
   }
 
@@ -87,6 +96,14 @@ class MerchantTransaction extends Model
     }
 
     return response()->json('', 204);
+  }
+
+  public function markMerchantTransactionAsPaid(self $trans)
+  {
+    $trans->is_merchant_paid = true;
+    $trans->save();
+
+    return response()->json([], 204);
   }
 
   public function processMerchantTransaction($trans_id)
