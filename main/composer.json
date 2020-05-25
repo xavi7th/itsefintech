@@ -75,6 +75,7 @@
             "@php artisan module:seed",
             "@php artisan auth:clear-resets",
             "@php artisan route:cache",
+            "@php artisan event:cache",
             "@php artisan config:cache",
             "@php artisan optimize",
             "composer dumpautoload",

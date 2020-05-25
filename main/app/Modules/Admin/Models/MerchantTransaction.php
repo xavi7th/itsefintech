@@ -13,10 +13,15 @@ use App\Modules\Admin\Models\ActivityLog;
 use App\Modules\CardUser\Models\CardUser;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Modules\Accountant\Events\MerchantLoanPaid;
 use App\Modules\CardUser\Notifications\VoucherPaid;
+use App\Modules\Accountant\Events\MerchantRequestDebit;
 use App\Modules\CardUser\Notifications\VoucherApproved;
+use App\Modules\Accountant\Events\MerchantTransactionMarkedAsPaid;
+use App\Modules\Accountant\Events\UserApprovesMerchantTransaction;
 use App\Modules\CardUser\Http\Requests\MakeVoucherRepaymentValidation;
 use App\Modules\CardUser\Transformers\CardUserMerchantTransactionTransformer;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 class MerchantTransaction extends Model
 {
@@ -50,7 +55,7 @@ class MerchantTransaction extends Model
     Route::group(['namespace' => '\App\Modules\Admin\Models', 'middleware' => 'web'], function () {
       Route::get('{user}/merchant-transactions', 'MerchantTransaction@getAllCardUserMerchantTransactions')->name('user.merchant-transactions')->middleware('auth:admin');
       Route::get('merchants/{merchant}/transactions', 'MerchantTransaction@getAllMerchantTransactions')->name('merchant.transactions')->middleware('auth:admin');
-      Route::get('/merchant-login', 'MerchantTransaction@merchantLogin')->name('merchants.login');
+      Route::get('/merchant-login', 'MerchantTransaction@showMerchantLoginForm')->name('merchants.login');
       Route::post('/validate-merchant-code', 'MerchantTransaction@validateMerchantCode');
       Route::post('merchant-transaction/create', 'MerchantTransaction@merchantDebitVoucher');
       Route::patch('merchant-transactions/{trans}/paid', 'MerchantTransaction@markMerchantTransactionAsPaid')->middleware('auth:admin');
@@ -66,7 +71,7 @@ class MerchantTransaction extends Model
     });
   }
 
-  public function merchantLogin()
+  public function showMerchantLoginForm()
   {
     return view('merchants');
   }
@@ -100,12 +105,22 @@ class MerchantTransaction extends Model
 
   public function markMerchantTransactionAsPaid(self $trans)
   {
+
+    event(new MerchantTransactionMarkedAsPaid($trans));
+
     $trans->is_merchant_paid = true;
     $trans->save();
 
     return response()->json([], 204);
   }
 
+  /**
+   * This route gets polled by the merchant page as they wait for the user to approve their debit requests
+   *
+   * @param int $trans_id
+   *
+   * @return JsonResponse (201 if approved, 200 if not yet approved, 205 if transaction not found e.g declined (deleted))
+   */
   public function processMerchantTransaction($trans_id)
   {
     if (request()->isMethod('GET')) {
@@ -132,7 +147,6 @@ class MerchantTransaction extends Model
   public function merchantDebitVoucher(Request $request)
   {
 
-
     $validator = Validator::make($request->all(), [
       'voucher_code' => 'required|alpha_dash|exists:vouchers,code',
       'amount' => 'required|numeric',
@@ -141,7 +155,7 @@ class MerchantTransaction extends Model
     if ($validator->fails()) {
       return response()->json($validator->errors()->first(), 422);
     }
-    // return $request->voucher_code;
+
     /** Find the voucher */
     $voucher = Voucher::where('code', $request->voucher_code)->firstOrFail();
     $merchant = Merchant::where('unique_code', $request->merchant_code)->firstOrFail();
@@ -150,6 +164,7 @@ class MerchantTransaction extends Model
     if (intval($voucher->card_user_id) <= 0) {
       return response()->json('Invalid voucher selected', 422);
     }
+
     /**Check the balance and the amount */
     if ($voucher->amount < $request->amount) {
       return response()->json('Insufficient balance in your voucher', 422);
@@ -162,7 +177,7 @@ class MerchantTransaction extends Model
       'trans_type' => 'debit request'
     ]);
 
-    ActivityLog::notifyAdmins($merchant->name . ' requests voucher debit from ' . optional($voucher->card_user)->email . '. Voucher Number: ' . $voucher->code);
+    event(new MerchantRequestDebit($voucher, $merchant));
 
     if ($request->ajax() || $request->expectsJson()) {
       // return (new CardUserMerchantTransactionTransformer)->transform($trans);
@@ -194,20 +209,16 @@ class MerchantTransaction extends Model
 
   public function approveVoucherDebitTransaction($merchant_transaction)
   {
-    $mer = MerchantTransaction::find($merchant_transaction);
+    $merchant_trans = MerchantTransaction::find($merchant_transaction);
 
-    if ($mer->trans_type == 'debit') {
+    if ($merchant_trans->trans_type == 'debit') {
       abort(403, 'Already approved');
     }
 
-    $mer->trans_type = 'debit';
-    $mer->save();
+    event(new UserApprovesMerchantTransaction($merchant_trans));
 
-    ActivityLog::logUserActivity(auth()->user()->email . ' approves voucher debit from ' . optional($mer->merchant)->name . '. Voucher Number: ' . optional($mer->voucher)->code);
-    ActivityLog::notifyAccountOfficers(auth()->user()->email . ' approves voucher debit from ' . optional($mer->merchant)->name . '. Voucher Number: ' . optional($mer->voucher)->code);
-    ActivityLog::notifyAdmins(auth()->user()->email . ' approves voucher debit from ' . optional($mer->merchant)->name . '. Voucher Number: ' . optional($mer->voucher)->code);
-
-    auth('card_user')->user()->notify(new VoucherApproved($mer->name));
+    $merchant_trans->trans_type = 'debit';
+    $merchant_trans->save();
 
     return response()->json([], 204);
   }
@@ -232,13 +243,7 @@ class MerchantTransaction extends Model
       'trans_type' => 'repayment'
     ]);
 
-    ActivityLog::logUserActivity(auth()->user()->email . ' repays merchant credit. Voucher Number: ' . $voucher->code . '. Amount: ' . $request->amount);
-    ActivityLog::notifyAccountants(auth()->user()->email . ' repays merchant credit. Voucher Number: ' . $voucher->code . '. Amount: ' . $request->amount);
-    ActivityLog::notifyAccountOfficers(auth()->user()->email . ' repays merchant credit. Voucher Number: ' . $voucher->code . '. Amount: ' . $request->amount);
-    ActivityLog::notifyAdmins(auth()->user()->email . ' repays merchant credit. Voucher Number: ' . $voucher->code . '. Amount: ' . $request->amount);
-    ActivityLog::notifyNormalAdmins(auth()->user()->email . ' repays merchant credit. Voucher Number: ' . $voucher->code . '. Amount: ' . $request->amount);
-
-    auth('card_user')->user()->notify(new VoucherPaid($request->amount));
+    event(new MerchantLoanPaid($voucher->code));
 
     DB::commit();
 
