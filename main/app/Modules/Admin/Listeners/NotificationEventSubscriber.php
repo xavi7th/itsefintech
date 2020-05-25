@@ -7,6 +7,8 @@ use App\Modules\Admin\Models\ActivityLog;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use App\Modules\Accountant\Events\MerchantLoanPaid;
 use App\Modules\CardUser\Notifications\VoucherPaid;
+use App\Modules\Admin\Events\UserVoucherManualDebit;
+use App\Modules\CardUser\Notifications\VoucherDebited;
 use App\Modules\CardUser\Notifications\VoucherApproved;
 use App\Modules\Accountant\Events\MerchantTransactionMarkedAsPaid;
 use App\Modules\Accountant\Events\UserApprovesMerchantTransaction;
@@ -39,6 +41,11 @@ class NotificationEventSubscriber
     $events->listen(
       MerchantRequestDebit::class,
       'App\Modules\Admin\Listeners\NotificationEventSubscriber@handleMerchantRequestDebit'
+    );
+
+    $events->listen(
+      UserVoucherManualDebit::class,
+      'App\Modules\Admin\Listeners\NotificationEventSubscriber@handleUserVoucherManualDebit'
     );
   }
 
@@ -78,5 +85,19 @@ class NotificationEventSubscriber
     ActivityLog::notifyAdmins($event->merchant->name . ' requests voucher debit from ' . optional($event->voucher->card_user)->email . '. Voucher Number: ' . $event->voucher->code);
 
     request()->user()->notify(new VoucherPaid(request('amount')));
+  }
+
+  public function handleUserVoucherManualDebit($event)
+  {
+    $message = request()->user()->email . ' manually debited ' . $event->amount . ' from ' .
+      $event->card_user->email . '´s voucher with code ' . $event->voucher_code . ' on behalf of merchant: ' . $event->merchant_name;
+
+    ActivityLog::notifyAdmins($message);
+    ActivityLog::notifyAccountants($message);
+    ActivityLog::notifyAccountOfficers($message);
+
+    try {
+      request()->user()->notify(new VoucherDebited(request('amount'), $event->voucher_code, $event->merchant_name));
+    } catch (\Throwable $th) { }
   }
 }

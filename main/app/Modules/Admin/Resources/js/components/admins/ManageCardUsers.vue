@@ -114,7 +114,7 @@
                                     </a>
                                     <div
                                       class="badge badge-danger pointer btn-bold pull-right"
-                                      @click="showFullBvnNumber(user)"
+                                      @click="showFullBvnNumber(value)"
                                       v-if="$user.isAdmin && property == 'bvn'"
                                     >
                                       REVEAL
@@ -142,7 +142,7 @@
                     class="btn btn-bold btn-info btn-danger"
                     @click="adminSetCardUserCreditLimit(userDetails)"
                     data-dismiss="modal"
-                    v-if="!userDetails.is_suspended && $user.isAccountOfficer"
+                    v-if="!userDetails.is_suspended && $user.isAccountOfficer || $user.isAdmin"
                   >Set User's Credit Limit</button>
 
                   <button
@@ -214,7 +214,7 @@
               <div class="modal-content">
                 <div class="modal-header">
                   <h4 class="modal-title">{{ userDetails.full_name }}'s Merchant Transactions</h4>
-                  <button type="button" class="close" data-dismiss="modal">
+                  <button type="button" class="close" data-dismiss="modal" ref="closeModal">
                     <span aria-hidden="true">&times;</span>
                   </button>
                 </div>
@@ -250,7 +250,13 @@
                     </div>
                   </div>
                 </div>
-                <div class="modal-footer">
+                <div class="modal-footer j-c-between">
+                  <button
+                    type="button"
+                    class="btn btn-bold btn-purple btn-styled"
+                    @click="debitVoucher"
+                    v-if="$user.isAdmin || $user.isAccountOfficer"
+                  >Debit Voucher</button>
                   <button
                     type="button"
                     class="btn btn-bold btn-pure btn-secondary"
@@ -451,9 +457,9 @@
           .fire({
             title: "Enter an amount",
             html: `<div class="d-flex">
-                                                                  										<input id="merchant-amount-input" class="swal2-input" required placeholder="Enter merchant limit">
-                                                                  										<input id="merchant-interest-input" class="swal2-input" required placeholder="Enter interest">
-                                                                  									</div>`,
+                                                                                <input id="merchant-amount-input" class="swal2-input" required placeholder="Enter merchant limit">
+                                                                                <input id="merchant-interest-input" class="swal2-input" required placeholder="Enter interest">
+                                                                              </div>`,
             showCancelButton: true,
             confirmButtonText: "Set Merchant Limit",
             allowEscapeKey: false,
@@ -513,9 +519,9 @@
           .fire({
             title: "Enter an amount",
             html: `<div class="d-flex">
-                                                                  										<input id="amount-input" class="swal2-input" required placeholder="Enter credit limit">
-                                                                  										<input id="interest-input" class="swal2-input" required placeholder="Enter interest">
-                                                                  									</div>`,
+                                                                                  <input id="amount-input" class="swal2-input" required placeholder="Enter credit limit">
+                                                                                  <input id="interest-input" class="swal2-input" required placeholder="Enter interest">
+                                                                                </div>`,
             showCancelButton: true,
             confirmButtonText: "Set Credit Limit",
             allowEscapeKey: false,
@@ -622,6 +628,74 @@
       },
       range(start, end) {
         return _.range(start, end);
+      },
+      debitVoucher() {
+        // this.sectionLoading = true;
+        console.log(this.$refs.closeModal.click());
+
+        BlockToast.fire({
+          text: "Debiting user´s voucher..."
+        });
+
+        swal
+          .fire({
+            title: "Enter an amount",
+            html: `<div class="d-flex flex-wrap j-c-center">
+                    <h1 class="text-danger text-center">
+                      <i class="fa fa-bullseye"></i>
+                      Notice!
+                    </h1>
+                    <p class="text-center text-danger">
+                      This action will perform a direct debit on the user´s voucher credit
+                    </p>
+                    <input id="merchant-code" class="swal2-input" required placeholder="Merchant Code" autofocus>
+                    <input id="debit-amount" class="swal2-input" required placeholder="Debit Amount">
+                  </div>`,
+            showCancelButton: true,
+            confirmButtonText: "Debit User Voucher",
+            allowEscapeKey: false,
+            focusCancel: true,
+            cancelButtonColor: "#333",
+            confirmButtonColor: "#d33",
+            showLoaderOnConfirm: true,
+            allowOutsideClick: () => !swal.isLoading(),
+            preConfirm: () => {
+              return axios
+                .post(`/merchant-transaction/${this.userDetails.id}/create`, {
+                  amount: document.getElementById("debit-amount").value,
+                  merchant_code: document.getElementById("merchant-code").value
+                })
+                .then(response => {
+                  if (response && response.status !== 201) {
+                    throw new Error(response.statusText);
+                  }
+                  return { rsp: true };
+                })
+                .catch(error => {
+                  swal.showValidationMessage(`Request failed: ${error}`);
+                });
+            }
+          })
+          .then(result => {
+            if (result.value) {
+              swal.fire({
+                title: "Success",
+                text: "Voucher debited",
+                position: "center",
+                icon: "success"
+              });
+            } else {
+              Toast.fire({
+                title: "Canceled",
+                text: "You cancelled the transaction",
+                position: "center",
+                icon: "info"
+              });
+            }
+          })
+          .then(() => {
+            this.sectionLoading = false;
+          });
       }
     }
   };
@@ -670,7 +744,7 @@
   }
 
   .debit-cards {
-    max-height: 40vh;
+    max-height: 60vh;
     overflow: auto;
   }
   .fz-10 {

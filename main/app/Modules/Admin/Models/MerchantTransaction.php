@@ -9,19 +9,17 @@ use App\Modules\Admin\Models\Voucher;
 use Illuminate\Support\Facades\Route;
 use App\Modules\Admin\Models\Merchant;
 use Illuminate\Database\Eloquent\Model;
-use App\Modules\Admin\Models\ActivityLog;
 use App\Modules\CardUser\Models\CardUser;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use App\Modules\Accountant\Events\MerchantLoanPaid;
-use App\Modules\CardUser\Notifications\VoucherPaid;
+use App\Modules\Admin\Events\UserVoucherManualDebit;
 use App\Modules\Accountant\Events\MerchantRequestDebit;
-use App\Modules\CardUser\Notifications\VoucherApproved;
 use App\Modules\Accountant\Events\MerchantTransactionMarkedAsPaid;
 use App\Modules\Accountant\Events\UserApprovesMerchantTransaction;
 use App\Modules\CardUser\Http\Requests\MakeVoucherRepaymentValidation;
 use App\Modules\CardUser\Transformers\CardUserMerchantTransactionTransformer;
-use Symfony\Component\HttpFoundation\JsonResponse;
 
 class MerchantTransaction extends Model
 {
@@ -33,6 +31,7 @@ class MerchantTransaction extends Model
     'merchant_id',
     'trans_type',
     'voucher_id',
+    'description'
   ];
 
   public function merchant()
@@ -58,6 +57,7 @@ class MerchantTransaction extends Model
       Route::get('/merchant-login', 'MerchantTransaction@showMerchantLoginForm')->name('merchants.login');
       Route::post('/validate-merchant-code', 'MerchantTransaction@validateMerchantCode');
       Route::post('merchant-transaction/create', 'MerchantTransaction@merchantDebitVoucher');
+      Route::post('merchant-transaction/{card_user}/create', 'MerchantTransaction@manualVoucherDebit')->middleware('auth:admin');
       Route::patch('merchant-transactions/{trans}/paid', 'MerchantTransaction@markMerchantTransactionAsPaid')->middleware('auth:admin');
       Route::match(['get', 'post'], '/process-merchant-transaction/{trans_id}', 'MerchantTransaction@processMerchantTransaction');
     });
@@ -184,6 +184,44 @@ class MerchantTransaction extends Model
       return response()->json((new CardUserMerchantTransactionTransformer)->transform($trans), 201);
     } else {
       return back()->withSuccess('Debit request created');
+    }
+  }
+
+  public function manualVoucherDebit(Request $request, CardUser $card_user)
+  {
+    $validator = Validator::make($request->all(), [
+      'merchant_code' => 'required|alpha_dash|exists:merchants,unique_code',
+      'amount' => 'required|numeric',
+    ]);
+
+    if ($validator->fails()) {
+      return response()->json($validator->errors()->first(), 422);
+    }
+
+    /** Find the voucher */
+    $voucher = $card_user->active_voucher ?? abort(422, 'User has no voucher');
+    $merchant = Merchant::where('unique_code', $request->merchant_code)->first();
+
+    /**Check the balance and the amount */
+    if ($voucher->amount < $request->amount) {
+      return response()->json('Insufficient balance in user voucher', 422);
+    }
+
+    /** Use the voucher code to create a new transaction */
+    $trans = $voucher->merchant_transactions()->create([
+      'amount' => $request->amount,
+      'card_user_id' => $voucher->card_user_id,
+      'merchant_id' => $merchant->id,
+      'description' => 'Automatic voucher debit for ' . $merchant->name,
+      'trans_type' => 'debit'
+    ]);
+
+    event(new UserVoucherManualDebit($voucher->code, $merchant->name, $card_user, $request->amount));
+
+    if ($request->ajax() || $request->expectsJson()) {
+      return response()->json([], 201);
+    } else {
+      return back()->withSuccess('Voucher Debited');
     }
   }
 

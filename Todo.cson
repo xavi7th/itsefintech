@@ -7,10 +7,5 @@ SMS alert not working
 
 
 
-
-
-
-admin debit user merchant credit
-
 create a nullable field state in the debcard req table
 add default false field is_merchant_paid to merchant transactions table to help reconcile whether the merchant has been paid for that transaction
