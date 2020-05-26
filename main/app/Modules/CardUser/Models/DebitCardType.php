@@ -14,6 +14,31 @@ use App\Modules\Admin\Transformers\AdminDebitCardTypeTransformer;
 use App\Modules\Admin\Http\Requests\DebitCardTypeCreationValidation;
 use App\Modules\CardUser\Transformers\DebitCardTypeTransformer;
 
+/**
+ * App\Modules\CardUser\Models\DebitCardType
+ *
+ * @property int $id
+ * @property string $card_type_name
+ * @property float $amount
+ * @property float|null $max_amount
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardUser\Models\DebitCardType newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardUser\Models\DebitCardType newQuery()
+ * @method static \Illuminate\Database\Query\Builder|\App\Modules\CardUser\Models\DebitCardType onlyTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardUser\Models\DebitCardType query()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardUser\Models\DebitCardType whereAmount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardUser\Models\DebitCardType whereCardTypeName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardUser\Models\DebitCardType whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardUser\Models\DebitCardType whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardUser\Models\DebitCardType whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardUser\Models\DebitCardType whereMaxAmount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardUser\Models\DebitCardType whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Modules\CardUser\Models\DebitCardType withTrashed()
+ * @method static \Illuminate\Database\Query\Builder|\App\Modules\CardUser\Models\DebitCardType withoutTrashed()
+ * @mixin \Eloquent
+ */
 class DebitCardType extends Model
 {
 	use SoftDeletes;

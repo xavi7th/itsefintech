@@ -16,6 +16,35 @@ use App\Modules\Admin\Models\ActivityLog;
 use App\Modules\CardUser\Notifications\CardFundingRequested;
 use App\Modules\Admin\Notifications\CardFundingProcessed;
 
+/**
+ * App\Modules\CardUser\Models\DebitCardFundingRequest
+ *
+ * @property int $id
+ * @property int $card_user_id
+ * @property int $debit_card_id
+ * @property float $amount
+ * @property int $is_funded
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property-read \App\Modules\CardUser\Models\CardUser $card_user
+ * @property-read \App\Modules\CardUser\Models\DebitCard $debit_card
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardUser\Models\DebitCardFundingRequest newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardUser\Models\DebitCardFundingRequest newQuery()
+ * @method static \Illuminate\Database\Query\Builder|\App\Modules\CardUser\Models\DebitCardFundingRequest onlyTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardUser\Models\DebitCardFundingRequest query()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardUser\Models\DebitCardFundingRequest whereAmount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardUser\Models\DebitCardFundingRequest whereCardUserId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardUser\Models\DebitCardFundingRequest whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardUser\Models\DebitCardFundingRequest whereDebitCardId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardUser\Models\DebitCardFundingRequest whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardUser\Models\DebitCardFundingRequest whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardUser\Models\DebitCardFundingRequest whereIsFunded($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardUser\Models\DebitCardFundingRequest whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Modules\CardUser\Models\DebitCardFundingRequest withTrashed()
+ * @method static \Illuminate\Database\Query\Builder|\App\Modules\CardUser\Models\DebitCardFundingRequest withoutTrashed()
+ * @mixin \Eloquent
+ */
 class DebitCardFundingRequest extends Model
 {
 	use SoftDeletes, Rememberable;

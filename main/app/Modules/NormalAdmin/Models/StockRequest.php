@@ -9,6 +9,32 @@ use App\Modules\SalesRep\Models\SalesRep;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Modules\NormalAdmin\Transformers\AdminStockRequestTransformer;
 
+/**
+ * App\Modules\NormalAdmin\Models\StockRequest
+ *
+ * @property int $id
+ * @property int $sales_rep_id
+ * @property int $number_of_cards
+ * @property int $is_processed
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property-read \App\Modules\SalesRep\Models\SalesRep $sales_rep
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\NormalAdmin\Models\StockRequest newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\NormalAdmin\Models\StockRequest newQuery()
+ * @method static \Illuminate\Database\Query\Builder|\App\Modules\NormalAdmin\Models\StockRequest onlyTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\NormalAdmin\Models\StockRequest query()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\NormalAdmin\Models\StockRequest whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\NormalAdmin\Models\StockRequest whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\NormalAdmin\Models\StockRequest whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\NormalAdmin\Models\StockRequest whereIsProcessed($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\NormalAdmin\Models\StockRequest whereNumberOfCards($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\NormalAdmin\Models\StockRequest whereSalesRepId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\NormalAdmin\Models\StockRequest whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Modules\NormalAdmin\Models\StockRequest withTrashed()
+ * @method static \Illuminate\Database\Query\Builder|\App\Modules\NormalAdmin\Models\StockRequest withoutTrashed()
+ * @mixin \Eloquent
+ */
 class StockRequest extends Model
 {
 	use SoftDeletes;

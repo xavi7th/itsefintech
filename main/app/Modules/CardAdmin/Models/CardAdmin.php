@@ -12,6 +12,53 @@ use App\Modules\Admin\Models\ActivityLog;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Modules\Admin\Transformers\AdminUserTransformer;
 
+/**
+ * App\Modules\CardAdmin\Models\CardAdmin
+ *
+ * @property int $id
+ * @property string $full_name
+ * @property string $email
+ * @property string $password
+ * @property string|null $phone
+ * @property string|null $bvn
+ * @property string|null $user_passport
+ * @property string|null $gender
+ * @property string|null $address
+ * @property \Illuminate\Support\Carbon|null $dob
+ * @property string|null $verified_at
+ * @property string|null $remember_token
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Modules\Admin\Models\ActivityLog[] $activities
+ * @property-read int|null $activities_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Modules\Admin\Models\ApiRoute[] $api_routes
+ * @property-read int|null $api_routes_count
+ * @property-read \Illuminate\Notifications\DatabaseNotificationCollection|\Illuminate\Notifications\DatabaseNotification[] $notifications
+ * @property-read int|null $notifications_count
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardAdmin\Models\CardAdmin newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardAdmin\Models\CardAdmin newQuery()
+ * @method static \Illuminate\Database\Query\Builder|\App\Modules\CardAdmin\Models\CardAdmin onlyTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardAdmin\Models\CardAdmin query()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardAdmin\Models\CardAdmin whereAddress($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardAdmin\Models\CardAdmin whereBvn($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardAdmin\Models\CardAdmin whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardAdmin\Models\CardAdmin whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardAdmin\Models\CardAdmin whereDob($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardAdmin\Models\CardAdmin whereEmail($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardAdmin\Models\CardAdmin whereFullName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardAdmin\Models\CardAdmin whereGender($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardAdmin\Models\CardAdmin whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardAdmin\Models\CardAdmin wherePassword($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardAdmin\Models\CardAdmin wherePhone($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardAdmin\Models\CardAdmin whereRememberToken($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardAdmin\Models\CardAdmin whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardAdmin\Models\CardAdmin whereUserPassport($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardAdmin\Models\CardAdmin whereVerifiedAt($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Modules\CardAdmin\Models\CardAdmin withTrashed()
+ * @method static \Illuminate\Database\Query\Builder|\App\Modules\CardAdmin\Models\CardAdmin withoutTrashed()
+ * @mixin \Eloquent
+ */
 class CardAdmin extends User
 {
 	use SoftDeletes;

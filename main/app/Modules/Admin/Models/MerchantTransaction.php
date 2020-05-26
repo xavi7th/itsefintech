@@ -21,6 +21,42 @@ use App\Modules\Accountant\Events\UserApprovesMerchantTransaction;
 use App\Modules\CardUser\Http\Requests\MakeVoucherRepaymentValidation;
 use App\Modules\CardUser\Transformers\CardUserMerchantTransactionTransformer;
 
+/**
+ * App\Modules\Admin\Models\MerchantTransaction
+ *
+ * @property int $id
+ * @property int $voucher_id
+ * @property int $card_user_id
+ * @property int|null $merchant_id
+ * @property float $amount
+ * @property string $trans_type
+ * @property string|null $description
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property int $is_merchant_paid
+ * @property-read \App\Modules\CardUser\Models\CardUser $card_user
+ * @property-read \App\Modules\Admin\Models\Merchant|null $merchant
+ * @property-read \App\Modules\Admin\Models\Voucher $voucher
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\Admin\Models\MerchantTransaction newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\Admin\Models\MerchantTransaction newQuery()
+ * @method static \Illuminate\Database\Query\Builder|\App\Modules\Admin\Models\MerchantTransaction onlyTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\Admin\Models\MerchantTransaction query()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\Admin\Models\MerchantTransaction whereAmount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\Admin\Models\MerchantTransaction whereCardUserId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\Admin\Models\MerchantTransaction whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\Admin\Models\MerchantTransaction whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\Admin\Models\MerchantTransaction whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\Admin\Models\MerchantTransaction whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\Admin\Models\MerchantTransaction whereIsMerchantPaid($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\Admin\Models\MerchantTransaction whereMerchantId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\Admin\Models\MerchantTransaction whereTransType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\Admin\Models\MerchantTransaction whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\Admin\Models\MerchantTransaction whereVoucherId($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Modules\Admin\Models\MerchantTransaction withTrashed()
+ * @method static \Illuminate\Database\Query\Builder|\App\Modules\Admin\Models\MerchantTransaction withoutTrashed()
+ * @mixin \Eloquent
+ */
 class MerchantTransaction extends Model
 {
   use SoftDeletes;

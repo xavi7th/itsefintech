@@ -15,6 +15,37 @@ use App\Modules\CardUser\Transformers\CardUserVoucherRequestTransformer;
 use App\Modules\CardUser\Notifications\VoucherRequested;
 use App\Modules\Admin\Notifications\MerchantCreditApproved;
 
+/**
+ * App\Modules\Admin\Models\VoucherRequest
+ *
+ * @property int $id
+ * @property int|null $voucher_id
+ * @property int $card_user_id
+ * @property float $amount
+ * @property string|null $approved_at
+ * @property int|null $approved_by
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property-read \App\Modules\CardUser\Models\CardUser $card_user
+ * @property-read \App\Modules\Admin\Models\Voucher|null $voucher
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\Admin\Models\VoucherRequest newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\Admin\Models\VoucherRequest newQuery()
+ * @method static \Illuminate\Database\Query\Builder|\App\Modules\Admin\Models\VoucherRequest onlyTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\Admin\Models\VoucherRequest query()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\Admin\Models\VoucherRequest whereAmount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\Admin\Models\VoucherRequest whereApprovedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\Admin\Models\VoucherRequest whereApprovedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\Admin\Models\VoucherRequest whereCardUserId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\Admin\Models\VoucherRequest whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\Admin\Models\VoucherRequest whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\Admin\Models\VoucherRequest whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\Admin\Models\VoucherRequest whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\Admin\Models\VoucherRequest whereVoucherId($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Modules\Admin\Models\VoucherRequest withTrashed()
+ * @method static \Illuminate\Database\Query\Builder|\App\Modules\Admin\Models\VoucherRequest withoutTrashed()
+ * @mixin \Eloquent
+ */
 class VoucherRequest extends Model
 {
 	use SoftDeletes;

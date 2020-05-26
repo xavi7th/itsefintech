@@ -13,6 +13,61 @@ use App\Modules\CardUser\Models\DebitCardType;
 use App\Modules\CardUser\Models\DebitCardRequestStatus;
 use App\Modules\Admin\Transformers\AdminDebitCardRequestTransformer;
 
+/**
+ * App\Modules\CardUser\Models\DebitCardRequest
+ *
+ * @property int $id
+ * @property int|null $debit_card_id
+ * @property int|null $debit_card_type_id
+ * @property int $card_user_id
+ * @property int|null $sales_rep_id
+ * @property int $debit_card_request_status_id
+ * @property string $phone
+ * @property string $address
+ * @property string $zip
+ * @property string $city
+ * @property string $payment_method
+ * @property int $is_paid
+ * @property int $is_payment_confirmed
+ * @property int|null $confirmed_by
+ * @property int|null $last_updated_by
+ * @property string|null $last_updater_user_type
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property-read \App\Modules\CardUser\Models\CardUser $card_user
+ * @property-read \App\Modules\CardUser\Models\DebitCard|null $debit_card
+ * @property-read \App\Modules\CardUser\Models\DebitCardRequestStatus $debit_card_request_status
+ * @property-read \App\Modules\CardUser\Models\DebitCardType|null $debit_card_type
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardUser\Models\DebitCardRequest newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardUser\Models\DebitCardRequest newQuery()
+ * @method static \Illuminate\Database\Query\Builder|\App\Modules\CardUser\Models\DebitCardRequest onlyTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardUser\Models\DebitCardRequest pendingAccountantConfirmation()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardUser\Models\DebitCardRequest query()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardUser\Models\DebitCardRequest remoteRequests()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardUser\Models\DebitCardRequest whereAddress($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardUser\Models\DebitCardRequest whereCardUserId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardUser\Models\DebitCardRequest whereCity($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardUser\Models\DebitCardRequest whereConfirmedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardUser\Models\DebitCardRequest whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardUser\Models\DebitCardRequest whereDebitCardId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardUser\Models\DebitCardRequest whereDebitCardRequestStatusId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardUser\Models\DebitCardRequest whereDebitCardTypeId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardUser\Models\DebitCardRequest whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardUser\Models\DebitCardRequest whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardUser\Models\DebitCardRequest whereIsPaid($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardUser\Models\DebitCardRequest whereIsPaymentConfirmed($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardUser\Models\DebitCardRequest whereLastUpdatedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardUser\Models\DebitCardRequest whereLastUpdaterUserType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardUser\Models\DebitCardRequest wherePaymentMethod($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardUser\Models\DebitCardRequest wherePhone($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardUser\Models\DebitCardRequest whereSalesRepId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardUser\Models\DebitCardRequest whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardUser\Models\DebitCardRequest whereZip($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Modules\CardUser\Models\DebitCardRequest withTrashed()
+ * @method static \Illuminate\Database\Query\Builder|\App\Modules\CardUser\Models\DebitCardRequest withoutTrashed()
+ * @mixin \Eloquent
+ */
 class DebitCardRequest extends Model
 {
   use SoftDeletes;

@@ -13,6 +13,53 @@ use App\Modules\Admin\Models\ActivityLog;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Modules\Admin\Transformers\AdminUserTransformer;
 
+/**
+ * App\Modules\NormalAdmin\Models\NormalAdmin
+ *
+ * @property int $id
+ * @property string $full_name
+ * @property string $email
+ * @property string $password
+ * @property string|null $phone
+ * @property string|null $bvn
+ * @property string|null $user_passport
+ * @property string|null $gender
+ * @property string|null $address
+ * @property \Illuminate\Support\Carbon|null $dob
+ * @property string|null $verified_at
+ * @property string|null $remember_token
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Modules\Admin\Models\ActivityLog[] $activities
+ * @property-read int|null $activities_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Modules\Admin\Models\ApiRoute[] $api_routes
+ * @property-read int|null $api_routes_count
+ * @property-read \Illuminate\Notifications\DatabaseNotificationCollection|\Illuminate\Notifications\DatabaseNotification[] $notifications
+ * @property-read int|null $notifications_count
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\NormalAdmin\Models\NormalAdmin newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\NormalAdmin\Models\NormalAdmin newQuery()
+ * @method static \Illuminate\Database\Query\Builder|\App\Modules\NormalAdmin\Models\NormalAdmin onlyTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\NormalAdmin\Models\NormalAdmin query()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\NormalAdmin\Models\NormalAdmin whereAddress($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\NormalAdmin\Models\NormalAdmin whereBvn($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\NormalAdmin\Models\NormalAdmin whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\NormalAdmin\Models\NormalAdmin whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\NormalAdmin\Models\NormalAdmin whereDob($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\NormalAdmin\Models\NormalAdmin whereEmail($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\NormalAdmin\Models\NormalAdmin whereFullName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\NormalAdmin\Models\NormalAdmin whereGender($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\NormalAdmin\Models\NormalAdmin whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\NormalAdmin\Models\NormalAdmin wherePassword($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\NormalAdmin\Models\NormalAdmin wherePhone($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\NormalAdmin\Models\NormalAdmin whereRememberToken($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\NormalAdmin\Models\NormalAdmin whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\NormalAdmin\Models\NormalAdmin whereUserPassport($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\NormalAdmin\Models\NormalAdmin whereVerifiedAt($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Modules\NormalAdmin\Models\NormalAdmin withTrashed()
+ * @method static \Illuminate\Database\Query\Builder|\App\Modules\NormalAdmin\Models\NormalAdmin withoutTrashed()
+ * @mixin \Eloquent
+ */
 class NormalAdmin extends User
 {
 

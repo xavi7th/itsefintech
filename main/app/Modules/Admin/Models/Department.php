@@ -5,6 +5,22 @@ namespace App\Modules\Admin\Models;
 use Illuminate\Database\Eloquent\Model;
 use App\Modules\CustomerSupport\Models\SupportTicket;
 
+/**
+ * App\Modules\Admin\Models\Department
+ *
+ * @property int $id
+ * @property string $name
+ * @property string $display_name
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Modules\CustomerSupport\Models\SupportTicket[] $support_tickets
+ * @property-read int|null $support_tickets_count
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\Admin\Models\Department newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\Admin\Models\Department newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\Admin\Models\Department query()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\Admin\Models\Department whereDisplayName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\Admin\Models\Department whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\Admin\Models\Department whereName($value)
+ * @mixin \Eloquent
+ */
 class Department extends Model
 {
 	protected $fillable = [];

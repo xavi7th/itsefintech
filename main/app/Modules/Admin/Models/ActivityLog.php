@@ -13,6 +13,27 @@ use App\Modules\AccountOfficer\Models\AccountOfficer;
 use App\Modules\CustomerSupport\Models\CustomerSupport;
 use App\Modules\Admin\Transformers\AdminActivityLogTransformer;
 
+/**
+ * App\Modules\Admin\Models\ActivityLog
+ *
+ * @property int $id
+ * @property int $user_id
+ * @property string $user_type
+ * @property string $activity
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Model|\Eloquent $user
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\Admin\Models\ActivityLog newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\Admin\Models\ActivityLog newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\Admin\Models\ActivityLog query()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\Admin\Models\ActivityLog whereActivity($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\Admin\Models\ActivityLog whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\Admin\Models\ActivityLog whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\Admin\Models\ActivityLog whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\Admin\Models\ActivityLog whereUserId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\Admin\Models\ActivityLog whereUserType($value)
+ * @mixin \Eloquent
+ */
 class ActivityLog extends Model
 {
   protected $fillable = ['activity'];

@@ -16,6 +16,56 @@ use App\Modules\CardUser\Models\DebitCardRequest;
 use App\Modules\Admin\Transformers\AdminUserTransformer;
 use App\Modules\SalesRep\Transformers\SalesRepDebitCardRequestTransformer;
 
+/**
+ * App\Modules\SalesRep\Models\SalesRep
+ *
+ * @property int $id
+ * @property string $full_name
+ * @property string $email
+ * @property string $password
+ * @property string|null $phone
+ * @property string|null $bvn
+ * @property string|null $user_passport
+ * @property string|null $gender
+ * @property string|null $address
+ * @property \Illuminate\Support\Carbon|null $dob
+ * @property string|null $verified_at
+ * @property string|null $remember_token
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Modules\Admin\Models\ActivityLog[] $activities
+ * @property-read int|null $activities_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Modules\Admin\Models\ApiRoute[] $api_routes
+ * @property-read int|null $api_routes_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Modules\CardUser\Models\DebitCard[] $assigned_debit_cards
+ * @property-read int|null $assigned_debit_cards_count
+ * @property-read \Illuminate\Notifications\DatabaseNotificationCollection|\Illuminate\Notifications\DatabaseNotification[] $notifications
+ * @property-read int|null $notifications_count
+ * @property-read \App\Modules\NormalAdmin\Models\StockRequest|null $stock_request
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\SalesRep\Models\SalesRep newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\SalesRep\Models\SalesRep newQuery()
+ * @method static \Illuminate\Database\Query\Builder|\App\Modules\SalesRep\Models\SalesRep onlyTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\SalesRep\Models\SalesRep query()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\SalesRep\Models\SalesRep whereAddress($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\SalesRep\Models\SalesRep whereBvn($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\SalesRep\Models\SalesRep whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\SalesRep\Models\SalesRep whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\SalesRep\Models\SalesRep whereDob($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\SalesRep\Models\SalesRep whereEmail($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\SalesRep\Models\SalesRep whereFullName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\SalesRep\Models\SalesRep whereGender($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\SalesRep\Models\SalesRep whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\SalesRep\Models\SalesRep wherePassword($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\SalesRep\Models\SalesRep wherePhone($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\SalesRep\Models\SalesRep whereRememberToken($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\SalesRep\Models\SalesRep whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\SalesRep\Models\SalesRep whereUserPassport($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\SalesRep\Models\SalesRep whereVerifiedAt($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Modules\SalesRep\Models\SalesRep withTrashed()
+ * @method static \Illuminate\Database\Query\Builder|\App\Modules\SalesRep\Models\SalesRep withoutTrashed()
+ * @mixin \Eloquent
+ */
 class SalesRep extends User
 {
 	use SoftDeletes;

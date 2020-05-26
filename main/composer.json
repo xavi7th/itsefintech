@@ -9,7 +9,6 @@
 	"license": "MIT",
 	"require": {
 		"php": "^7.2",
-		"barryvdh/laravel-ide-helper": "^2.7",
 		"danielme85/laravel-log-to-db": "^2.0",
 		"fideloper/proxy": "^4.0",
 		"laravel-notification-channels/twilio": "^2.0",
@@ -24,6 +23,7 @@
 	},
 	"require-dev": {
 		"barryvdh/laravel-debugbar": "^3.2",
+		"barryvdh/laravel-ide-helper": "^2.7",
 		"facade/ignition": "^1.4",
 		"facade/ignition-tinker-tab": "^1.0",
 		"fzaninotto/faker": "^1.4",

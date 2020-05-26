@@ -11,6 +11,42 @@ use App\Modules\CardAdmin\Models\CardAdmin;
 use App\Modules\CustomerSupport\Models\CustomerSupport;
 use App\Modules\SalesRep\Models\SalesRep;
 
+/**
+ * App\Modules\Admin\Models\ApiRoute
+ *
+ * @property int $id
+ * @property string $path
+ * @property string $name
+ * @property string $meta
+ * @property string|null $description
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Modules\AccountOfficer\Models\AccountOfficer[] $account_officers
+ * @property-read int|null $account_officers_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Modules\Accountant\Models\Accountant[] $accountants
+ * @property-read int|null $accountants_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Modules\Admin\Models\Admin[] $admins
+ * @property-read int|null $admins_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Modules\CardAdmin\Models\CardAdmin[] $card_admins
+ * @property-read int|null $card_admins_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Modules\CustomerSupport\Models\CustomerSupport[] $customer_supports
+ * @property-read int|null $customer_supports_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Modules\NormalAdmin\Models\NormalAdmin[] $normal_admins
+ * @property-read int|null $normal_admins_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Modules\SalesRep\Models\SalesRep[] $sales_reps
+ * @property-read int|null $sales_reps_count
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\Admin\Models\ApiRoute newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\Admin\Models\ApiRoute newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\Admin\Models\ApiRoute query()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\Admin\Models\ApiRoute whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\Admin\Models\ApiRoute whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\Admin\Models\ApiRoute whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\Admin\Models\ApiRoute whereMeta($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\Admin\Models\ApiRoute whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\Admin\Models\ApiRoute wherePath($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\Admin\Models\ApiRoute whereUpdatedAt($value)
+ * @mixin \Eloquent
+ */
 class ApiRoute extends Model
 {
 	protected $fillable = [

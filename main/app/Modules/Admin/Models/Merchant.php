@@ -19,6 +19,41 @@ use App\Modules\Admin\Transformers\AdminMerchantCategoryTransformer;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
 
+/**
+ * App\Modules\Admin\Models\Merchant
+ *
+ * @property int $id
+ * @property string $name
+ * @property string $merchant_img
+ * @property int $merchant_category_id
+ * @property string $address
+ * @property string|null $email
+ * @property string|null $phone
+ * @property string $unique_code
+ * @property int $is_active
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Modules\Admin\Models\ActivityLog[] $activities
+ * @property-read int|null $activities_count
+ * @property-read \App\Modules\Admin\Models\MerchantCategory $merchant_category
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Modules\Admin\Models\MerchantTransaction[] $merchant_transactions
+ * @property-read int|null $merchant_transactions_count
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\Admin\Models\Merchant newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\Admin\Models\Merchant newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\Admin\Models\Merchant query()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\Admin\Models\Merchant whereAddress($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\Admin\Models\Merchant whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\Admin\Models\Merchant whereEmail($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\Admin\Models\Merchant whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\Admin\Models\Merchant whereIsActive($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\Admin\Models\Merchant whereMerchantCategoryId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\Admin\Models\Merchant whereMerchantImg($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\Admin\Models\Merchant whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\Admin\Models\Merchant wherePhone($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\Admin\Models\Merchant whereUniqueCode($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\Admin\Models\Merchant whereUpdatedAt($value)
+ * @mixin \Eloquent
+ */
 class Merchant  extends Model implements AuthenticatableContract, AuthorizableContract
 {
 	use Authenticatable, Authorizable;

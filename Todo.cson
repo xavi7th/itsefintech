@@ -1,11 +1,19 @@
 Recovery
   Add a page for list of those with loan show (loan amount, amount paid, due date, )
+  set schedule to send reminder on due loans with notifications to admins
+  set manual send reminder button
+  add extra charges to loans by admin
+  recovery officer can add repayment for a client
+
+Test is_fully_repaid field for loan requests
 
 Email alert customisation
 
 SMS alert not working
 
-
+Implement proper cache busting
 
 create a nullable field state in the debcard req table
 add default false field is_merchant_paid to merchant transactions table to help reconcile whether the merchant has been paid for that transaction
+add nullable reminded_at to the loan requests table
+add default false is_fully_paid field to loan requests table

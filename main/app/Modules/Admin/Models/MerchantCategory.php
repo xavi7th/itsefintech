@@ -7,6 +7,24 @@ use App\Modules\Admin\Models\Merchant;
 use Illuminate\Database\Eloquent\Model;
 use App\Modules\Admin\Transformers\AdminMerchantCategoryTransformer;
 
+/**
+ * App\Modules\Admin\Models\MerchantCategory
+ *
+ * @property int $id
+ * @property string $name
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Modules\Admin\Models\Merchant[] $merchants
+ * @property-read int|null $merchants_count
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\Admin\Models\MerchantCategory newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\Admin\Models\MerchantCategory newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\Admin\Models\MerchantCategory query()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\Admin\Models\MerchantCategory whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\Admin\Models\MerchantCategory whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\Admin\Models\MerchantCategory whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\Admin\Models\MerchantCategory whereUpdatedAt($value)
+ * @mixin \Eloquent
+ */
 class MerchantCategory  extends Model
 {
 

@@ -12,6 +12,53 @@ use App\Modules\Admin\Models\ActivityLog;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Modules\Admin\Transformers\AdminUserTransformer;
 
+/**
+ * App\Modules\Accountant\Models\Accountant
+ *
+ * @property int $id
+ * @property string $full_name
+ * @property string $email
+ * @property string $password
+ * @property string|null $phone
+ * @property string|null $bvn
+ * @property string|null $user_passport
+ * @property string|null $gender
+ * @property string|null $address
+ * @property \Illuminate\Support\Carbon|null $dob
+ * @property string|null $verified_at
+ * @property string|null $remember_token
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Modules\Admin\Models\ActivityLog[] $activities
+ * @property-read int|null $activities_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Modules\Admin\Models\ApiRoute[] $api_routes
+ * @property-read int|null $api_routes_count
+ * @property-read \Illuminate\Notifications\DatabaseNotificationCollection|\Illuminate\Notifications\DatabaseNotification[] $notifications
+ * @property-read int|null $notifications_count
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\Accountant\Models\Accountant newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\Accountant\Models\Accountant newQuery()
+ * @method static \Illuminate\Database\Query\Builder|\App\Modules\Accountant\Models\Accountant onlyTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\Accountant\Models\Accountant query()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\Accountant\Models\Accountant whereAddress($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\Accountant\Models\Accountant whereBvn($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\Accountant\Models\Accountant whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\Accountant\Models\Accountant whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\Accountant\Models\Accountant whereDob($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\Accountant\Models\Accountant whereEmail($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\Accountant\Models\Accountant whereFullName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\Accountant\Models\Accountant whereGender($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\Accountant\Models\Accountant whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\Accountant\Models\Accountant wherePassword($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\Accountant\Models\Accountant wherePhone($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\Accountant\Models\Accountant whereRememberToken($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\Accountant\Models\Accountant whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\Accountant\Models\Accountant whereUserPassport($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\Accountant\Models\Accountant whereVerifiedAt($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Modules\Accountant\Models\Accountant withTrashed()
+ * @method static \Illuminate\Database\Query\Builder|\App\Modules\Accountant\Models\Accountant withoutTrashed()
+ * @mixin \Eloquent
+ */
 class Accountant extends User
 {
 	use SoftDeletes;

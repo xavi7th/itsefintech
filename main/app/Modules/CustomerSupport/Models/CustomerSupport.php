@@ -13,6 +13,59 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Modules\CustomerSupport\Models\SupportTicket;
 use App\Modules\Admin\Transformers\AdminUserTransformer;
 
+/**
+ * App\Modules\CustomerSupport\Models\CustomerSupport
+ *
+ * @property int $id
+ * @property string $full_name
+ * @property string $email
+ * @property string $password
+ * @property string|null $phone
+ * @property string|null $bvn
+ * @property string|null $user_passport
+ * @property string|null $gender
+ * @property string|null $address
+ * @property \Illuminate\Support\Carbon|null $dob
+ * @property string|null $verified_at
+ * @property string|null $remember_token
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Modules\Admin\Models\ActivityLog[] $activities
+ * @property-read int|null $activities_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Modules\Admin\Models\ApiRoute[] $api_routes
+ * @property-read int|null $api_routes_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Modules\CustomerSupport\Models\SupportTicket[] $assigned_tickets
+ * @property-read int|null $assigned_tickets_count
+ * @property-read \Illuminate\Notifications\DatabaseNotificationCollection|\Illuminate\Notifications\DatabaseNotification[] $notifications
+ * @property-read int|null $notifications_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Modules\CustomerSupport\Models\SupportTicket[] $resolved_tickets
+ * @property-read int|null $resolved_tickets_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Modules\CustomerSupport\Models\SupportTicket[] $support_tickets
+ * @property-read int|null $support_tickets_count
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CustomerSupport\Models\CustomerSupport newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CustomerSupport\Models\CustomerSupport newQuery()
+ * @method static \Illuminate\Database\Query\Builder|\App\Modules\CustomerSupport\Models\CustomerSupport onlyTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CustomerSupport\Models\CustomerSupport query()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CustomerSupport\Models\CustomerSupport whereAddress($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CustomerSupport\Models\CustomerSupport whereBvn($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CustomerSupport\Models\CustomerSupport whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CustomerSupport\Models\CustomerSupport whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CustomerSupport\Models\CustomerSupport whereDob($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CustomerSupport\Models\CustomerSupport whereEmail($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CustomerSupport\Models\CustomerSupport whereFullName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CustomerSupport\Models\CustomerSupport whereGender($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CustomerSupport\Models\CustomerSupport whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CustomerSupport\Models\CustomerSupport wherePassword($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CustomerSupport\Models\CustomerSupport wherePhone($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CustomerSupport\Models\CustomerSupport whereRememberToken($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CustomerSupport\Models\CustomerSupport whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CustomerSupport\Models\CustomerSupport whereUserPassport($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CustomerSupport\Models\CustomerSupport whereVerifiedAt($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Modules\CustomerSupport\Models\CustomerSupport withTrashed()
+ * @method static \Illuminate\Database\Query\Builder|\App\Modules\CustomerSupport\Models\CustomerSupport withoutTrashed()
+ * @mixin \Eloquent
+ */
 class CustomerSupport extends User
 {
 	use SoftDeletes;

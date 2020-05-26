@@ -16,10 +16,12 @@ use App\Modules\Admin\Models\VoucherRequest;
 use App\Modules\CardUser\Models\LoanRequest;
 use App\Modules\Admin\Models\CardUserCategory;
 use App\Modules\CardUser\Notifications\SendOTP;
+use App\Modules\Admin\Events\UserCreditLimitSet;
 use App\Modules\CardUser\Models\LoanTransaction;
 use App\Modules\Admin\Models\MerchantTransaction;
 use App\Modules\CardUser\Emails\CardBlockRequest;
 use App\Modules\CardUser\Models\DebitCardRequest;
+use App\Modules\Admin\Events\UserMerchantLimitSet;
 use App\Modules\CardUser\Models\DebitCardTransaction;
 use App\Modules\CardUser\Notifications\ProfileEdited;
 use App\Modules\CardUser\Notifications\AccountCreated;
@@ -31,6 +33,102 @@ use App\Modules\Admin\Http\Requests\SetCardUserCreditLimitValidation;
 use App\Modules\CardUser\Notifications\SendPasswordResetNotification;
 use App\Modules\CardUser\Http\Requests\CardUserUpdateProfileValidation;
 
+/**
+ * App\Modules\CardUser\Models\CardUser
+ *
+ * @property int $id
+ * @property int|null $card_user_category_id
+ * @property string|null $first_name
+ * @property string|null $last_name
+ * @property string $email
+ * @property string|null $otp_verified_at
+ * @property string|null $password
+ * @property string|null $phone
+ * @property string $address
+ * @property string $city
+ * @property string|null $school
+ * @property string|null $department
+ * @property string|null $level
+ * @property string|null $mat_no
+ * @property string|null $user_passport
+ * @property string $bvn
+ * @property float|null $merchant_limit
+ * @property float|null $merchant_percentage
+ * @property float|null $credit_limit
+ * @property float|null $credit_percentage
+ * @property bool $is_active
+ * @property string|null $remember_token
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property-read \App\Modules\Admin\Models\Voucher|null $active_voucher
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Modules\Admin\Models\ActivityLog[] $activities
+ * @property-read int|null $activities_count
+ * @property-read \App\Modules\Admin\Models\CardUserCategory|null $card_user_category
+ * @property-read \App\Modules\CardUser\Models\DebitCardFundingRequest|null $debit_card_funding_request
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Modules\CardUser\Models\DebitCardRequest[] $debit_card_requests
+ * @property-read int|null $debit_card_requests_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Modules\CardUser\Models\DebitCardTransaction[] $debit_card_transactions
+ * @property-read int|null $debit_card_transactions_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Modules\CardUser\Models\DebitCard[] $debit_cards
+ * @property-read int|null $debit_cards_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Modules\Admin\Models\MerchantTransaction[] $debit_merchant_transactions
+ * @property-read int|null $debit_merchant_transactions_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Modules\Admin\Models\Voucher[] $expired_vouchers
+ * @property-read int|null $expired_vouchers_count
+ * @property-read \App\Modules\CardUser\Models\DebitCard|null $first_debit_card
+ * @property-read float $assigned_credit_limit
+ * @property-read string $full_bvn
+ * @property-read string $full_name
+ * @property-read \App\Modules\CardUser\Models\DebitCardRequest|null $last_debit_card_request
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Modules\CardUser\Models\LoanRequest[] $loan_request
+ * @property-read int|null $loan_request_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Modules\CardUser\Models\LoanTransaction[] $loan_transactions
+ * @property-read int|null $loan_transactions_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Modules\Admin\Models\MerchantTransaction[] $merchant_transactions
+ * @property-read int|null $merchant_transactions_count
+ * @property-read \Illuminate\Notifications\DatabaseNotificationCollection|\Illuminate\Notifications\DatabaseNotification[] $notifications
+ * @property-read int|null $notifications_count
+ * @property-read \App\Modules\CardUser\Models\OTP|null $otp
+ * @property-read \App\Modules\CardUser\Models\DebitCardRequest|null $pending_debit_card_requests
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Modules\Admin\Models\MerchantTransaction[] $repayment_merchant_transactions
+ * @property-read int|null $repayment_merchant_transactions_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Modules\CardUser\Models\LoanRequest[] $running_loan_requests
+ * @property-read int|null $running_loan_requests_count
+ * @property-read \App\Modules\Admin\Models\MerchantTransaction|null $unapproved_merchant_transactions
+ * @property-read \App\Modules\Admin\Models\VoucherRequest|null $voucher_request
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Modules\Admin\Models\Voucher[] $vouchers
+ * @property-read int|null $vouchers_count
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardUser\Models\CardUser newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardUser\Models\CardUser newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardUser\Models\CardUser query()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardUser\Models\CardUser whereAddress($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardUser\Models\CardUser whereBvn($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardUser\Models\CardUser whereCardUserCategoryId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardUser\Models\CardUser whereCity($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardUser\Models\CardUser whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardUser\Models\CardUser whereCreditLimit($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardUser\Models\CardUser whereCreditPercentage($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardUser\Models\CardUser whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardUser\Models\CardUser whereDepartment($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardUser\Models\CardUser whereEmail($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardUser\Models\CardUser whereFirstName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardUser\Models\CardUser whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardUser\Models\CardUser whereIsActive($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardUser\Models\CardUser whereLastName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardUser\Models\CardUser whereLevel($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardUser\Models\CardUser whereMatNo($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardUser\Models\CardUser whereMerchantLimit($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardUser\Models\CardUser whereMerchantPercentage($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardUser\Models\CardUser whereOtpVerifiedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardUser\Models\CardUser wherePassword($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardUser\Models\CardUser wherePhone($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardUser\Models\CardUser whereRememberToken($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardUser\Models\CardUser whereSchool($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardUser\Models\CardUser whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardUser\Models\CardUser whereUserPassport($value)
+ * @mixin \Eloquent
+ */
 class CardUser extends User
 {
   protected $fillable = [
@@ -462,8 +560,6 @@ class CardUser extends User
     return response()->json(['updated' => true], 204);
   }
 
-
-
   public function getCardUserCategories()
   {
     return CardUserCategory::get(['category_name', 'id']);
@@ -581,22 +677,23 @@ class CardUser extends User
 
   public function setUserCreditLimit(SetCardUserCreditLimitValidation $request, CardUser $card_user)
   {
+
+    event(new UserCreditLimitSet($card_user, floatval($request->input('amount')), floatval($request->input('interest'))));
+
     $card_user->credit_limit = $request->input('amount');
     $card_user->credit_percentage = $request->input('interest');
     $card_user->save();
-
-    ActivityLog::logAdminActivity('Card User\'s credit limit updated. Card user details: ' . $card_user->email);
 
     return response()->json(['rsp' => true], 204);
   }
 
   public function setUserMerchantLimit(SetCardUserCreditLimitValidation $request, CardUser $card_user)
   {
+    event(new UserMerchantLimitSet($card_user, floatval($request->input('amount')), floatval($request->input('interest'))));
+
     $card_user->merchant_limit = $request->input('amount');
     $card_user->merchant_percentage = $request->input('interest');
     $card_user->save();
-
-    ActivityLog::logAdminActivity('Card User\'s merchant limit updated. Card user details: ' . $card_user->email);
 
     return response()->json(['rsp' => true], 204);
   }

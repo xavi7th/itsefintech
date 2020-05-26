@@ -8,219 +8,328 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use Watson\Rememberable\Rememberable;
 use Illuminate\Database\Eloquent\Model;
-use App\Modules\Admin\Models\ActivityLog;
 use App\Modules\CardUser\Models\CardUser;
+use App\Modules\Admin\Events\LoanDisbursed;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Modules\CardUser\Models\LoanTransaction;
-use App\Modules\Admin\Notifications\LoanApproved;
-use App\Modules\Admin\Notifications\LoanProcessed;
+use App\Modules\Admin\Events\LoanRequestApproved;
 use App\Modules\CardUser\Notifications\LoanRequested;
 use App\Modules\CardUser\Transformers\LoanRequestTransformer;
 use App\Modules\Admin\Transformers\AdminLoanRequestTransformer;
 use App\Modules\CardUser\Http\Requests\CreateLoanRequestValidation;
 
+/**
+ * App\Modules\CardUser\Models\LoanRequest
+ *
+ * @property int $id
+ * @property int $card_user_id
+ * @property float $amount
+ * @property float $monthly_interest
+ * @property int $total_duration
+ * @property bool $is_school_fees
+ * @property \Illuminate\Support\Carbon|null $approved_at
+ * @property int|null $approved_by
+ * @property \Illuminate\Support\Carbon|null $paid_at
+ * @property int|null $marked_paid_by
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property string|null $reminded_at
+ * @property-read \App\Modules\CardUser\Models\CardUser $card_user
+ * @property-read mixed $due_date
+ * @property-read \App\Modules\CardUser\Models\LoanTransaction|null $last_loan_transaction
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Modules\CardUser\Models\LoanTransaction[] $loan_transactions
+ * @property-read int|null $loan_transactions_count
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardUser\Models\LoanRequest newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardUser\Models\LoanRequest newQuery()
+ * @method static \Illuminate\Database\Query\Builder|\App\Modules\CardUser\Models\LoanRequest onlyTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardUser\Models\LoanRequest query()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardUser\Models\LoanRequest whereAmount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardUser\Models\LoanRequest whereApprovedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardUser\Models\LoanRequest whereApprovedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardUser\Models\LoanRequest whereCardUserId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardUser\Models\LoanRequest whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardUser\Models\LoanRequest whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardUser\Models\LoanRequest whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardUser\Models\LoanRequest whereIsSchoolFees($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardUser\Models\LoanRequest whereMarkedPaidBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardUser\Models\LoanRequest whereMonthlyInterest($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardUser\Models\LoanRequest wherePaidAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardUser\Models\LoanRequest whereRemindedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardUser\Models\LoanRequest whereTotalDuration($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardUser\Models\LoanRequest whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Modules\CardUser\Models\LoanRequest withTrashed()
+ * @method static \Illuminate\Database\Query\Builder|\App\Modules\CardUser\Models\LoanRequest withoutTrashed()
+ * @mixin \Eloquent
+ */
 class LoanRequest extends Model
 {
-	use SoftDeletes, Rememberable;
+  use SoftDeletes, Rememberable;
 
-	protected $fillable = ['amount', 'total_duration', 'monthly_interest', 'is_school_fees'];
+  protected $fillable = ['amount', 'total_duration', 'monthly_interest', 'is_school_fees'];
 
-	protected $appends = ['due_date'];
+  protected $appends = ['final_due_date', 'is_expired'];
 
-	protected $casts = ['is_school_fees' => 'boolean'];
+  protected $casts = [
+    'is_school_fees' => 'boolean', 'is_expired' => 'boolean',
+    'final_due_date' => 'datetime', 'is_fully_repaid' => 'boolean',
+    'approved_at' => 'datetime', 'paid_at' => 'datetime',
+  ];
 
-	/**
-	 * The attributes that should be mutated to dates.
-	 *
-	 * @var array
-	 */
-	protected $dates = [
-		'due_date', 'approved_at', 'paid_at'
-	];
+  public function card_user()
+  {
+    return $this->belongsTo(CardUser::class);
+  }
 
-	public function card_user()
-	{
-		return $this->belongsTo(CardUser::class);
-	}
+  public function loan_transactions()
+  {
+    return $this->hasMany(LoanTransaction::class);
+  }
 
-	public function loan_transactions()
-	{
-		return $this->hasMany(LoanTransaction::class);
-	}
+  public function last_loan_transaction()
+  {
+    return $this->hasOne(LoanTransaction::class)->latest();
+  }
 
-	public function loan_balance()
-	{
-		return $this->breakdownStatistics()->total_repayment_amount - $this->loan_transactions()->where('transaction_type', 'repayment')->sum('amount');
-	}
+  public function loan_balance()
+  {
+    return $this->breakdownStatistics()->total_repayment_amount - $this->loan_transactions()->where('transaction_type', 'repayment')->sum('amount');
+  }
 
-	public function getDueDateAttribute()
-	{
-		return Carbon::parse($this->attributes['created_at'])->addMonths($this->attributes['total_duration'])->toDateString();
-	}
+  public function getFinalDueDateAttribute()
+  {
+    return Carbon::parse($this->created_at)->addMonths($this->total_duration);
+  }
 
-	public function breakdownStatistics(): object
-	{
-		return (object)[
-			'amount' => (float)$this->amount,
-			'is_school_fees' => (boolean)$this->is_school_fees,
-			'interest_rate' => (float)$this->monthly_interest,
-			'total_duration' => (string)$this->total_duration . ' months',
-			'minimum_repayment_amount' => (float)round($this->amount * ($this->monthly_interest / 100), 2),
-			'minimum_repayment_amount_in_kobo' => (float)(round($this->amount * ($this->monthly_interest / 100), 2) * 100),
-			'total_interest_amount' => (float)round($total_interest_amount = ($this->monthly_interest / 100) * $this->amount * (now()->diffInMonths(($this->paid_at)) + 1), 2),
-			'total_repayment_amount' => (float)round($total_repayment_amount = $total_interest_amount + $this->amount, 2),
-			'scheduled_repayment_amount' => (float)number_format($total_repayment_amount / $this->total_duration, 2, '.', ''),
-			'scheduled_repayment_amount_in_kobo' => (float)(number_format($total_repayment_amount / $this->total_duration, 2, '.', '') * 100)
-		];
-	}
+  public function next_due_date()
+  {
+    return $this->last_loan_transaction->next_installment_due_date;
+  }
 
-	static function normalAdminRoutes()
-	{
-		Route::group(['namespace' => '\App\Modules\CardUser\Models', 'prefix' => 'api'], function () {
-			Route::put('loan-request/{loan_request}/approve', 'LoanRequest@approveLoanRequest')->middleware('auth:normal_admin');
-		});
-	}
+  public function getIsExpiredAttribute(): bool
+  {
+    return $this->final_due_date->lte(now());
+  }
 
-	static function adminRoutes()
-	{
-		Route::group(['namespace' => '\App\Modules\CardUser\Models'], function () {
-			Route::get('loan-requests/', 'LoanRequest@showAllLoanRequests')->middleware('auth:admin,normal_admin,accountant');
-			Route::put('loan-request/{loan_request}/paid', 'LoanRequest@markLoanRequestAsPaid')->middleware('auth:accountant');
-		});
-	}
+  public function is_fully_paid(): bool
+  {
+    return $this->loan_balance() <= 0;
+  }
 
-	static function cardUserRoutes()
-	{
-		Route::group(['namespace' => '\App\Modules\CardUser\Models', 'middleware' => ['verified_card_users']], function () {
-			Route::get('loan-request', 'LoanRequest@getLoanRequest')->middleware('auth:card_user');
-			Route::get('{loan_request}/loan-transactions', 'LoanRequest@getLoanRequestTransactions')->middleware('auth:card_user');
-			Route::get('loan-request/create', 'LoanRequest@getLoanRequestBreakdown')->middleware('auth:card_user');
-			Route::post('loan-request/create', 'LoanRequest@makeLoanRequest')->middleware('auth:card_user');
-		});
-	}
+  public function is_due(): bool
+  {
+    return $this->next_due_date()->lte(now());
+  }
 
-	/**
-	 * ! Card User Route Methods
-	 */
+  public function is_due_soon(): bool
+  {
+    return $this->next_due_date()->lte(now()->subDays(3));
+  }
 
-	public function getLoanRequest(Request $request)
-	{
-		try {
-			return (new LoanRequestTransformer)->collectionTransformer($request->user()->loan_request, 'transform');
-		} catch (\Throwable $th) {
-			return response()->json(['mesage' => 'User has no existing loan request'], 404);
-		}
-	}
+  public function needs_reminder(): bool
+  {
+    return $this->is_due() && $this->reminded_at()->gte($this->next_due_date());
+  }
 
-	public function getLoanRequestTransactions(LoanRequest $loan_request)
-	{
-		return (new LoanRequestTransformer)->transformLoanTransactions($loan_request);
-	}
+  public function breakdownStatistics(): object
+  {
+    return (object)[
+      'amount' => (float)$this->amount,
+      'is_school_fees' => (boolean)$this->is_school_fees,
+      'interest_rate' => (float)$this->monthly_interest,
+      'total_duration' => (string)$this->total_duration . ' months',
+      'minimum_repayment_amount' => (float)round($this->amount * ($this->monthly_interest / 100), 2),
+      'minimum_repayment_amount_in_kobo' => (float)(round($this->amount * ($this->monthly_interest / 100), 2) * 100),
+      'total_interest_amount' => (float)round($total_interest_amount = ($this->monthly_interest / 100) * $this->amount * (now()->diffInMonths(($this->paid_at)) + 1), 2),
+      'total_repayment_amount' => (float)round($total_repayment_amount = $total_interest_amount + $this->amount, 2),
+      'scheduled_repayment_amount' => (float)number_format($total_repayment_amount / $this->total_duration, 2, '.', ''),
+      'scheduled_repayment_amount_in_kobo' => (float)(number_format($total_repayment_amount / $this->total_duration, 2, '.', '') * 100)
+    ];
+  }
 
-	public function getLoanRequestBreakdown(CreateLoanRequestValidation $request)
-	{
-		$loan_request = resolve(LoanRequest::class);
-		$loan_request->amount = (float)$request->input('amount');
-		$loan_request->monthly_interest = auth()->user()->credit_percentage;
-		$loan_request->total_duration = (int)$request->input('total_duration');
-		return (array)$loan_request->breakdownStatistics();
-	}
+  static function normalAdminRoutes()
+  {
+    Route::group(['namespace' => '\App\Modules\CardUser\Models', 'prefix' => 'api'], function () {
+      Route::put('loan-request/{loan_request}/approve', 'LoanRequest@approveLoanRequest')->middleware('auth:normal_admin');
+    });
+  }
 
-	public function makeLoanRequest(CreateLoanRequestValidation $request)
-	{
+  static function adminRoutes()
+  {
+    Route::group(['namespace' => '\App\Modules\CardUser\Models'], function () {
+      Route::get('loan-requests/', 'LoanRequest@showAllLoanRequests')->middleware('auth:admin,normal_admin,accountant');
+      Route::get('loan-recovery', 'LoanRequest@showAllLoanRecoveries')->middleware('auth:admin,normal_admin,accountant');
+      Route::put('loan-request/{loan_request}/paid', 'LoanRequest@markLoanRequestAsPaid')->middleware('auth:accountant');
+    });
+  }
 
-		$loan_request = $request->user()->loan_request()->create([
-			'amount' => $request->input('amount'),
-			'total_duration' => $request->input('total_duration'),
-			'monthly_interest' => auth()->user()->credit_percentage,
-			'is_school_fees' => $is_school_fees_loan = filter_var($request->is_school_fees, FILTER_VALIDATE_BOOLEAN)
-		]);
+  static function cardUserRoutes()
+  {
+    Route::group(['namespace' => '\App\Modules\CardUser\Models', 'middleware' => ['verified_card_users']], function () {
+      Route::get('loan-request', 'LoanRequest@getLoanRequest')->middleware('auth:card_user');
+      Route::get('{loan_request}/loan-transactions', 'LoanRequest@getLoanRequestTransactions')->middleware('auth:card_user');
+      Route::get('loan-request/create', 'LoanRequest@getLoanRequestBreakdown')->middleware('auth:card_user');
+      Route::post('loan-request/create', 'LoanRequest@makeLoanRequest')->middleware('auth:card_user');
+    });
+  }
 
-		if ($is_school_fees_loan) {
-			ActivityLog::logUserActivity(auth()->user()->email . ' made a school fees loan request of ' . $request->input('amount'));
-			ActivityLog::notifyAccountOfficers(auth()->user()->email . ' made a school fees loan request of ' . $request->input('amount'));
-			ActivityLog::notifyAccountants(auth()->user()->email . ' made a school fees loan request of ' . $request->input('amount'));
-			ActivityLog::notifyAdmins(auth()->user()->email . ' made a school fees loan request of ' . $request->input('amount'));
-			ActivityLog::notifyNormalAdmins(auth()->user()->email . ' made a school fees loan request of ' . $request->input('amount'));
-			auth()->user()->notify(new LoanRequested($request->input('amount'), true));
-		} else {
-			ActivityLog::logUserActivity(auth()->user()->email . ' made a loan request of ' . $request->input('amount'));
-			ActivityLog::notifyAccountOfficers(auth()->user()->email . ' made a loan request of ' . $request->input('amount'));
-			ActivityLog::notifyAccountants(auth()->user()->email . ' made a loan request of ' . $request->input('amount'));
-			ActivityLog::notifyAdmins(auth()->user()->email . ' made a loan request of ' . $request->input('amount'));
-			ActivityLog::notifyNormalAdmins(auth()->user()->email . ' made a loan request of ' . $request->input('amount'));
-			auth()->user()->notify(new LoanRequested($request->input('amount')));
-		}
-		return response()->json((array)$loan_request->breakdownStatistics(), 201);
-	}
+  /**
+   * ! Card User Route Methods
+   */
+
+  public function getLoanRequest(Request $request)
+  {
+    try {
+      return (new LoanRequestTransformer)->collectionTransformer($request->user()->loan_request, 'transform');
+    } catch (\Throwable $th) {
+      return response()->json(['mesage' => 'User has no existing loan request'], 404);
+    }
+  }
+
+  public function getLoanRequestTransactions(LoanRequest $loan_request)
+  {
+    return (new LoanRequestTransformer)->transformLoanTransactions($loan_request);
+  }
+
+  public function getLoanRequestBreakdown(CreateLoanRequestValidation $request)
+  {
+    $loan_request = resolve(LoanRequest::class);
+    $loan_request->amount = (float)$request->input('amount');
+    $loan_request->monthly_interest = auth()->user()->credit_percentage;
+    $loan_request->total_duration = (int)$request->input('total_duration');
+    return (array)$loan_request->breakdownStatistics();
+  }
+
+  public function makeLoanRequest(CreateLoanRequestValidation $request)
+  {
+
+    $loan_request = $request->user()->loan_request()->create([
+      'amount' => $request->input('amount'),
+      'total_duration' => $request->input('total_duration'),
+      'monthly_interest' => auth()->user()->credit_percentage,
+      'is_school_fees' => $is_school_fees_loan = filter_var($request->is_school_fees, FILTER_VALIDATE_BOOLEAN)
+    ]);
+
+    event(new LoanRequested($request->user(), $request->input('amount'), $is_school_fees_loan));
+
+    return response()->json((array)$loan_request->breakdownStatistics(), 201);
+  }
 
 
 
-	/**
-	 * !Admin Route Methods
-	 */
+  /**
+   * !Admin Route Methods
+   */
 
-	public function showAllLoanRequests($admin = null)
-	{
-		if (auth('admin')->check()) {
-			$loan_requests = LoanRequest::withTrashed()->get();
-		} else if (auth('normal_admin')->check()) {
-			$loan_requests = LoanRequest::where('approved_at', null)->get();
-		} else if (auth('accountant')->check()) {
-			$loan_requests = LoanRequest::where('approved_at', '<>', null)->get();
-		}
-		return (new AdminLoanRequestTransformer)->collectionTransformer($loan_requests, 'transformForAdminViewLoanRequests');
-	}
+  public function showAllLoanRequests()
+  {
+    if (auth('admin')->check()) {
+      $loan_requests = LoanRequest::withTrashed()->get();
+    } else if (auth('normal_admin')->check()) {
+      $loan_requests = LoanRequest::notApproved()->get();
+    } else if (auth('accountant')->check()) {
+      $loan_requests = LoanRequest::approved()->get();
+    }
+    return (new AdminLoanRequestTransformer)->collectionTransformer($loan_requests, 'transformForAdminViewLoanRequests');
+  }
 
-	public function approveLoanRequest(LoanRequest $loan_request)
-	{
-		$card_user = $loan_request->card_user;
+  public function showAllLoanRecoveries()
+  {
+    if (auth('admin')->check()) {
+      $loan_requests = LoanRequest::withTrashed()->disbursed()->fullyPaid(false)->get();
+    } else if (auth('normal_admin')->check()) {
+      $loan_requests = LoanRequest::disbursed()->fullyPaid(false)->get();
+    } else if (auth('accountant')->check()) {
+      $loan_requests = LoanRequest::disbursed()->fullyPaid(false)->get();
+    }
+    return (new AdminLoanRequestTransformer)->collectionTransformer($loan_requests, 'transformForAdminViewLoanRecovery');
+  }
 
-		$loan_request->approved_at = now();
-		$loan_request->approved_by = auth()->id();
-		$loan_request->save();
+  public function approveLoanRequest(LoanRequest $loan_request)
+  {
+    $card_user = $loan_request->card_user;
 
-		ActivityLog::notifyAccountOfficers(auth()->user()->email . ' approved a loan request of ' . $loan_request->amount . ' for ' . $card_user->email);
-		ActivityLog::notifyAccountants(auth()->user()->email . ' approved a loan request of ' . $loan_request->amount . ' for ' . $card_user->email);
-		ActivityLog::notifyAdmins(auth()->user()->email . ' approved a loan request of ' . $loan_request->amount . ' for ' . $card_user->email);
-		ActivityLog::notifyNormalAdmins(auth()->user()->email . ' approved a loan request of ' . $loan_request->amount . ' for ' . $card_user->email);
+    event(new LoanRequestApproved($card_user, $loan_request->amount, $loan_request->is_school_fees));
 
-		$card_user->notify(new LoanApproved($loan_request->amount, $loan_request->is_school_fees));
+    $loan_request->approved_at = now();
+    $loan_request->approved_by = auth()->id();
+    $loan_request->save();
 
-		return response()->json(['rsp' => []], 204);
-	}
+    return response()->json(['rsp' => []], 204);
+  }
 
-	public function markLoanRequestAsPaid(LoanRequest $loan_request)
-	{
-		DB::beginTransaction();
+  public function markLoanRequestAsPaid(LoanRequest $loan_request)
+  {
+    DB::beginTransaction();
 
-		$card_user = $loan_request->card_user;
+    $card_user = $loan_request->card_user;
 
-		$loan_request->paid_at = now();
-		$loan_request->marked_paid_by = auth()->id();
-		$loan_request->save();
+    $loan_request->paid_at = now();
+    $loan_request->marked_paid_by = auth()->id();
+    $loan_request->save();
 
-		$loan_request->loan_transactions()->updateOrCreate(
-			[
-				'loan_request_id' => $loan_request->id
-			],
-			[
-				'card_user_id' => $loan_request->card_user_id,
-				'amount' => ((object)$loan_request->breakdownStatistics())->total_repayment_amount,
-				'transaction_type' => $loan_request->is_school_fees ? 'school fees loan' : 'loan',
-				'next_installment_due_date' => now()->addMonth(),
-			]
-		);
+    $loan_request->loan_transactions()->updateOrCreate(
+      [
+        'loan_request_id' => $loan_request->id
+      ],
+      [
+        'card_user_id' => $loan_request->card_user_id,
+        'amount' => ((object)$loan_request->breakdownStatistics())->total_repayment_amount,
+        'transaction_type' => $loan_request->is_school_fees ? 'school fees loan' : 'loan',
+        'next_installment_due_date' => now()->addMonth(),
+      ]
+    );
 
-		ActivityLog::notifyAccountOfficers(auth()->user()->email . ' marked ' .  $card_user->email . '\'s loan request of ' . $loan_request->amount . ' as paid.');
-		ActivityLog::notifyAccountants(auth()->user()->email . ' marked ' .  $card_user->email . '\'s loan request of ' . $loan_request->amount . ' as paid.');
-		ActivityLog::notifyAdmins(auth()->user()->email . ' marked ' .  $card_user->email . '\'s loan request of ' . $loan_request->amount . ' as paid.');
-		ActivityLog::notifyNormalAdmins(auth()->user()->email . ' marked ' .  $card_user->email . '\'s loan request of ' . $loan_request->amount . ' as paid.');
+    DB::commit();
 
-		DB::commit();
+    event(new LoanDisbursed($card_user, $loan_request->amount, $loan_request->is_school_fees));
 
-		$card_user->notify(new LoanProcessed($loan_request->amount, $loan_request->is_school_fees));
 
-		return response()->json(['rsp' => []], 204);
-	}
+    return response()->json(['rsp' => []], 204);
+  }
+
+  /**
+   * Scope a query to only include loan requests that have not been approved by the admin.
+   *
+   * @param  \Illuminate\Database\Eloquent\Builder  $query
+   * @return \Illuminate\Database\Eloquent\Builder
+   */
+  public function scopeNotApproved($query)
+  {
+    return $query->where('approved_at', null);
+  }
+
+  /**
+   * Scope a query to only include loan requests that have been approved by the admin.
+   *
+   * @param  \Illuminate\Database\Eloquent\Builder  $query
+   * @return \Illuminate\Database\Eloquent\Builder
+   */
+  public function scopeApproved($query)
+  {
+    return $query->where('approved_at', '<>', null);
+  }
+
+  /**
+   * Scope a query to only include loans that have been disbursed to the requester.
+   *
+   * @param  \Illuminate\Database\Eloquent\Builder  $query
+   * @return \Illuminate\Database\Eloquent\Builder
+   */
+  public function scopeDisbursed($query)
+  {
+    return $query->where('paid_at', '<>', null);
+  }
+
+  /**
+   * Scope a query to only include loans based on their fully paid status.
+   *
+   * @param  \Illuminate\Database\Eloquent\Builder  $query
+   * @param bool $state
+   * @return \Illuminate\Database\Eloquent\Builder
+   */
+  public function scopeFullyPaid($query, bool $state)
+  {
+    return $query->where('is_fully_repaid', $state);
+  }
 }

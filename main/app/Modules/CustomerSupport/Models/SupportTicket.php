@@ -12,6 +12,58 @@ use App\Modules\CustomerSupport\Models\CustomerSupport;
 use App\Modules\CustomerSupport\Transformers\SupportTicketTransformer;
 use App\Modules\CustomerSupport\Http\Requests\CreateSupportTicketValidation;
 
+/**
+ * App\Modules\CustomerSupport\Models\SupportTicket
+ *
+ * @property int $id
+ * @property int $customer_support_id
+ * @property string $ticket_type
+ * @property string $channel
+ * @property string $description
+ * @property int $department_id
+ * @property string|null $assigned_at
+ * @property int|null $assignee_id
+ * @property string|null $assignee_type
+ * @property string|null $resolved_at
+ * @property int|null $resolver_id
+ * @property string|null $resolver_type
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property-read \Illuminate\Database\Eloquent\Model|\Eloquent $assignee
+ * @property-read \App\Modules\CustomerSupport\Models\CustomerSupport $customer_support
+ * @property-read \App\Modules\Admin\Models\Department $department
+ * @property-read \Illuminate\Database\Eloquent\Model|\Eloquent $resolver
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CustomerSupport\Models\SupportTicket accountOfficers()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CustomerSupport\Models\SupportTicket accountants()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CustomerSupport\Models\SupportTicket admins()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CustomerSupport\Models\SupportTicket cardAdmins()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CustomerSupport\Models\SupportTicket customerSupports()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CustomerSupport\Models\SupportTicket newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CustomerSupport\Models\SupportTicket newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CustomerSupport\Models\SupportTicket normalAdmins()
+ * @method static \Illuminate\Database\Query\Builder|\App\Modules\CustomerSupport\Models\SupportTicket onlyTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CustomerSupport\Models\SupportTicket query()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CustomerSupport\Models\SupportTicket salesReps()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CustomerSupport\Models\SupportTicket whereAssignedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CustomerSupport\Models\SupportTicket whereAssigneeId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CustomerSupport\Models\SupportTicket whereAssigneeType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CustomerSupport\Models\SupportTicket whereChannel($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CustomerSupport\Models\SupportTicket whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CustomerSupport\Models\SupportTicket whereCustomerSupportId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CustomerSupport\Models\SupportTicket whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CustomerSupport\Models\SupportTicket whereDepartmentId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CustomerSupport\Models\SupportTicket whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CustomerSupport\Models\SupportTicket whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CustomerSupport\Models\SupportTicket whereResolvedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CustomerSupport\Models\SupportTicket whereResolverId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CustomerSupport\Models\SupportTicket whereResolverType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CustomerSupport\Models\SupportTicket whereTicketType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CustomerSupport\Models\SupportTicket whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Modules\CustomerSupport\Models\SupportTicket withTrashed()
+ * @method static \Illuminate\Database\Query\Builder|\App\Modules\CustomerSupport\Models\SupportTicket withoutTrashed()
+ * @mixin \Eloquent
+ */
 class SupportTicket extends Model
 {
 	use SoftDeletes;
