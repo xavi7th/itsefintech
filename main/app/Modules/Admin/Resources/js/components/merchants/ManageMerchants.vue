@@ -446,6 +446,7 @@
                   $("#merchants-table").DataTable({
                     responsive: true,
                     scrollX: false,
+                    order: [[0, "desc"]],
                     language: {
                       searchPlaceholder: "Search...",
                       sSearch: ""
@@ -459,6 +460,7 @@
                   $("#merchants-table").DataTable({
                     responsive: false,
                     scrollX: true,
+                    order: [[0, "desc"]],
                     language: {
                       searchPlaceholder: "Search...",
                       sSearch: ""

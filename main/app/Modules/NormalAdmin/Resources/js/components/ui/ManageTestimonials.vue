@@ -182,6 +182,7 @@
           $(function() {
             $("#testimonialTable").DataTable({
               responsive: true,
+              order: [[0, "desc"]],
               language: {
                 searchPlaceholder: "Search...",
                 sSearch: ""

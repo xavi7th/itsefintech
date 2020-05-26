@@ -264,6 +264,7 @@
                   $("#debit-card-types").DataTable({
                     responsive: true,
                     scrollX: false,
+                    order: [[0, "desc"]],
                     language: {
                       searchPlaceholder: "Search...",
                       sSearch: ""
@@ -277,6 +278,7 @@
                   $("#debit-card-types").DataTable({
                     responsive: false,
                     scrollX: true,
+                    order: [[0, "desc"]],
                     language: {
                       searchPlaceholder: "Search...",
                       sSearch: ""

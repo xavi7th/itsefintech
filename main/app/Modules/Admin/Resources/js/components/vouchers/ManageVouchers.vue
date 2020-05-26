@@ -252,6 +252,7 @@
                 $("#vouchers-table").DataTable({
                   responsive: true,
                   scrollX: false,
+                  order: [[0, "desc"]],
                   language: {
                     searchPlaceholder: "Search...",
                     sSearch: ""
@@ -265,6 +266,7 @@
                 $("#vouchers-table").DataTable({
                   responsive: false,
                   scrollX: true,
+                  order: [[0, "desc"]],
                   language: {
                     searchPlaceholder: "Search...",
                     sSearch: ""
