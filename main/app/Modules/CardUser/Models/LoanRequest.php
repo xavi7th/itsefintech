@@ -10,6 +10,7 @@ use Watson\Rememberable\Rememberable;
 use Illuminate\Database\Eloquent\Model;
 use App\Modules\CardUser\Models\CardUser;
 use App\Modules\Admin\Events\LoanDisbursed;
+use App\Modules\CardUser\Events\OverdueLoan;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Modules\CardUser\Models\LoanTransaction;
 use App\Modules\Admin\Events\LoanRequestApproved;
@@ -62,6 +63,14 @@ use App\Modules\CardUser\Http\Requests\CreateLoanRequestValidation;
  * @method static \Illuminate\Database\Query\Builder|\App\Modules\CardUser\Models\LoanRequest withTrashed()
  * @method static \Illuminate\Database\Query\Builder|\App\Modules\CardUser\Models\LoanRequest withoutTrashed()
  * @mixin \Eloquent
+ * @property bool $is_fully_repaid
+ * @property-read mixed $final_due_date
+ * @property-read bool $is_expired
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardUser\Models\LoanRequest approved()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardUser\Models\LoanRequest disbursed()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardUser\Models\LoanRequest fullyPaid($state)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardUser\Models\LoanRequest notApproved()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardUser\Models\LoanRequest whereIsFullyRepaid($value)
  */
 class LoanRequest extends Model
 {
@@ -75,6 +84,7 @@ class LoanRequest extends Model
     'is_school_fees' => 'boolean', 'is_expired' => 'boolean',
     'final_due_date' => 'datetime', 'is_fully_repaid' => 'boolean',
     'approved_at' => 'datetime', 'paid_at' => 'datetime',
+    'reminded_at' => 'datetime'
   ];
 
   public function card_user()
@@ -144,9 +154,25 @@ class LoanRequest extends Model
 
   public function needs_reminder(): bool
   {
-    return $this->is_due() && (is_null($this->reminded_at) || $this->reminded_at->gte($this->next_due_date()));
+    return $this->is_due() && (is_null($this->reminded_at) || $this->reminded_at->lte($this->next_due_date()));
   }
 
+  /**
+   * Return the statistics of the loan request
+   *
+   * @property float $amount
+   * @property bool $is_school_fees
+   * @property float $interest_rate
+   * @property int $total_duration
+   * @property float $minimum_repayment_amount
+   * @property float $minimum_repayment_amount_in_kobo
+   * @property float $total_interest_amount
+   * @property float $total_repayment_amount
+   * @property float $scheduled_repayment_amount
+   * @property float $scheduled_repayment_amount_in_kobo
+   *
+   * @return object
+   */
   public function breakdownStatistics(): object
   {
     return (object)[
@@ -176,6 +202,7 @@ class LoanRequest extends Model
       Route::get('loan-requests/', 'LoanRequest@showAllLoanRequests')->middleware('auth:admin,normal_admin,accountant');
       Route::get('loan-recovery', 'LoanRequest@showAllLoanRecoveries')->middleware('auth:admin,normal_admin,accountant');
       Route::put('loan-request/{loan_request}/paid', 'LoanRequest@markLoanRequestAsPaid')->middleware('auth:accountant');
+      Route::post('loan-request/{loan_request}/remind', 'LoanRequest@sendOverDueLoanReminder')->middleware('auth:accountant,admin');
       Route::put('loan-request/{loan_request}/transaction/add', 'LoanRequest@manuallyAddLoanRequestTransaction')->middleware('auth:accountant,admin');
     });
   }
@@ -301,8 +328,17 @@ class LoanRequest extends Model
 
     event(new LoanDisbursed($card_user, $loan_request->amount, $loan_request->is_school_fees));
 
-
     return response()->json(['rsp' => []], 204);
+  }
+
+  public function sendOverDueLoanReminder(LoanRequest $loan_request)
+  {
+    event(new OverdueLoan($loan_request));
+
+    $loan_request->reminded_at = now();
+    $loan_request->save();
+
+    return response()->json(['rsp' => []], 200);
   }
 
   public function manuallyAddLoanRequestTransaction(Request $request, LoanRequest $loan_request)

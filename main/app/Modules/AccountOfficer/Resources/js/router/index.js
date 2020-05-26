@@ -15,8 +15,7 @@ const APP_NAME = 'Itse FinTech Admin'
  * @param  {string}   name     the filename (basename) of the view to load.
  */
 function view(name) {
-	return () => import( /* webpackChunkName: "js/accountOfficer-" */ `@accountOfficer-components/${name}.vue`)
-		.then(module => module.default);
+	return () => import( /* webpackChunkName: "js/accountOfficer-" */ `@accountOfficer-components/${name}.vue`);
 }
 
 const processRoutes = async (route) => {

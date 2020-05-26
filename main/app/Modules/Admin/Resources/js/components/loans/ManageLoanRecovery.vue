@@ -261,20 +261,20 @@
           .fire({
             title: "Enter an amount",
             html: `<div class="d-flex flex-wrap j-c-center">
-                                                <h1 class="text-danger text-center">
-                                                  <i class="fa fa-bullseye"></i>
-                                                  Notice!
-                                                </h1>
-                                                <p class="text-center text-danger">
-                                                  This action will affect the user's loan balance.
-                                                </p>
-                                                <input id="amount-input" class="swal2-input" placeholder="Enter Amount">
-                                                <select id="transaction-type-input" class="swal2-input">
-                                                  <option>repayment</option>
-                                                  <option>servicing</option>
-                                                  <option>others</option>
-                                                </select>
-                                              </div>`,
+                                                        <h1 class="text-danger text-center">
+                                                          <i class="fa fa-bullseye"></i>
+                                                          Notice!
+                                                        </h1>
+                                                        <p class="text-center text-danger">
+                                                          This action will affect the user's loan balance.
+                                                        </p>
+                                                        <input id="amount-input" class="swal2-input" placeholder="Enter Amount">
+                                                        <select id="transaction-type-input" class="swal2-input">
+                                                          <option>repayment</option>
+                                                          <option>servicing</option>
+                                                          <option>others</option>
+                                                        </select>
+                                                      </div>`,
             showCancelButton: true,
             confirmButtonText: "Create Transaction",
             allowEscapeKey: false,
@@ -333,18 +333,17 @@
         BlockToast.fire({
           text: "processing ..."
         });
-        console.log(LoanRequestDetails);
-
-        return;
 
         axios
-          .put(normalAdminApproveLoanRequest(loanRequest.id))
+          .post(
+            `/admin-panel/api/loan-request/${this.LoanRequestDetails.id}/remind`
+          )
           .then(({ status }) => {
-            loanRequest.is_approved = true;
-            if (status === 204) {
+            if (status === 200) {
+              this.LoanRequestDetails.needs_reminder = false;
               Toast.fire({
                 title: "Success",
-                text: "Request has been marked as approved",
+                text: "Reminder messages sent",
                 position: "center"
               });
             } else {

@@ -6,6 +6,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use App\Modules\Admin\Models\ActivityLog;
 use App\Modules\Admin\Events\LoanDisbursed;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use App\Modules\CardUser\Events\OverdueLoan;
 use App\Modules\CardUser\Events\LoanRequested;
 use App\Modules\Admin\Events\UserCreditLimitSet;
 use App\Modules\Admin\Events\LoanRequestApproved;
@@ -22,6 +23,7 @@ use App\Modules\CardUser\Notifications\VoucherApproved;
 use App\Modules\Accountant\Events\MerchantTransactionMarkedAsPaid;
 use App\Modules\Accountant\Events\UserApprovesMerchantTransaction;
 use App\Modules\CardUser\Notifications\LoanRequested as LoanRequestedNotification;
+use App\Modules\CardUser\Notifications\LoanOverdue;
 
 class NotificationEventSubscriber
 {
@@ -86,6 +88,16 @@ class NotificationEventSubscriber
     $events->listen(
       ManualLoanTransactionSet::class,
       'App\Modules\Admin\Listeners\NotificationEventSubscriber@handleManualLoanTransactionSet'
+    );
+
+    $events->listen(
+      ManualLoanTransactionSet::class,
+      'App\Modules\Admin\Listeners\NotificationEventSubscriber@handleManualLoanTransactionSet'
+    );
+
+    $events->listen(
+      OverdueLoan::class,
+      'App\Modules\Admin\Listeners\NotificationEventSubscriber@handleManualOverdueLoan'
     );
   }
 
@@ -214,5 +226,16 @@ class NotificationEventSubscriber
     ActivityLog::notifyNormalAdmins($message);
 
     $event->card_user->notify(new LoanModified($event->amount));
+  }
+
+  public function handleManualOverdueLoan($event)
+  {
+    $message = 'Loan over due reminder sent to ' .  $event->loan_request->card_user->email;
+
+    ActivityLog::notifyAccountOfficers($message);
+    ActivityLog::notifyAccountants($message);
+    ActivityLog::notifyAdmins($message);
+
+    $event->loan_request->card_user->notify(new LoanOverdue($event->loan_request));
   }
 }

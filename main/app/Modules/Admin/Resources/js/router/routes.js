@@ -18,8 +18,7 @@ const accountantView = function(name) {
 }
 
 const accountOfficerView = function(name) {
-	return () => import( /* webpackChunkName: "js/accountOfficer-" */ `@accountOfficer-components/${name}.vue`)
-		.then(module => module.default);
+	return () => import( /* webpackChunkName: "js/accountOfficer-" */ `@accountOfficer-components/${name}.vue`);
 }
 
 const cardAdminView = function(name) {
