@@ -71,6 +71,8 @@ use App\Modules\CardUser\Http\Requests\CreateLoanRequestValidation;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardUser\Models\LoanRequest fullyPaid($state)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardUser\Models\LoanRequest notApproved()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardUser\Models\LoanRequest whereIsFullyRepaid($value)
+ * @property int $is_fully_paid
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardUser\Models\LoanRequest whereIsFullyPaid($value)
  */
 class LoanRequest extends Model
 {

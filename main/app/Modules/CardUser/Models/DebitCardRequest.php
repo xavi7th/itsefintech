@@ -67,6 +67,8 @@ use App\Modules\Admin\Transformers\AdminDebitCardRequestTransformer;
  * @method static \Illuminate\Database\Query\Builder|\App\Modules\CardUser\Models\DebitCardRequest withTrashed()
  * @method static \Illuminate\Database\Query\Builder|\App\Modules\CardUser\Models\DebitCardRequest withoutTrashed()
  * @mixin \Eloquent
+ * @property string $state
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardUser\Models\DebitCardRequest whereState($value)
  */
 class DebitCardRequest extends Model
 {

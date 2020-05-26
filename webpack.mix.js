@@ -29,7 +29,7 @@ mix.webpackConfig({
 	},
 	plugins: [
     new CleanWebpackPlugin({
-			dry: mix.inProduction(),
+			dry: false,
 			cleanOnceBeforeBuildPatterns: ['js/*', 'css/*', '/img/*', 'fonts/*', 'robots.txt', 'mix-manifest.json',
 				'./*.js']
 
@@ -84,7 +84,7 @@ mix
 			require('postcss-fixes')(),
 		],
 	})
-	.extract(['vue', 'sweetalert2', 'axios', 'lodash', 'vue-plugin-load-script', 'vue-router']);
+	.extract();
 
 mix.copyDirectory(__dirname + '/main/resources/site-assets/', 'public_html/basicsite');
 
