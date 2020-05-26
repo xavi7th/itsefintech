@@ -47,7 +47,7 @@ class AdminLoanRequestTransformer
       'next_due_date' => $loan_request->next_due_date()->toDateString(),
       'monthly_interest' => (string)$loan_request->monthly_interest . '%',
       'loan_balance' => (float)$loan_balance = $loan_request->loan_balance(),
-      'amount_paid' => (float)$breakdown_statistics->total_repayment_amount - $loan_balance,
+      'amount_paid' => (float)$breakdown_statistics->total_repayment_amount - $loan_balance + $loan_request->total_servicing_fee(),
       'is_approved' => (bool)$loan_request->approved_at,
       'is_expired' => (bool)$loan_request->is_expired,
       'is_due' => (bool)$loan_request->is_due(),

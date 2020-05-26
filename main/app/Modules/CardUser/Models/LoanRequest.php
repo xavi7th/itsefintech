@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Modules\CardUser\Models\LoanTransaction;
 use App\Modules\Admin\Events\LoanRequestApproved;
 use App\Modules\CardUser\Notifications\LoanRequested;
+use App\Modules\Admin\Events\ManualLoanTransactionSet;
 use App\Modules\CardUser\Transformers\LoanRequestTransformer;
 use App\Modules\Admin\Transformers\AdminLoanRequestTransformer;
 use App\Modules\CardUser\Http\Requests\CreateLoanRequestValidation;
@@ -91,9 +92,19 @@ class LoanRequest extends Model
     return $this->hasOne(LoanTransaction::class)->latest();
   }
 
+  public function extraAmount(): float
+  {
+    return $this->loan_transactions()->where('transaction_type', 'others')->sum('amount');
+  }
+
+  public function total_servicing_fee(): float
+  {
+    return $this->loan_transactions()->where('transaction_type', 'servicing')->sum('amount');
+  }
+
   public function loan_balance()
   {
-    return $this->breakdownStatistics()->total_repayment_amount - $this->loan_transactions()->where('transaction_type', 'repayment')->sum('amount');
+    return $this->breakdownStatistics()->total_repayment_amount + $this->extraAmount() - $this->loan_transactions()->where('transaction_type', 'repayment')->sum('amount');
   }
 
   public function getFinalDueDateAttribute()
@@ -128,7 +139,7 @@ class LoanRequest extends Model
 
   public function needs_reminder(): bool
   {
-    return $this->is_due() && $this->reminded_at()->gte($this->next_due_date());
+    return $this->is_due() && (is_null($this->reminded_at) || $this->reminded_at->gte($this->next_due_date()));
   }
 
   public function breakdownStatistics(): object
@@ -160,6 +171,7 @@ class LoanRequest extends Model
       Route::get('loan-requests/', 'LoanRequest@showAllLoanRequests')->middleware('auth:admin,normal_admin,accountant');
       Route::get('loan-recovery', 'LoanRequest@showAllLoanRecoveries')->middleware('auth:admin,normal_admin,accountant');
       Route::put('loan-request/{loan_request}/paid', 'LoanRequest@markLoanRequestAsPaid')->middleware('auth:accountant');
+      Route::put('loan-request/{loan_request}/transaction/add', 'LoanRequest@manuallyAddLoanRequestTransaction')->middleware('auth:accountant,admin');
     });
   }
 
@@ -284,6 +296,39 @@ class LoanRequest extends Model
 
     event(new LoanDisbursed($card_user, $loan_request->amount, $loan_request->is_school_fees));
 
+
+    return response()->json(['rsp' => []], 204);
+  }
+
+  public function manuallyAddLoanRequestTransaction(Request $request, LoanRequest $loan_request)
+  {
+    $request->validate([
+      'amount' => 'required|numeric',
+      'transaction_type' => 'required|string|max:15'
+    ]);
+    DB::beginTransaction();
+
+    $card_user = $loan_request->card_user;
+    $next_installment_due_date = $request->transaction_type == 'loan' ?
+      $loan_request->last_loan_transaction->next_installment_due_date : now()->addMonth();
+
+    if ($request->transaction_type == 'repayment' && $loan_request->loan_balance() < $request->amount) {
+      abort(422, 'The amount is more than the loan balance of ' . $loan_request->loan_balance());
+    } elseif ($request->transaction_type == 'servicing' && $loan_request->breakdownStatistics()->minimum_repayment_amount != $request->amount) {
+      abort(422, 'The amount is more than the loan servicing amount of ' . $loan_request->breakdownStatistics()->minimum_repayment_amount);
+    }
+
+
+    $loan_request->loan_transactions()->create([
+      'card_user_id' => $loan_request->card_user_id,
+      'amount' => $request->amount,
+      'transaction_type' => $request->transaction_type,
+      'next_installment_due_date' => $next_installment_due_date
+    ]);
+
+    DB::commit();
+
+    event(new ManualLoanTransactionSet($card_user, $request->amount, $request->transaction_type));
 
     return response()->json(['rsp' => []], 204);
   }

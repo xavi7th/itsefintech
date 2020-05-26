@@ -7601,7 +7601,7 @@ a.text-primary:focus {
 }
 
 .bg-pale-pink {
-	background-color: #fff4f8;
+	background-color: #ffdbe8 !important;
 }
 
 .bg-pale-brown {

@@ -10,11 +10,13 @@ use App\Modules\CardUser\Events\LoanRequested;
 use App\Modules\Admin\Events\UserCreditLimitSet;
 use App\Modules\Admin\Events\LoanRequestApproved;
 use App\Modules\Admin\Notifications\LoanApproved;
+use App\Modules\Admin\Notifications\LoanModified;
 use App\Modules\Admin\Events\UserMerchantLimitSet;
 use App\Modules\Admin\Notifications\LoanProcessed;
 use App\Modules\Accountant\Events\MerchantLoanPaid;
 use App\Modules\CardUser\Notifications\VoucherPaid;
 use App\Modules\Admin\Events\UserVoucherManualDebit;
+use App\Modules\Admin\Events\ManualLoanTransactionSet;
 use App\Modules\CardUser\Notifications\VoucherDebited;
 use App\Modules\CardUser\Notifications\VoucherApproved;
 use App\Modules\Accountant\Events\MerchantTransactionMarkedAsPaid;
@@ -79,6 +81,11 @@ class NotificationEventSubscriber
     $events->listen(
       LoanDisbursed::class,
       'App\Modules\Admin\Listeners\NotificationEventSubscriber@handleLoanDisbursed'
+    );
+
+    $events->listen(
+      ManualLoanTransactionSet::class,
+      'App\Modules\Admin\Listeners\NotificationEventSubscriber@handleManualLoanTransactionSet'
     );
   }
 
@@ -194,5 +201,18 @@ class NotificationEventSubscriber
     ActivityLog::notifyNormalAdmins($message);
 
     $event->card_user->notify(new LoanProcessed($event->amount, $event->is_school_fees_loan));
+  }
+
+  public function handleManualLoanTransactionSet($event)
+  {
+    $message = request()->user()->email . ' manually added a loan transaction for ' .  $event->card_user->email . ' of amount ' .
+      to_naira($event->amount) . ' as a ' . $event->transaction_type . ' transaction. The user´s loan balance has been adjusted accordingly.';
+
+    ActivityLog::notifyAccountOfficers($message);
+    ActivityLog::notifyAccountants($message);
+    ActivityLog::notifyAdmins($message);
+    ActivityLog::notifyNormalAdmins($message);
+
+    $event->card_user->notify(new LoanModified($event->amount));
   }
 }

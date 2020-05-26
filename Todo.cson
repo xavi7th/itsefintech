@@ -2,8 +2,6 @@ Recovery
   Add a page for list of those with loan show (loan amount, amount paid, due date, )
   set schedule to send reminder on due loans with notifications to admins
   set manual send reminder button
-  add extra charges to loans by admin
-  recovery officer can add repayment for a client
 
 Test is_fully_repaid field for loan requests
 Extract datatables options into a global object to DRY the code base

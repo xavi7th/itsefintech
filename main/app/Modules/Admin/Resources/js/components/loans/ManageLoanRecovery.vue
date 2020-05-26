@@ -12,43 +12,38 @@
               <tr>
                 <th>ID</th>
                 <th>User</th>
-                <th>Phone</th>
-                <th>Amount</th>
-                <th>Loan Duration</th>
-                <th>Approval Status</th>
+                <th>Loan Balance</th>
+                <th>Amount Paid</th>
+                <th>To pay</th>
+                <th>Next Due Date</th>
+                <th>Status</th>
                 <th>Actions</th>
               </tr>
             </thead>
             <tbody>
-              <tr v-for="loan_request in loan_requests" :key="loan_request.id">
+              <tr
+                v-for="loan_request in loan_requests"
+                :key="loan_request.id"
+                :class="{'bg-pale-pink': loan_request.is_due}"
+              >
                 <td>{{ loan_request.id }}</td>
                 <td>{{ loan_request.requester.full_name }}</td>
-                <td>{{ loan_request.requester.phone }}</td>
-                <template v-if="loan_request.loan_balance == 0">
-                  <td colspan="4" class="text-center text-bold text-uppercase">Loan paid</td>
-                </template>
-                <template v-else>
-                  <td>
-                    {{ loan_request.amount | Naira }}
-                    <span
-                      v-if="loan_request.is_school_fees"
-                    >school fees</span>
-                  </td>
-                  <td>{{ loan_request.total_duration }}</td>
-                  <td>{{ loan_request.is_paid ? 'Payment made' : loan_request.is_approved ? 'Approved without payment' : 'Not Approved' }}</td>
-                </template>
+                <td>{{ loan_request.loan_balance | Naira}}</td>
+                <td>{{ loan_request.amount_paid | Naira}}</td>
+                <td>{{ loan_request.scheduled_repayment_amount | Naira}}</td>
+                <td>{{ loan_request.next_due_date }}</td>
+
+                <td
+                  class="text-center text-bold text-uppercase"
+                >{{loan_request.is_due ? 'DEFAULTER' : 'NOT DUE' }}</td>
+
                 <td>
                   <div
-                    class="badge badge-info badge-shadow pointer"
+                    class="btn btn-info bg-dark mb-10 pointer btn-xs"
                     data-toggle="modal"
                     data-target="#loan-request-details"
                     @click="showDetailsModal(loan_request)"
-                  >View Request Details</div>
-                  <div
-                    class="btn btn-purple badge-shadow pointer"
-                    @click="sendReminderNotifications(loan_request)"
-                    v-if="!loan_request.is_approved && $user.isAccountant"
-                  >Send Reminder</div>
+                  >Details</div>
                 </td>
               </tr>
             </tbody>
@@ -125,10 +120,23 @@
                     </div>
                   </div>
                 </div>
-                <div class="modal-footer">
+                <div class="modal-footer j-c-between">
                   <button
                     type="button"
-                    class="btn btn-bold btn-pure btn-secondary"
+                    class="btn btn-purple badge-shadow"
+                    @click="sendReminderNotifications"
+                    v-if="LoanRequestDetails.needs_reminder && ($user.isAccountant || $user.isAdmin)"
+                  >Send Reminder</button>
+                  <button
+                    type="button"
+                    class="btn btn-pink badge-shadow"
+                    @click="addManualTransaction"
+                    v-if="$user.isAccountOfficer || $user.isAdmin"
+                  >Add Transaction</button>
+                  <button
+                    ref="closeDetailsModal"
+                    type="button"
+                    class="btn btn-bold btn-secondary"
                     data-dismiss="modal"
                   >Close</button>
                 </div>
@@ -178,11 +186,89 @@
         }
         return words.join(" ");
       },
-      sendReminderNotifications(loanRequest) {
+      addManualTransaction() {
+        this.sectionLoading = true;
+        this.$refs.closeDetailsModal.click();
+
+        swal
+          .fire({
+            title: "Enter an amount",
+            html: `<div class="d-flex flex-wrap j-c-center">
+            <h1 class="text-danger text-center">
+              <i class="fa fa-bullseye"></i>
+              Notice!
+            </h1>
+            <p class="text-center text-danger">
+              This action will affect the user's loan balance.
+            </p>
+            <input id="amount-input" class="swal2-input" placeholder="Enter Amount">
+            <select id="transaction-type-input" class="swal2-input">
+              <option>repayment</option>
+              <option>servicing</option>
+              <option>others</option>
+            </select>
+          </div>`,
+            showCancelButton: true,
+            confirmButtonText: "Create Transaction",
+            allowEscapeKey: false,
+            focusCancel: true,
+            cancelButtonColor: "#333",
+            confirmButtonColor: "#d33",
+            showLoaderOnConfirm: true,
+            allowOutsideClick: () => !swal.isLoading(),
+            preConfirm: () => {
+              return axios
+                .put(
+                  `/admin-panel/api/loan-request/${this.LoanRequestDetails.id}/transaction/add`,
+                  {
+                    amount: document.getElementById("amount-input").value,
+                    transaction_type: document.getElementById(
+                      "transaction-type-input"
+                    ).value
+                  }
+                )
+                .then(response => {
+                  if (response && response.status !== 204) {
+                    throw new Error(response.statusText);
+                  }
+                  this.sectionLoading = false;
+                  this.getLoanRecovery();
+                  return { rsp: true };
+                })
+                .catch(error => {
+                  this.sectionLoading = false;
+                  swal.showValidationMessage(`Request failed: ${error}`);
+                });
+            }
+          })
+          .then(result => {
+            if (result.value) {
+              swal.fire({
+                title: "Success",
+                text: "Loan transaction recorded",
+                position: "center"
+              });
+            } else {
+              Toast.fire({
+                title: "Cancelled",
+                text: "You canceled the transaction or something else went wrong",
+                position: "center",
+                icon: "info"
+              });
+            }
+          })
+          .then(() => {
+            this.sectionLoading = false;
+          });
+      },
+      sendReminderNotifications() {
         this.sectionLoading = true;
         BlockToast.fire({
           text: "processing ..."
         });
+        console.log(LoanRequestDetails);
+
+        return;
 
         axios
           .put(normalAdminApproveLoanRequest(loanRequest.id))
@@ -216,27 +302,37 @@
             if (this.$isDesktop) {
               this.$nextTick(() => {
                 $(function() {
-                  $("#datatable1").DataTable({
-                    responsive: true,
-                    scrollX: false,
-                    language: {
-                      searchPlaceholder: "Search...",
-                      sSearch: ""
-                    }
-                  });
+                  if ($.fn.dataTable.isDataTable("#datatable1")) {
+                    let table = $("#datatable1").DataTable();
+                  } else {
+                    $("#datatable1").DataTable({
+                      responsive: true,
+                      scrollX: false,
+                      order: [[0, "desc"]],
+                      language: {
+                        searchPlaceholder: "Search...",
+                        sSearch: ""
+                      }
+                    });
+                  }
                 });
               });
             } else {
               this.$nextTick(() => {
                 $(function() {
-                  $("#datatable1").DataTable({
-                    responsive: false,
-                    scrollX: true,
-                    language: {
-                      searchPlaceholder: "Search...",
-                      sSearch: ""
-                    }
-                  });
+                  if ($.fn.dataTable.isDataTable("#datatable1")) {
+                    let table = $("#datatable1").DataTable();
+                  } else {
+                    $("#datatable1").DataTable({
+                      responsive: false,
+                      scrollX: true,
+                      order: [[0, "desc"]],
+                      language: {
+                        searchPlaceholder: "Search...",
+                        sSearch: ""
+                      }
+                    });
+                  }
                 });
               });
             }
