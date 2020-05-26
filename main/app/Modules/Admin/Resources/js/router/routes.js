@@ -3,45 +3,38 @@
  * @param  {string}   name     the filename (basename) of the view to load.
  */
 function adminView(name) {
-	return function(resolve) {
-		require(['@admin-components/' + name], resolve)
-	}
+	return () => import( /* webpackChunkName: "js/admin-" */ `@admin-components/${name}.vue`)
+		.then(module => module.default);
 }
 
 function normalAdminView(name) {
-	return function(resolve) {
-		require(['@normalAdmin-components/' + name], resolve)
-	}
+	return () => import( /* webpackChunkName: "js/normalAdmin-" */ `@normalAdmin-components/${name}.vue`)
+		.then(module => module.default);
 }
 
 const accountantView = function(name) {
-	return function(resolve) {
-		require(['@accountant-components/' + name], resolve)
-	}
+	return () => import( /* webpackChunkName: "js/accountant-" */ `@accountant-components/${name}.vue`)
+		.then(module => module.default);
 }
 
 const accountOfficerView = function(name) {
-	return function(resolve) {
-		require(['@accountOfficer-components/' + name], resolve)
-	}
+	return () => import( /* webpackChunkName: "js/accountOfficer-" */ `@accountOfficer-components/${name}.vue`)
+		.then(module => module.default);
 }
 
 const cardAdminView = function(name) {
-	return function(resolve) {
-		require(['@cardAdmin-components/' + name], resolve)
-	}
+	return () => import( /* webpackChunkName: "js/cardAdmin-" */ `@cardAdmin-components/${name}.vue`)
+		.then(module => module.default);
 }
 
 const customerSupportView = function(name) {
-	return function(resolve) {
-		require(['@customerSupport-components/' + name], resolve)
-	}
+	return () => import( /* webpackChunkName: "js/customerSupport-" */ `@customerSupport-components/${name}.vue`)
+		.then(module => module.default);
 }
 
 const salesRepView = function(name) {
-	return function(resolve) {
-		require(['@salesRep-components/' + name], resolve)
-	}
+	return () => import( /* webpackChunkName: "js/salesRep-" */ `@salesRep-components/${name}.vue`)
+		.then(module => module.default);
 }
 
 const APP_NAME = 'Capital X';

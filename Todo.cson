@@ -6,6 +6,7 @@ Recovery
   recovery officer can add repayment for a client
 
 Test is_fully_repaid field for loan requests
+Extract datatables options into a global object to DRY the code base
 
 Email alert customisation
 

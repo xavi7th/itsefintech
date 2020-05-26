@@ -308,7 +308,7 @@
               $("#datatable1").DataTable({
                 responsive: true,
                 scrollX: false,
-                order: [[0, "desc"]]
+                order: [[0, "desc"]],
                 language: {
                   searchPlaceholder: "Search...",
                   sSearch: ""
@@ -322,7 +322,7 @@
               $("#datatable1").DataTable({
                 responsive: false,
                 scrollX: true,
-                order: [[0, "desc"]]
+                order: [[0, "desc"]],
                 language: {
                   searchPlaceholder: "Search...",
                   sSearch: ""
@@ -459,9 +459,9 @@
           .fire({
             title: "Enter an amount",
             html: `<div class="d-flex">
-                      <input id="merchant-amount-input" class="swal2-input" required placeholder="Enter merchant limit">
-                      <input id="merchant-interest-input" class="swal2-input" required placeholder="Enter interest">
-                    </div>`,
+                        <input id="merchant-amount-input" class="swal2-input" required placeholder="Enter merchant limit">
+                        <input id="merchant-interest-input" class="swal2-input" required placeholder="Enter interest">
+                      </div>`,
             showCancelButton: true,
             confirmButtonText: "Set Merchant Limit",
             allowEscapeKey: false,
@@ -521,9 +521,9 @@
           .fire({
             title: "Enter an amount",
             html: `<div class="d-flex">
-                      <input id="amount-input" class="swal2-input" required placeholder="Enter credit limit">
-                      <input id="interest-input" class="swal2-input" required placeholder="Enter interest">
-                    </div>`,
+                        <input id="amount-input" class="swal2-input" required placeholder="Enter credit limit">
+                        <input id="interest-input" class="swal2-input" required placeholder="Enter interest">
+                      </div>`,
             showCancelButton: true,
             confirmButtonText: "Set Credit Limit",
             allowEscapeKey: false,
@@ -643,16 +643,16 @@
           .fire({
             title: "Enter an amount",
             html: `<div class="d-flex flex-wrap j-c-center">
-                      <h1 class="text-danger text-center">
-                        <i class="fa fa-bullseye"></i>
-                        Notice!
-                      </h1>
-                      <p class="text-center text-danger">
-                        This action will perform a direct debit on the user´s voucher credit
-                      </p>
-                      <input id="merchant-code" class="swal2-input" required placeholder="Merchant Code" autofocus>
-                      <input id="debit-amount" class="swal2-input" required placeholder="Debit Amount">
-                    </div>`,
+                        <h1 class="text-danger text-center">
+                          <i class="fa fa-bullseye"></i>
+                          Notice!
+                        </h1>
+                        <p class="text-center text-danger">
+                          This action will perform a direct debit on the user´s voucher credit
+                        </p>
+                        <input id="merchant-code" class="swal2-input" required placeholder="Merchant Code" autofocus>
+                        <input id="debit-amount" class="swal2-input" required placeholder="Debit Amount">
+                      </div>`,
             showCancelButton: true,
             confirmButtonText: "Debit User Voucher",
             allowEscapeKey: false,
