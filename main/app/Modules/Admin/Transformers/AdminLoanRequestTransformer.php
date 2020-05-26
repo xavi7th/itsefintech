@@ -4,6 +4,7 @@ namespace App\Modules\Admin\Transformers;
 
 use App\Modules\CardUser\Models\LoanRequest;
 use App\Modules\Admin\Models\Admin;
+use App\Modules\CardUser\Transformers\LoanTransactionTransformer;
 
 class AdminLoanRequestTransformer
 {
@@ -39,6 +40,9 @@ class AdminLoanRequestTransformer
   public function transformForAdminViewLoanRecovery(LoanRequest $loan_request)
   {
     $breakdown_statistics = $loan_request->breakdownStatistics();
+    $loan_transactions = (new LoanTransactionTransformer)->collectionTransformer($loan_request->loan_transactions()
+      ->where('transaction_type', '<>', 'loan')->get(), 'basicTransform')['loan_transactions'];
+
     return collect([
       'id' => (int)$loan_request->id,
       'amount' => (float)$loan_request->amount,
@@ -46,8 +50,8 @@ class AdminLoanRequestTransformer
       'final_due_date' => $loan_request->final_due_date->toDateString(),
       'next_due_date' => $loan_request->next_due_date()->toDateString(),
       'monthly_interest' => (string)$loan_request->monthly_interest . '%',
-      'loan_balance' => (float)$loan_balance = $loan_request->loan_balance(),
-      'amount_paid' => (float)$breakdown_statistics->total_repayment_amount - $loan_balance + $loan_request->total_servicing_fee(),
+      'loan_balance' => (float)$loan_request->loan_balance(),
+      'amount_paid' => (float)$loan_request->loan_amount_repaid() + $loan_request->total_servicing_fee(),
       'is_approved' => (bool)$loan_request->approved_at,
       'is_expired' => (bool)$loan_request->is_expired,
       'is_due' => (bool)$loan_request->is_due(),
@@ -56,7 +60,8 @@ class AdminLoanRequestTransformer
       'paid_by' => $loan_request->marked_paid_by ? (new AdminUserTransformer)->transformForAdminViewAdminsBasicDetails(Admin::find($loan_request->marked_paid_by))['full_name'] : null,
       'request_date' => $loan_request->created_at->toDateString(),
       'needs_reminder' => $loan_request->needs_reminder(),
-      'requester' => (new AdminUserTransformer)->transformForLoanRecoveryViewCardUsers($loan_request->card_user)
+      'requester' => (new AdminUserTransformer)->transformForLoanRecoveryViewCardUsers($loan_request->card_user),
+      'loan_transactions' => $loan_transactions
     ])->merge($breakdown_statistics);
   }
 }

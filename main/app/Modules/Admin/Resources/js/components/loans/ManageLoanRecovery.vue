@@ -44,16 +44,81 @@
                     data-target="#loan-request-details"
                     @click="showDetailsModal(loan_request)"
                   >Details</div>
+                  <div
+                    class="btn btn-purple pointer btn-xs"
+                    data-toggle="modal"
+                    data-target="#loan-transactions"
+                    @click="showTransactionsModal(loan_request)"
+                  >Transactions</div>
                 </td>
               </tr>
             </tbody>
           </table>
 
+          <div class="modal modal-right fade" id="loan-transactions" tabindex="-2">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h4 class="modal-title">Transaction's Details</h4>
+                  <button type="button" class="close" data-dismiss="modal">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <div class="col-md-12">
+                    <div class="card overflow-hidden">
+                      <div class="card-body py-0">
+                        <div class="card-row">
+                          <div class="table-responsive">
+                            <table class="table table-striped table-hover table-bordered">
+                              <thead>
+                                <tr>
+                                  <th>Amount</th>
+                                  <th>Type</th>
+                                  <th>Date</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                <tr v-for="(value, idx) in LoanTransactionDetails" :key="idx">
+                                  <td>{{ value.amount | Naira}}</td>
+                                  <td>
+                                    <span>{{ value.transaction_type }}</span>
+                                  </td>
+                                  <td>
+                                    <span>{{ value.date }}</span>
+                                  </td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="modal-footer j-c-between">
+                  <button
+                    type="button"
+                    class="btn btn-pink badge-shadow"
+                    @click="addManualTransaction"
+                    v-if="$user.isAccountOfficer || $user.isAdmin"
+                  >Add Transaction</button>
+                  <button
+                    ref="closeDetailsModal"
+                    type="button"
+                    class="btn btn-bold btn-secondary"
+                    data-dismiss="modal"
+                  >Close</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <div class="modal modal-left fade" id="loan-request-details" tabindex="-1">
             <div class="modal-dialog">
               <div class="modal-content">
                 <div class="modal-header">
-                  <h4 class="modal-title">{{ LoanRequestDetails.full_name }}' details</h4>
+                  <h4 class="modal-title">{{ LoanRequestDetails.full_name }}´s details</h4>
                   <button type="button" class="close" data-dismiss="modal">
                     <span aria-hidden="true">&times;</span>
                   </button>
@@ -129,13 +194,6 @@
                   >Send Reminder</button>
                   <button
                     type="button"
-                    class="btn btn-pink badge-shadow"
-                    @click="addManualTransaction"
-                    v-if="$user.isAccountOfficer || $user.isAdmin"
-                  >Add Transaction</button>
-                  <button
-                    ref="closeDetailsModal"
-                    type="button"
                     class="btn btn-bold btn-secondary"
                     data-dismiss="modal"
                   >Close</button>
@@ -161,6 +219,11 @@
           cards: {}
         }
       },
+      LoanTransactionDetails: {
+        requester: {
+          cards: {}
+        }
+      },
       sectionLoading: false,
       details: {}
     }),
@@ -176,6 +239,10 @@
     methods: {
       showDetailsModal(LoanRequestDetails) {
         this.LoanRequestDetails = LoanRequestDetails;
+      },
+      showTransactionsModal(transactionDetails) {
+        this.LoanRequestDetails = transactionDetails;
+        this.LoanTransactionDetails = transactionDetails.loan_transactions;
       },
       slugToString(slug) {
         let words = slug.split("_");
@@ -194,20 +261,20 @@
           .fire({
             title: "Enter an amount",
             html: `<div class="d-flex flex-wrap j-c-center">
-            <h1 class="text-danger text-center">
-              <i class="fa fa-bullseye"></i>
-              Notice!
-            </h1>
-            <p class="text-center text-danger">
-              This action will affect the user's loan balance.
-            </p>
-            <input id="amount-input" class="swal2-input" placeholder="Enter Amount">
-            <select id="transaction-type-input" class="swal2-input">
-              <option>repayment</option>
-              <option>servicing</option>
-              <option>others</option>
-            </select>
-          </div>`,
+                                                <h1 class="text-danger text-center">
+                                                  <i class="fa fa-bullseye"></i>
+                                                  Notice!
+                                                </h1>
+                                                <p class="text-center text-danger">
+                                                  This action will affect the user's loan balance.
+                                                </p>
+                                                <input id="amount-input" class="swal2-input" placeholder="Enter Amount">
+                                                <select id="transaction-type-input" class="swal2-input">
+                                                  <option>repayment</option>
+                                                  <option>servicing</option>
+                                                  <option>others</option>
+                                                </select>
+                                              </div>`,
             showCancelButton: true,
             confirmButtonText: "Create Transaction",
             allowEscapeKey: false,

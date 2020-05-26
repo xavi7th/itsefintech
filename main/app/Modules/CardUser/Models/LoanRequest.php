@@ -102,6 +102,11 @@ class LoanRequest extends Model
     return $this->loan_transactions()->where('transaction_type', 'servicing')->sum('amount');
   }
 
+  public function loan_amount_repaid(): float
+  {
+    return $this->loan_transactions()->where('transaction_type', 'repayment')->sum('amount');
+  }
+
   public function loan_balance()
   {
     return $this->breakdownStatistics()->total_repayment_amount + $this->extraAmount() - $this->loan_transactions()->where('transaction_type', 'repayment')->sum('amount');
@@ -309,11 +314,13 @@ class LoanRequest extends Model
     DB::beginTransaction();
 
     $card_user = $loan_request->card_user;
-    $next_installment_due_date = $request->transaction_type == 'loan' ?
+    $next_installment_due_date = $request->transaction_type == 'others' ?
       $loan_request->last_loan_transaction->next_installment_due_date : now()->addMonth();
 
     if ($request->transaction_type == 'repayment' && $loan_request->loan_balance() < $request->amount) {
       abort(422, 'The amount is more than the loan balance of ' . $loan_request->loan_balance());
+    } elseif ($request->transaction_type == 'repayment' && $loan_request->breakdownStatistics()->scheduled_repayment_amount > $request->amount) {
+      abort(422, 'The amount is less than the loan scheduled repayment amount of ' . $loan_request->breakdownStatistics()->scheduled_repayment_amount);
     } elseif ($request->transaction_type == 'servicing' && $loan_request->breakdownStatistics()->minimum_repayment_amount != $request->amount) {
       abort(422, 'The amount is more than the loan servicing amount of ' . $loan_request->breakdownStatistics()->minimum_repayment_amount);
     }

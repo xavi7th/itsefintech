@@ -134,11 +134,6 @@ class LoanTransaction extends Model
       'next_installment_due_date' => now()->addMonth()
     ]);
 
-    if ($loan_request->is_fully_paid()) {
-      $loan_request->is_fully_repaid = true;
-      $loan_request->save();
-    }
-
     ActivityLog::logUserActivity(auth()->user()->email . 'made a loan repayment. Amount: ' . $request->amount . ' Type: '  . $trans_type);
 
     DB::commit();
@@ -156,5 +151,18 @@ class LoanTransaction extends Model
     $loan_requests = LoanTransaction::all();
 
     return (new AdminLoanTransactionTransformer)->collectionTransformer($loan_requests, 'transformForAdminViewLoanTransactions');
+  }
+
+  public static function boot()
+  {
+
+    parent::boot();
+
+    static::created(function ($transaction) {
+      if ($transaction->loan_request->is_fully_paid()) {
+        $transaction->loan_request->is_fully_repaid = true;
+        $transaction->loan_request->save();
+      }
+    });
   }
 }
