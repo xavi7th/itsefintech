@@ -32,8 +32,7 @@ class CardBlockRequest extends Mailable
    */
   public function build()
   {
-    return $this->from('support@53thbnk.com')
-      ->subject(config('app.name') . ' Update')
+    return $this
       ->view('carduser::emails.card-block-request');
   }
 }

@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "target": "es2017",
+    "allowSyntheticDefaultImports": false,
+    "baseUrl": "./",
+    "paths": {
+      "@dashboard-components/*": [ "main/app/Modules/AppUser/Resources/js/components/*" ],
+      "@dashboard-assets/*": [ "main/app/Modules/AppUser/Resources/*" ],
+      "@basicsite-components/*": [ "main/app/Modules/AppUser/Resources/js/components/*" ],
+      "@basicsite-assets/*": [ "main/app/Modules/AppUser/Resources/*" ],
+      "@admin-components/*": [ "main/app/Modules/AppUser/Resources/js/components/*" ],
+      "@admin-assets/*": [ "main/app/Modules/AppUser/Resources/*" ]
+    }
+  },
+  "exclude": [ "**/node_modules/*", "main/vendor/*", "main/storage/*", "public_html/*" ]
+}
