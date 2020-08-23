@@ -89,8 +89,7 @@
             "@php artisan view:clear",
             "@php artisan event:clear",
             "@php artisan migrate:fresh",
-            "@php artisan module:seed",
-            "npm run watch"
+            "@php artisan module:seed"
         ],
 		"post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",

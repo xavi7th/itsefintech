@@ -18,15 +18,19 @@ use App\Modules\CardUser\Models\CardUser;
 */
 
 $factory->define(CardUser::class, function (Faker $faker) {
-	return [
-		'first_name' => $faker->firstName,
-		'last_name' => $faker->lastName,
-		'email' => $faker->unique()->safeEmail,
-		// 'card_user_category_id' => 1,
-		'otp_verified_at' => now(),
-		'password' => 'pass',
-		'phone' => $faker->phoneNumber,
-		'user_passport' => '/storage/id_cards/' . $faker->file(public_path('img/'), public_path('storage/card_users/'), false),
-		'remember_token' => Str::random(10),
-	];
+  if (!File::isDirectory(public_path('storage/card_users/'))) {
+    File::makeDirectory(public_path('storage/card_users/'), 0755);
+  }
+
+  return [
+    'first_name' => $faker->firstName,
+    'last_name' => $faker->lastName,
+    'email' => $faker->unique()->safeEmail,
+    // 'card_user_category_id' => 1,
+    'otp_verified_at' => now(),
+    'password' => 'password@1',
+    'phone' => $faker->phoneNumber,
+    'user_passport' => '/storage/id_cards/' . $faker->file(public_path('img/'), public_path('storage/card_users/'), false),
+    'remember_token' => Str::random(10),
+  ];
 });

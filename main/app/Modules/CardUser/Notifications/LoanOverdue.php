@@ -7,7 +7,7 @@ use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use App\Modules\CardUser\Models\LoanRequest;
 use Illuminate\Notifications\Messages\MailMessage;
-use App\Modules\CardUser\Notifications\Channels\SMSSolutionsMessage;
+use App\Modules\CardUser\Notifications\Channels\TermiiSMSMessage;
 
 class LoanOverdue extends Notification
 {
@@ -28,7 +28,7 @@ class LoanOverdue extends Notification
    */
   public function via($notifiable)
   {
-    return ['mail', 'database', SMSSolutionsMessage::class];
+    return ['mail', 'database', TermiiSMSMessage::class];
   }
 
   /**
@@ -62,12 +62,12 @@ class LoanOverdue extends Notification
   /**
    * Get the SMS representation of the notification.
    *
-   * @param mixed $notifiable
+   * @param mixed $card_user
    */
-  public function toSMSSolutions($notifiable)
+  public function toTermiiSMS($card_user)
   {
-    return (new SMSSolutionsMessage)
-      ->sms_message('Hello ' . $notifiable->full_name . '. You are over due on your next scheduled payment of ' . to_naira($this->loan_request->breakdownStatistics()->scheduled_repayment_amount))
-      ->to($notifiable->phone);
+    return (new TermiiSMSMessage)
+      ->sms_message('Hello ' . $card_user->full_name . '. You are over due on your next scheduled payment of ' . to_naira($this->loan_request->breakdownStatistics()->scheduled_repayment_amount))
+      ->to($card_user->phone);
   }
 }

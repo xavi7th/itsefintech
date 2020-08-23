@@ -6,7 +6,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
-use App\Modules\CardUser\Notifications\Channels\SMSSolutionsMessage;
+use App\Modules\CardUser\Notifications\Channels\TermiiSMSMessage;
 
 class VoucherDebited extends Notification
 {
@@ -36,7 +36,7 @@ class VoucherDebited extends Notification
    */
   public function via($notifiable)
   {
-    return ['mail', 'database', SMSSolutionsMessage::class];
+    return ['mail', 'database', TermiiSMSMessage::class];
   }
 
   /**
@@ -71,25 +71,12 @@ class VoucherDebited extends Notification
   /**
    * Get the SMS representation of the notification.
    *
-   * @param mixed $notifiable
+   * @param mixed $card_user
    */
-  public function toSMSSolutions($notifiable)
+  public function toTermiiSMS($card_user)
   {
-    return (new SMSSolutionsMessage)
+    return (new TermiiSMSMessage)
       ->sms_message('Your voucher with code ' . $this->voucher_code . ' was just debited of ' . $this->amount . ' to pay your transaction with merchant ' . $this->merchant_name)
-      ->to($notifiable->phone);
-  }
-
-  /**
-   * Get the array representation of the notification.
-   *
-   * @param mixed $notifiable
-   * @return array
-   */
-  public function toArray($notifiable)
-  {
-    return [
-      //
-    ];
+      ->to($card_user->phone);
   }
 }

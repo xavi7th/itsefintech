@@ -53,6 +53,7 @@ use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\Admin\Models\Merchant whereUniqueCode($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\Admin\Models\Merchant whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\Admin\Models\Merchant active()
  */
 class Merchant  extends Model implements AuthenticatableContract, AuthorizableContract
 {

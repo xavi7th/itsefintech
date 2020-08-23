@@ -272,7 +272,7 @@ class CardUser extends User
 
   public function due_for_merchant_loan()
   {
-    return (boolean)$this->merchant_limit;
+    return (bool)$this->merchant_limit;
   }
 
   public function merchant_loan_balance()
@@ -322,13 +322,13 @@ class CardUser extends User
 
   public function due_for_credit()
   {
-    return (boolean)$this->credit_limit;
+    return (bool)$this->credit_limit;
     return $this->debit_cards()->where('is_admin_activated', true)->where('is_suspended', false)->whereDate('activated_at', '<=', now()->subDays(30)->toDateString())->exists();
   }
 
   public function due_for_merchant_credit()
   {
-    return (boolean)$this->merchant_limit;
+    return (bool)$this->merchant_limit;
   }
 
   public function activities()
@@ -478,8 +478,6 @@ class CardUser extends User
   {
     Route::group(['namespace' =>  '\App\Modules\CardUser\Models'], function () {
       Route::get('card-users/profile-details', 'CardUser@getCardUserProfileDetails');
-      /** Redundant Route use /user instead */
-      // Route::put('card-user/profile', 'CardUser@editCardUserProfileDetails')->middleware('auth:card_user');
       Route::get('card-users/categories', 'CardUser@getCardUserCategories');
     });
 
@@ -535,10 +533,7 @@ class CardUser extends User
     /** Send welcome message */
     ActivityLog::logUserActivity($request->user()->email . ' OTP successfully verified.');
 
-    /**
-     * ! Disabled per app owner's request
-     */
-    // $request->user()->notify(new AccountCreated);
+    $request->user()->notify(new AccountCreated);
 
     DB::commit();
 
@@ -568,22 +563,6 @@ class CardUser extends User
   public function getCardUserProfileDetails()
   {
     return self::$editableProperties;
-  }
-
-  public function editCardUserProfileDetails()
-  {
-    $keys = [];
-    foreach (request()->except('token') as $key => $value) {
-      auth()->user()->$key = $value;
-    }
-    auth()->user()->save();
-
-    ActivityLog::logUserActivity(auth()->user()->email . ' edited his profile.');
-
-    // auth()->user()->notify(new ProfileEdited);
-
-
-    return response()->json([], 204);
   }
 
   /**

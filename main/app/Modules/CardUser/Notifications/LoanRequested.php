@@ -7,7 +7,6 @@ use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use App\Modules\CardUser\Notifications\Channels\TermiiSMSMessage;
-use App\Modules\CardUser\Notifications\Channels\SMSSolutionsMessage;
 
 class LoanRequested extends Notification
 {
@@ -86,16 +85,6 @@ class LoanRequested extends Notification
       ];
     }
   }
-
-  /**
-   * Get the SMS representation of the notification.
-   *
-   * @param App\Modules\CardUser\Models\CardUser $card_user
-   */
-  public function toSMSSolutions($card_user)
-  { }
-
-
 
   /**
    * Get the SMS representation of the notification.
