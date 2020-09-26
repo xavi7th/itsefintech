@@ -62,6 +62,11 @@
                     @click="allocateCard(debitCard)"
                     v-if="debitCard.sales_rep && !debitCard.card_user && $user.isSalesRep"
                   >Allocate Card</div>
+                  <div
+                    class="fs-11 btn btn-bold badge badge-danger pointer"
+                    @click="deleteCard(debitCard)"
+                    v-if="!debitCard.card_user && $user.isAdmin"
+                  >Delete Card</div>
                 </td>
               </tr>
             </tbody>
@@ -99,7 +104,7 @@
                               class="form-control form-control-pill"
                               id="form-full-name"
                               v-model="details.card_number"
-                              v-validate="'required|credit_card'"
+                              v-validate="'required'"
                               data-vv-as="credit card number"
                               name="card_number"
                             />
@@ -232,11 +237,12 @@
 <script>
   import {
     adminViewDebitCards,
-    toggleDebitCardSuspension
+    deleteDebitCard,
+    toggleDebitCardSuspension,
   } from "@admin-assets/js/config";
   import {
     normalAdminCreateDebitCard,
-    normalAdminAssignDebitCard
+    normalAdminAssignDebitCard,
   } from "@normalAdmin-assets/js/config";
   import { cardAdminActivateDebitCard } from "@cardAdmin-assets/js/config";
   import { salesRepAllocateDebitCardToCardUser } from "@salesRep-assets/js/config";
@@ -249,12 +255,12 @@
       debitCardDetails: {},
       sectionLoading: false,
       details: {
-        debit_card_type_id: null
+        debit_card_type_id: null,
       },
-      userDetails: {}
+      userDetails: {},
     }),
     components: {
-      PreLoader
+      PreLoader,
     },
     created() {
       this.getDebitCards();
@@ -274,7 +280,7 @@
       },
       getDebitCards() {
         BlockToast.fire({
-          text: "loading debit cards..."
+          text: "loading debit cards...",
         });
         axios
           .get(adminViewDebitCards(this.saleRepId))
@@ -284,29 +290,29 @@
 
             if (this.$isDesktop) {
               this.$nextTick(() => {
-                $(function() {
+                $(function () {
                   $("#datatable1").DataTable({
                     responsive: true,
                     scrollX: false,
                     order: [[0, "desc"]],
                     language: {
                       searchPlaceholder: "Search...",
-                      sSearch: ""
-                    }
+                      sSearch: "",
+                    },
                   });
                 });
               });
             } else {
               this.$nextTick(() => {
-                $(function() {
+                $(function () {
                   $("#datatable1").DataTable({
                     responsive: false,
                     scrollX: true,
                     order: [[0, "desc"]],
                     language: {
                       searchPlaceholder: "Search...",
-                      sSearch: ""
-                    }
+                      sSearch: "",
+                    },
                   });
                 });
               });
@@ -316,21 +322,21 @@
           });
       },
       createDebitCard() {
-        this.$validator.validateAll().then(result => {
+        this.$validator.validateAll().then((result) => {
           if (!result) {
             Toast.fire({
               title: "Invalid data! Try again",
               position: "center",
-              icon: "error"
+              icon: "error",
             });
           } else {
             BlockToast.fire({
-              text: "creating debit card for user..."
+              text: "creating debit card for user...",
             });
 
             axios
               .post(normalAdminCreateDebitCard, {
-                ...this.details
+                ...this.details,
               })
               .then(({ status, data: { rsp } }) => {
                 if (undefined !== status && status == 201) {
@@ -340,16 +346,16 @@
                     title: "Created",
                     text: `It can now bw assigned to a sales rep's stock`,
                     icon: "success",
-                    position: "center"
+                    position: "center",
                   });
                 }
               })
-              .catch(err => {
+              .catch((err) => {
                 if (err.response.status == 500) {
                   swal.fire({
                     title: "Error",
                     text: `Something went wrong on server. Creation not successful.`,
-                    icon: "error"
+                    icon: "error",
                   });
                 }
               });
@@ -362,23 +368,23 @@
             title: "Enter a Sales Rep's email",
             input: "text",
             inputAttributes: {
-              autocapitalize: "off"
+              autocapitalize: "off",
             },
             showCancelButton: true,
             confirmButtonText: "Assign card",
             showLoaderOnConfirm: true,
-            preConfirm: email => {
+            preConfirm: (email) => {
               return axios
                 .put(normalAdminAssignDebitCard(debitCardDetails.id), {
-                  email
+                  email,
                 })
-                .then(response => {
+                .then((response) => {
                   if (response.status !== 204) {
                     throw new Error(response.statusText);
                   }
                   return { rsp: true };
                 })
-                .catch(error => {
+                .catch((error) => {
                   console.log(error.response);
 
                   if (error.response.status === 404) {
@@ -388,15 +394,15 @@
                   }
                 });
             },
-            allowOutsideClick: () => !swal.isLoading()
+            allowOutsideClick: () => !swal.isLoading(),
           })
-          .then(result => {
+          .then((result) => {
             if (result.value) {
               swal
                 .fire({
                   title: `Success`,
                   text: "Assigned to sales rep!",
-                  icon: "success"
+                  icon: "success",
                 })
                 .then(() => {
                   location.reload();
@@ -410,17 +416,17 @@
             title: "Enter a User's email",
             input: "email",
             inputAttributes: {
-              autocapitalize: "off"
+              autocapitalize: "off",
             },
             showCancelButton: true,
             confirmButtonText: "Allocate card",
             showLoaderOnConfirm: true,
-            preConfirm: email => {
+            preConfirm: (email) => {
               return axios
                 .put(salesRepAllocateDebitCardToCardUser(debitCardDetails.id), {
-                  email
+                  email,
                 })
-                .then(response => {
+                .then((response) => {
                   if (undefined === response) {
                     throw new Error("");
                   }
@@ -430,7 +436,7 @@
                   }
                   return { rsp: true };
                 })
-                .catch(error => {
+                .catch((error) => {
                   if (error.response.status === 423) {
                     swal.showValidationMessage("Unassigned Card");
                   } else {
@@ -438,21 +444,64 @@
                   }
                 });
             },
-            allowOutsideClick: () => !swal.isLoading()
+            allowOutsideClick: () => !swal.isLoading(),
           })
-          .then(result => {
+          .then((result) => {
             if (result.value) {
               swal
                 .fire({
                   title: `Allocated`,
                   text:
                     "The user will be required to activate the card before using it!",
-                  icon: "success"
+                  icon: "success",
                 })
                 .then(() => {
                   location.reload();
                 });
             }
+          });
+      },
+      deleteCard(debit_card) {
+        // this.sectionLoading = true;
+        // BlockToast.fire({
+        //   text: "deleting debit card and all associated data ...",
+        // });
+        swalPreconfirm
+          .fire({
+            text: "This will delete this debit card and all its associated data.",
+            preConfirm: () => {
+              axios
+                .delete(deleteDebitCard(debit_card.id), {
+                  permitted_routes: this.permitted_routes,
+                })
+                .then(({ status }) => {
+                  if (status === 204) {
+                    let removed = this.debitCards.indexOf(debit_card);
+                    if (removed != -1) {
+                      this.debitCards.splice(removed, 1);
+                    }
+                    Toast.fire({
+                      title: "Success",
+                      text: "Card deleted",
+                      position: "center",
+                    });
+                  } else {
+                    Toast.fire({
+                      title: "Failed",
+                      text: "Something wrong happend",
+                      position: "center",
+                    });
+                  }
+                });
+            },
+          })
+          .then((rsp) => {
+            // debugger;
+            this.$nextTick(() => {
+              $(() => {
+                this.sectionLoading = false;
+              });
+            });
           });
       },
       activateDebitCard(debit_card) {
@@ -462,7 +511,7 @@
         // });
         axios
           .put(cardAdminActivateDebitCard(debit_card.id), {
-            permitted_routes: this.permitted_routes
+            permitted_routes: this.permitted_routes,
           })
           .then(({ status }) => {
             if (status === 204) {
@@ -470,13 +519,13 @@
               Toast.fire({
                 title: "Success",
                 text: "Card activated",
-                position: "center"
+                position: "center",
               });
             } else {
               Toast.fire({
                 title: "Failed",
                 text: "Something wrong happend",
-                position: "center"
+                position: "center",
               });
             }
 
@@ -490,11 +539,11 @@
       toggleDebitCardSuspension(debit_card) {
         this.sectionLoading = true;
         BlockToast.fire({
-          text: "updating card status ..."
+          text: "updating card status ...",
         });
         axios
           .put(toggleDebitCardSuspension(debit_card.id), {
-            permitted_routes: this.permitted_routes
+            permitted_routes: this.permitted_routes,
           })
           .then(({ status }) => {
             if (status === 204) {
@@ -505,13 +554,13 @@
               Toast.fire({
                 title: "Success",
                 text: msg,
-                position: "center"
+                position: "center",
               });
             } else {
               Toast.fire({
                 title: "Failed",
                 text: "Something wrong happend",
-                position: "center"
+                position: "center",
               });
             }
 
@@ -527,13 +576,13 @@
       },
       range(start, end) {
         return _.range(start, end);
-      }
+      },
     },
     computed: {
       saleRepId() {
         return this.$route.params.rep;
-      }
-    }
+      },
+    },
   };
 </script>
 

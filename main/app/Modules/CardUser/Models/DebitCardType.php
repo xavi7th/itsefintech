@@ -66,7 +66,7 @@ class DebitCardType extends Model
 
 			Route::put('debit-card-type/{debit_card_type}', 'DebitCardType@editDebitCardType')->middleware('auth:admin');
 
-			Route::delete('debit-card/{debit_card}/delete', 'DebitCardType@deleteDebitCardType')->middleware('auth:admin');
+      Route::delete('debit-card-type/{debit_card}/delete', 'DebitCardType@deleteDebitCardType')->middleware('auth:admin');
 		});
 	}
 

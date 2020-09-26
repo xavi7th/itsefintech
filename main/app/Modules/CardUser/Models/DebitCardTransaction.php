@@ -10,6 +10,7 @@ use App\Modules\CardUser\Models\DebitCard;
 use App\Modules\CardUser\Notifications\CardDebited;
 use App\Modules\CardUser\Http\Requests\CreateCardTransactionValidation;
 use App\Modules\CardUser\Transformers\DebitCardTransactionsTransformer;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * App\Modules\CardUser\Models\DebitCardTransaction
@@ -57,6 +58,8 @@ use App\Modules\CardUser\Transformers\DebitCardTransactionsTransformer;
  */
 class DebitCardTransaction extends Model
 {
+  use SoftDeletes;
+
 	protected $fillable = [
 		'card_user_id',
 		'debit_card_id',

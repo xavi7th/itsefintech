@@ -2,8 +2,10 @@
 
 namespace App\Modules\CardUser\Models;
 
+use Cache;
 use Carbon\Carbon;
 use Illuminate\Support\Arr;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Hash;
@@ -13,8 +15,10 @@ use Illuminate\Database\Eloquent\Model;
 use App\Modules\Admin\Models\ActivityLog;
 use App\Modules\CardUser\Models\CardUser;
 use App\Modules\SalesRep\Models\SalesRep;
+use App\Modules\SuperAdmin\Models\ErrLog;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Modules\CardUser\Models\DebitCardType;
+use App\Modules\CardUser\Emails\CardBlockRequest;
 use App\Modules\CardUser\Models\DebitCardRequest;
 use App\Modules\CardUser\Models\DebitCardTransaction;
 use App\Modules\CardUser\Models\DebitCardRequestStatus;
@@ -28,8 +32,6 @@ use App\Modules\Admin\Http\Requests\DebitCardCreationValidation;
 use App\Modules\CardUser\Http\Requests\CardActivationValidation;
 use App\Modules\CardUser\Http\Requests\CardDeactivationValidation;
 use App\Modules\CardUser\Transformers\CardUserDebitCardTransformer;
-use App\Modules\SuperAdmin\Models\ErrLog;
-use App\Modules\CardUser\Emails\CardBlockRequest;
 
 /**
  * App\Modules\CardUser\Models\DebitCard
@@ -168,12 +170,10 @@ class DebitCard extends Model
     return Carbon::createFromDate($this->year, $this->month + 1, 1);
   }
 
-
   public function getFullPanNumberAttribute(): string
   {
     return decrypt($this->attributes['card_number']);
   }
-
 
   public function getCardNumberAttribute($value)
   {
@@ -365,7 +365,7 @@ class DebitCard extends Model
   public function getDebitCards($rep = null)
   {
     if (auth('admin')->check()) {
-      $debit_cards = DebitCard::withTrashed()->get();
+      $debit_cards = DebitCard::all();
     } else if (auth('sales_rep')->check()) {
       $debit_cards = auth('sales_rep')->user()->assigned_debit_cards()->get();
     } else if (auth('card_admin')->check()) {
@@ -506,10 +506,14 @@ class DebitCard extends Model
     return response()->json([], 204);
   }
 
-  public function deleteDebitCard(DebitCard $debit_card)
+  public function deleteDebitCard(Request $request, DebitCard $debit_card)
   {
-    return;
-    $debit_card->delete();
+    try {
+      $debit_card->delete();
+    } catch (\Throwable $th) {
+      ErrLog::notifyAdmin($request->user(), $th, 'Unable to delete debit card');
+      dd($th);
+    }
     return response()->json(['rsp' => true], 204);
   }
 
@@ -518,5 +522,22 @@ class DebitCard extends Model
     ActivityLog::notifyAdmins(auth()->user()->email . ' accessed the full PAN number of card ' . $debit_card->card_number);
 
     return response()->json(['full_pan' => $debit_card->full_pan_number], 200);
+  }
+
+  protected static function boot()
+  {
+    parent::boot();
+
+    static::saved(function (self $debitCard) {
+      Cache::forget('debit-cards');
+    });
+
+    static::deleting(function (self $debitCard) {
+      Cache::forget('debit-cards');
+      $debitCard->debit_card_request()->delete();
+      $debitCard->debit_card_transactions()->delete();
+      $debitCard->debit_card_request()->delete();
+      $debitCard->debit_card_funding_request()->delete();
+    });
   }
 }

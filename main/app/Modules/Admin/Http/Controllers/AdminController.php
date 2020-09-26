@@ -149,7 +149,7 @@ class AdminController extends Controller
 		}
 		return  collect(['type' => activeGuard()])->merge((new AdminUserTransformer)->transform(auth(activeGuard())->user()));
 	}
-
+//
 	public function testRoutePermission()
 	{
 
@@ -183,7 +183,7 @@ class AdminController extends Controller
 
 	public function loadAdminApp()
 	{
-		// return dd(ActivityLog::with('user')->get()); //with('user'));
+    // return dd(ActivityLog::with('user')->get()); //with('user'));
 		// auth()->user()->api_routes()->syncWithoutDetaching(2);
 		return view('admin::index');
 	}
