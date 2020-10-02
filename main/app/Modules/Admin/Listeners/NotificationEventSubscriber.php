@@ -14,16 +14,24 @@ use App\Modules\Admin\Notifications\LoanApproved;
 use App\Modules\Admin\Notifications\LoanModified;
 use App\Modules\Admin\Events\UserMerchantLimitSet;
 use App\Modules\Admin\Notifications\LoanProcessed;
+use App\Modules\CardUser\Notifications\BVNUpdated;
 use App\Modules\Accountant\Events\MerchantLoanPaid;
+use App\Modules\CardUser\Events\UserProfileUpdated;
+use App\Modules\CardUser\Notifications\LoanOverdue;
 use App\Modules\CardUser\Notifications\VoucherPaid;
 use App\Modules\Admin\Events\UserVoucherManualDebit;
+use App\Modules\CardUser\Notifications\ProfileEdited;
 use App\Modules\Admin\Events\ManualLoanTransactionSet;
 use App\Modules\CardUser\Notifications\VoucherDebited;
 use App\Modules\CardUser\Notifications\VoucherApproved;
+use App\Modules\CardUser\Notifications\DebitCardActivated;
+use App\Modules\CardUser\Notifications\DebitCardRequested;
 use App\Modules\Accountant\Events\MerchantTransactionMarkedAsPaid;
 use App\Modules\Accountant\Events\UserApprovesMerchantTransaction;
+use App\Modules\Accountant\Events\DebitCardActivated as DebitCardActivatedEvent;
+use App\Modules\Accountant\Events\DebitCardRequested as DebitCardRequestedEvent;
 use App\Modules\CardUser\Notifications\LoanRequested as LoanRequestedNotification;
-use App\Modules\CardUser\Notifications\LoanOverdue;
+use App\Modules\CardUser\Notifications\UserCreditLimitSet as UserCreditLimitSetNotification;
 
 class NotificationEventSubscriber
 {
@@ -35,6 +43,26 @@ class NotificationEventSubscriber
    */
   public function subscribe($events)
   {
+    $events->listen(
+      UserProfileUpdated::class,
+      'App\Modules\Admin\Listeners\NotificationEventSubscriber@handleUserProfileUpdated'
+    );
+
+    $events->listen(
+      UserBVNUpdated::class,
+      'App\Modules\Admin\Listeners\NotificationEventSubscriber@handleUserBVNUpdated'
+    );
+
+    $events->listen(
+      DebitCardRequestedEvent::class,
+      'App\Modules\Admin\Listeners\NotificationEventSubscriber@handleDebitCardRequested'
+    );
+
+    $events->listen(
+      DebitCardActivatedEvent::class,
+      'App\Modules\Admin\Listeners\NotificationEventSubscriber@handleDebitCardActivated'
+    );
+
     $events->listen(
       MerchantTransactionMarkedAsPaid::class,
       'App\Modules\Admin\Listeners\NotificationEventSubscriber@handleMerchantTransactionMarkedPaid'
@@ -103,6 +131,43 @@ class NotificationEventSubscriber
 
 
 
+  public function handleUserProfileUpdated($event)
+  {
+    $event->cardUser->notify(new ProfileEdited);
+  }
+
+  public function handleUserBVNUpdated($event)
+  {
+    $event->cardUser->notify(new BVNUpdated);
+  }
+
+  public function handleDebitCardRequested($event)
+  {
+
+    ActivityLog::logUserActivity('You successfully paid for a ' . $event->debit_card_type . ' debit card');
+    ActivityLog::notifyCardAdmins(request()->user()->email . ' successfully paid for a ' . $event->debit_card_type . ' debit card');
+    ActivityLog::notifyAdmins(request()->user()->email . ' successfully paid for a ' . $event->debit_card_type . ' debit card');
+    ActivityLog::notifyAccountOfficers(request()->user()->email . ' successfully paid for a ' . $event->debit_card_type . ' debit card');
+    ActivityLog::notifyNormalAdmins(request()->user()->email . ' successfully paid for a ' . $event->debit_card_type . ' debit card');
+
+    try {
+      request()->user()->notify(new DebitCardRequested($event->debit_card_type));
+    } catch (\Throwable $th) {
+      ActivityLog::notifyAdmins('New Debit Card request alert not sent to ' . request()->user()->email . ' because ' . $th->getMessage());
+      ActivityLog::notifyNormalAdmins('New Debit Card request alert not sent to ' . request()->user()->email . ' because ' . $th->getMessage());
+    }
+  }
+
+
+  public function handleDebitCardActivated($event)
+  {
+    ActivityLog::logUserActivity(request()->user()->email . ' has just successfully activated his new credit card');
+    ActivityLog::notifyCardAdmins(request()->user()->email . ' has just successfully activated his new credit card');
+    ActivityLog::notifyAccountOfficers(request()->user()->email . ' has just successfully activated his new credit card');
+
+    request()->user()->notify(new DebitCardActivated);
+  }
+
   public function handleMerchantTransactionMarkedPaid($event)
   {
     $message = request()->user()->email . ' marked ' . $event->transaction->merchant->name .
@@ -164,6 +229,11 @@ class NotificationEventSubscriber
 
     ActivityLog::notifyAccountOfficers($message);
     ActivityLog::notifyAdmins($message);
+
+    try {
+      $event->card_user->notify(new UserCreditLimitSetNotification($event->card_user, $event->amount, $$event->interest_rate));
+    } catch (\Throwable $th) {
+    }
   }
 
   public function handleUserMerchantLimitSet($event)

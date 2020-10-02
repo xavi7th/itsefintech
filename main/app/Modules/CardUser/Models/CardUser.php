@@ -11,19 +11,18 @@ use App\Modules\CardUser\Models\OTP;
 use App\Modules\Admin\Models\Voucher;
 use Illuminate\Support\Facades\Route;
 use App\Modules\Admin\Models\ActivityLog;
-use Illuminate\Notifications\Notification;
 use App\Modules\Admin\Models\VoucherRequest;
 use App\Modules\CardUser\Models\LoanRequest;
 use App\Modules\Admin\Models\CardUserCategory;
+use App\Modules\CardUser\Events\UserBVNUpdated;
 use App\Modules\CardUser\Notifications\SendOTP;
 use App\Modules\Admin\Events\UserCreditLimitSet;
 use App\Modules\CardUser\Models\LoanTransaction;
 use App\Modules\Admin\Models\MerchantTransaction;
-use App\Modules\CardUser\Emails\CardBlockRequest;
 use App\Modules\CardUser\Models\DebitCardRequest;
 use App\Modules\Admin\Events\UserMerchantLimitSet;
+use App\Modules\CardUser\Events\UserProfileUpdated;
 use App\Modules\CardUser\Models\DebitCardTransaction;
-use App\Modules\CardUser\Notifications\ProfileEdited;
 use App\Modules\CardUser\Notifications\AccountCreated;
 use App\Modules\CardUser\Models\DebitCardRequestStatus;
 use App\Modules\Admin\Transformers\AdminUserTransformer;
@@ -550,7 +549,12 @@ class CardUser extends User
   {
     auth('card_user')->user()->update($request->except(['email', 'phone']));
 
-    auth()->user()->notify(new ProfileEdited);
+    if ($request->user()->isDirty('bvn')) {
+      event(new UserBVNUpdated($request->user()));
+    } else {
+      event(new UserProfileUpdated($request->user()));
+    }
+
 
     return response()->json(['updated' => true], 204);
   }

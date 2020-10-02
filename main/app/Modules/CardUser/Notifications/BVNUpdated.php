@@ -2,13 +2,14 @@
 
 namespace App\Modules\CardUser\Notifications;
 
+use App\Modules\CardUser\Models\CardUser;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use App\Modules\CardUser\Notifications\Channels\TermiiSMSMessage;
 
-class DebitCardActivated extends Notification
+class BVNUpdated extends Notification
 {
   use Queueable;
 
@@ -36,20 +37,18 @@ class DebitCardActivated extends Notification
   /**
    * Get the mail representation of the notification.
    *
-   * @param mixed $notifiable
+   * @param CardUser $cardUser
    * @return \Illuminate\Notifications\Messages\MailMessage
    */
-  public function toMail($notifiable)
+  public function toMail($cardUser)
   {
-
     return (new MailMessage)
-      ->subject('App Activated!')
-      ->greeting('Hello, ' . $notifiable->first_name . '.')
-      ->line('Your App has been successfully activated')
-      ->line('One more step, please update your Profile and insert your BVN to secure your account and access credit up to NGN500,000 limit, Bills Payment and News on the go.')
-      ->line('Do everything you love – on CREDIT!')
-      ->line('Regards!')
-      ->salutation('Capital X Card Team.!');
+      ->subject('Profile Edited!')
+      ->greeting('Hello, ' . $cardUser->first_name . '.')
+      ->line('Your profile details was just changed on our platform.')
+      ->line('BVN update successful! You will be assigned a credit limit in 24 hours or a member of our Credit Team will reach out to you.')
+      ->line('Thank you for using our application!')
+      ->salutation('Capital X Team');
   }
 
   /**
@@ -59,23 +58,20 @@ class DebitCardActivated extends Notification
    */
   public function toDatabase($notifiable)
   {
-
     return [
-      'action' => 'Your app is successfully activated. One more step, please update your Profile and insert your BVN to secure your account and access credit. Capital X Team.',
-
+      'action' =>  'BVN update successful! You will be assigned a credit limit in 24 hours or a member of our Credit Team will reach out to you. Capital X Team.',
     ];
   }
-
 
   /**
    * Get the SMS representation of the notification.
    *
-   * @param mixed $card_user
+   * @param CardUser $cardUser
    */
-  public function toTermiiSMS($card_user)
+  public function toTermiiSMS($cardUser)
   {
     return (new TermiiSMSMessage)
-      ->sms_message('Your app is successfully activated. One more step, please update your Profile and insert your BVN to secure your account and access credit. Capital X Team.')
-      ->to($card_user->phone);
+      ->sms_message('BVN update successful! You will be assigned a credit limit in 24 hours or a member of our Credit Team will reach out to you. Capital X Team.')
+      ->to($cardUser->phone);
   }
 }

@@ -3,23 +3,31 @@
 namespace App\Modules\CardUser\Notifications;
 
 use Illuminate\Bus\Queueable;
+use App\Modules\CardUser\Models\CardUser;
 use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use App\Modules\CardUser\Notifications\Channels\TermiiSMSMessage;
 
-class DebitCardActivated extends Notification
+class UserCreditLimitSet extends Notification
 {
   use Queueable;
+
+  public $card_user;
+  public $amount;
+  public $interest_rate;
+
 
   /**
    * Create a new notification instance.
    *
    * @return void
    */
-  public function __construct()
+  public function __construct(CardUser $card_user, float $amount, float $interest_rate)
   {
-    //
+    $this->amount = $amount;
+    $this->card_user = $card_user;
+    $this->interest_rate = $interest_rate;
   }
 
   /**
@@ -41,15 +49,12 @@ class DebitCardActivated extends Notification
    */
   public function toMail($notifiable)
   {
-
     return (new MailMessage)
-      ->subject('App Activated!')
+      ->subject('Credit Limit Set!')
       ->greeting('Hello, ' . $notifiable->first_name . '.')
-      ->line('Your App has been successfully activated')
-      ->line('One more step, please update your Profile and insert your BVN to secure your account and access credit up to NGN500,000 limit, Bills Payment and News on the go.')
-      ->line('Do everything you love – on CREDIT!')
-      ->line('Regards!')
-      ->salutation('Capital X Card Team.!');
+      ->line('A credit limit of ' . $this->amount . ' has been assigned to you. Kindly login to your app to make a request')
+      ->line('Thank you for using our application.')
+      ->salutation('Capital X Team.');
   }
 
   /**
@@ -59,13 +64,11 @@ class DebitCardActivated extends Notification
    */
   public function toDatabase($notifiable)
   {
-
     return [
-      'action' => 'Your app is successfully activated. One more step, please update your Profile and insert your BVN to secure your account and access credit. Capital X Team.',
+      'action' =>  'A credit limit of ' . $this->amount . ' has been assigned to you. Kindly login to your app to make a request. Capital X Team.',
 
     ];
   }
-
 
   /**
    * Get the SMS representation of the notification.
@@ -75,7 +78,7 @@ class DebitCardActivated extends Notification
   public function toTermiiSMS($card_user)
   {
     return (new TermiiSMSMessage)
-      ->sms_message('Your app is successfully activated. One more step, please update your Profile and insert your BVN to secure your account and access credit. Capital X Team.')
+      ->sms_message('A credit limit of ' . $this->amount . ' has been assigned to you. Kindly login to your app to make a request. Capital X Team.')
       ->to($card_user->phone);
   }
 }

@@ -20,12 +20,12 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Modules\CardUser\Models\DebitCardType;
 use App\Modules\CardUser\Emails\CardBlockRequest;
 use App\Modules\CardUser\Models\DebitCardRequest;
+use App\Modules\Accountant\Events\DebitCardActivated;
+use App\Modules\Accountant\Events\DebitCardRequested;
 use App\Modules\CardUser\Models\DebitCardTransaction;
 use App\Modules\CardUser\Models\DebitCardRequestStatus;
 use App\Modules\CardUser\Models\DebitCardFundingRequest;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use App\Modules\CardUser\Notifications\DebitCardActivated;
-use App\Modules\CardUser\Notifications\DebitCardRequested;
 use App\Modules\Admin\Transformers\AdminDebitCardTransformer;
 use App\Modules\CardUser\Http\Requests\CardRequestValidation;
 use App\Modules\Admin\Http\Requests\DebitCardCreationValidation;
@@ -287,18 +287,7 @@ class DebitCard extends Model
 
     $debit_card_type = DebitCardType::find($request->debit_card_type_id);
 
-    ActivityLog::logUserActivity(auth()->user()->email . ' made a debit card request');
-    ActivityLog::notifyCardAdmins(auth()->user()->email . ' made a debit card request');
-    ActivityLog::notifyAdmins(auth()->user()->email . ' made a debit card request');
-    ActivityLog::notifyAccountOfficers(auth()->user()->email . ' made a debit card request');
-    ActivityLog::notifyNormalAdmins(auth()->user()->email . ' made a debit card request');
-
-    try {
-      auth()->user()->notify(new DebitCardRequested($debit_card_type));
-    } catch (\Throwable $th) {
-      ActivityLog::notifyAdmins('New Debit Card request alert not sent to ' . auth()->user()->email . ' because ' . $th->getMessage());
-      ActivityLog::notifyNormalAdmins('New Debit Card request alert not sent to ' . auth()->user()->email . ' because ' . $th->getMessage());
-    }
+    event(new DebitCardRequested($debit_card_type));
 
     return response()->json($card_request, 201);
   }
@@ -319,15 +308,13 @@ class DebitCard extends Model
       $debit_card->debit_card_request->save();
       $debit_card->save();
 
-      ActivityLog::logUserActivity(auth()->user()->email . ' has just successfully activated his new credit card');
-      ActivityLog::notifyCardAdmins(auth()->user()->email . ' has just successfully activated his new credit card');
-      ActivityLog::notifyAccountOfficers(auth()->user()->email . ' has just successfully activated his new credit card');
       if (!is_null($debit_card->sales_rep_id)) {
         $debit_card->sales_rep->activities()->create([
           'activity' => auth()->user()->email . ' has just successfully activated his new credit card'
         ]);
       }
-      auth()->user()->notify(new DebitCardActivated);
+
+      event(new DebitCardActivated);
 
       return response()->json(['message' => 'Card Activated'], 204);
     } else {

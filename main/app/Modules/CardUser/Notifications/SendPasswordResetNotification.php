@@ -6,6 +6,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Support\HtmlString;
 
 class SendPasswordResetNotification extends Notification
 {
@@ -44,12 +45,12 @@ class SendPasswordResetNotification extends Notification
     {
 				return (new MailMessage)
 										->subject('Reset Password Notification')
-										->greeting('Hello ' . $user->first_name . '.')
+      ->greeting('Hello John,')
+										// ->greeting('Hello ' . $user->first_name . '.')
                     ->line('You are receiving this email because we received a password reset request for your account.')
-                    ->line('Your password reset token is ' . $this->token)
+      ->line(new HtmlString('Your password reset token is: <strong style="color:red;">' . $this->token . '<strong>'))
 										->line('Enter this code into your app to reset your password')
                     ->line('If you did not request a password reset, no further action is required.')
-										->with('Regards,')
-										->salutation(config('app.name'));
+    ->salutation(new HtmlString('Regards,<br>' . config('app.name')));
     }
 }

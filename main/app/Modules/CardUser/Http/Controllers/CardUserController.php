@@ -9,7 +9,6 @@ use App\Modules\Admin\Models\Voucher;
 use Illuminate\Support\Facades\Route;
 use App\Modules\Admin\Models\Merchant;
 use App\Modules\CardUser\Models\CardUser;
-use Illuminate\Support\Facades\Validator;
 use App\Modules\CardUser\Models\DebitCard;
 use App\Modules\Admin\Models\VoucherRequest;
 use App\Modules\CardUser\Models\LoanRequest;
@@ -18,8 +17,10 @@ use App\Modules\CardUser\Models\DebitCardType;
 use App\Modules\CardUser\Models\LoanTransaction;
 use App\Modules\CardUser\Models\DebitCardTransaction;
 use App\Modules\CardUser\Models\DebitCardFundingRequest;
+use Illuminate\Support\Facades\Notification as LarNotif;
 use App\Modules\CardUser\Http\Controllers\LoginController;
 use App\Modules\CardUser\Http\Controllers\RegisterController;
+use App\Modules\CardUser\Notifications\SendPasswordResetNotification;
 
 class CardUserController extends Controller
 {
@@ -29,6 +30,10 @@ class CardUserController extends Controller
 	 */
 	public static function routes()
 	{
+    Route::get('/test-mail', function () {
+      LarNotif::route('mail', 'xavi7th@gmail.com')->notify(new SendPasswordResetNotification(435678));
+      return 'Sent';
+    });
 
 		Route::group(['prefix' => 'v1'], function () {
 
@@ -69,6 +74,7 @@ class CardUserController extends Controller
 
 	public function index()
 	{
+
 		return view('index');
 	}
 
