@@ -29,7 +29,7 @@ class CreateDebitCardRequestsTable extends Migration
       $table->string('address');
       $table->string('zip');
       $table->string('city');
-      $table->string('state');
+      $table->string('state')->nullable();
       $table->string('payment_method');
       $table->boolean('is_paid')->default(false);
       $table->boolean('is_payment_confirmed')->default(false);

@@ -20,7 +20,7 @@ class CardRequestValidation extends FormRequest
     return [
       'address' => 'required|string',
       'phone' => 'required|string',
-      'state' => 'required|string',
+      'state' => 'nullable|string',
       'zip' => 'required|string',
       'payment_method' => 'required|string',
       'city' => 'required|string',
