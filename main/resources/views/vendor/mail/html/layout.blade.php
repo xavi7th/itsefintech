@@ -49,7 +49,7 @@
 
 												<h4 style="margin-bottom: 10px;">Need Help?</h4>
 												<div style="color: #A5A5A5; font-size: 12px;">
-													<p>For more enquiries, call 01000110090</p>
+													<p>For more enquiries, call {{config('app.phone')}}</p>
 												</div>
 
 												<div style="color: #636363; font-size: 14px;">Live your best life with Capital X Card.</div>

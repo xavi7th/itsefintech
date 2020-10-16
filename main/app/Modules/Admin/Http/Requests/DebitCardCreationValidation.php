@@ -18,7 +18,7 @@ class DebitCardCreationValidation extends FormRequest
 	{
 		return [
 
-      'card_number' => 'required|digits_between:12,24|unique:debit_cards,card_number',
+      'card_number' => 'required|unique:debit_cards,card_number',
 			'month' => 'required|numeric|between:1,12',
 			'year' => 'required|numeric|date_format:Y',
 			'csc' => 'required|numeric',

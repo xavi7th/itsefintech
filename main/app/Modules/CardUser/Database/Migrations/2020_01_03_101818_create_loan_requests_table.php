@@ -30,7 +30,7 @@ class CreateLoanRequestsTable extends Migration
       $table->foreign('marked_paid_by')->references('id')->on('hardmean')->onDelete('cascade');
       // $table->string('marked_paid_by_user_type')->nullable();
       $table->timestamp('reminded_at')->nullable();
-      $table->boolean('is_fully_paid')->default(false);
+      $table->boolean('is_fully_repaid')->default(false);
 
       $table->timestamps();
       $table->softDeletes();
