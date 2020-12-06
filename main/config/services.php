@@ -51,5 +51,13 @@ return [
 		'api_key' => env('TERMII_API_KEY'), // optional when using username and password
 		'from' => env('TERMII_SENDER_ID'), // optional
 	],
+  'bleyt' => [
+    'endpoint' => 'https://termii.com/api/sms/send',
+    'username' => env('BLEYT_USERNAME'),
+    'password' => env('BLEYT_PASSWORD'),
+    'secret_key' => env('BLEYT_SECRET_KEY'),
+    'public_key' => env('BLEYT_PUBLIC_KEY'),
+
+  ],
 
 ];
