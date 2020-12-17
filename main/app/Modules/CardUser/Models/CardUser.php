@@ -127,6 +127,8 @@ use App\Modules\CardUser\Http\Requests\CardUserUpdateProfileValidation;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardUser\Models\CardUser whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardUser\Models\CardUser whereUserPassport($value)
  * @mixin \Eloquent
+ * @property string|null $date_of_birth
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardUser\Models\CardUser whereDateOfBirth($value)
  */
 class CardUser extends User
 {

@@ -92,6 +92,8 @@ use App\Modules\CardUser\Transformers\CardUserDebitCardTransformer;
  * @method static \Illuminate\Database\Query\Builder|\App\Modules\CardUser\Models\DebitCard withTrashed()
  * @method static \Illuminate\Database\Query\Builder|\App\Modules\CardUser\Models\DebitCard withoutTrashed()
  * @mixin \Eloquent
+ * @property string|null $bleyt_wallet_id
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardUser\Models\DebitCard whereBleytWalletId($value)
  */
 class DebitCard extends Model
 {
