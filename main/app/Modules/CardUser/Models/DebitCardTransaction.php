@@ -55,6 +55,9 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardUser\Models\DebitCardTransaction whereTransType($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardUser\Models\DebitCardTransaction whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @method static \Illuminate\Database\Query\Builder|\App\Modules\CardUser\Models\DebitCardTransaction onlyTrashed()
+ * @method static \Illuminate\Database\Query\Builder|\App\Modules\CardUser\Models\DebitCardTransaction withTrashed()
+ * @method static \Illuminate\Database\Query\Builder|\App\Modules\CardUser\Models\DebitCardTransaction withoutTrashed()
  */
 class DebitCardTransaction extends Model
 {

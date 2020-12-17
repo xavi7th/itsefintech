@@ -1,10 +1,9 @@
 <?php
 
-namespace App\Modules\SuperAdmin\Models;
+namespace App\Modules\Admin\Models;
 
 use App\User;
 use Throwable;
-use TypeError;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
@@ -12,7 +11,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
- * App\Modules\SuperAdmin\Models\ErrLog
+ * App\Modules\Admin\Models\ErrLog
  *
  * @property int $id
  * @property string|null $message
@@ -25,27 +24,25 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property string|null $extra
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\SuperAdmin\Models\ErrLog adminMessages()
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\SuperAdmin\Models\ErrLog newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\SuperAdmin\Models\ErrLog newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\SuperAdmin\Models\ErrLog query()
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\SuperAdmin\Models\ErrLog whereChannel($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\SuperAdmin\Models\ErrLog whereContext($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\SuperAdmin\Models\ErrLog whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\SuperAdmin\Models\ErrLog whereDatetime($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\SuperAdmin\Models\ErrLog whereExtra($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\SuperAdmin\Models\ErrLog whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\SuperAdmin\Models\ErrLog whereLevel($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\SuperAdmin\Models\ErrLog whereLevelName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\SuperAdmin\Models\ErrLog whereMessage($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\SuperAdmin\Models\ErrLog whereUnixTime($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\SuperAdmin\Models\ErrLog whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|ErrLog adminMessages()
+ * @method static \Illuminate\Database\Eloquent\Builder|ErrLog newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|ErrLog newQuery()
+ * @method static \Illuminate\Database\Query\Builder|ErrLog onlyTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder|ErrLog query()
+ * @method static \Illuminate\Database\Eloquent\Builder|ErrLog whereChannel($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|ErrLog whereContext($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|ErrLog whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|ErrLog whereDatetime($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|ErrLog whereExtra($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|ErrLog whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|ErrLog whereLevel($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|ErrLog whereLevelName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|ErrLog whereMessage($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|ErrLog whereUnixTime($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|ErrLog whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Query\Builder|ErrLog withTrashed()
+ * @method static \Illuminate\Database\Query\Builder|ErrLog withoutTrashed()
  * @mixin \Eloquent
- * @property \Illuminate\Support\Carbon|null $deleted_at
- * @method static \Illuminate\Database\Query\Builder|\App\Modules\SuperAdmin\Models\ErrLog onlyTrashed()
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\SuperAdmin\Models\ErrLog whereDeletedAt($value)
- * @method static \Illuminate\Database\Query\Builder|\App\Modules\SuperAdmin\Models\ErrLog withTrashed()
- * @method static \Illuminate\Database\Query\Builder|\App\Modules\SuperAdmin\Models\ErrLog withoutTrashed()
  */
 class ErrLog extends Model
 {

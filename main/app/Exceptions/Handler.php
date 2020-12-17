@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
+use Throwable;
 
 class Handler extends ExceptionHandler
 {
@@ -32,25 +33,25 @@ class Handler extends ExceptionHandler
 		'password_confirmation',
 	];
 
-	/**
-	 * Report or log an exception.
-	 *
-	 * @param  \Exception  $exception
-	 * @return void
-	 */
-	public function report(Exception $exception)
+  /**
+   * Report or log an exception.
+   *
+   * @param  \Throwable  $exception
+   * @return void
+   */
+  public function report(Throwable $exception)
 	{
 		parent::report($exception);
 	}
 
-	/**
-	 * Render an exception into an HTTP response.
-	 *
-	 * @param  \Illuminate\Http\Request  $request
-	 * @param  \Exception  $exception
-	 * @return \Illuminate\Http\Response
-	 */
-	public function render($request, Exception $exception)
+  /**
+   * Render an exception into an HTTP response.
+   *
+   * @param  \Illuminate\Http\Request  $request
+   * @param  \Throwable  $exception
+   * @return \Illuminate\Http\Response
+   */
+  public function render($request, Throwable $exception)
 	{
 		// dd(get_class($exception));
 		if ($request->expectsJson()) {
