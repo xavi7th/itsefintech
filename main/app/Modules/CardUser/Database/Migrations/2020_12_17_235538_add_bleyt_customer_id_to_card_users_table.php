@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class AddBleytWalletIdToDebitCardsTable extends Migration
+class AddBleytCustomerIdToCardUsersTable extends Migration
 {
   /**
    * Run the migrations.
@@ -13,8 +13,8 @@ class AddBleytWalletIdToDebitCardsTable extends Migration
    */
   public function up()
   {
-    Schema::table('debit_cards', function (Blueprint $table) {
-      $table->string('bleyt_wallet_id')->nullable()->after('year');
+    Schema::table('card_users', function (Blueprint $table) {
+      $table->string('bleyt_customer_id')->nullable()->after('remember_token');
     });
   }
 
@@ -25,8 +25,8 @@ class AddBleytWalletIdToDebitCardsTable extends Migration
    */
   public function down()
   {
-    Schema::table('debit_cards', function (Blueprint $table) {
-      $table->dropColumn('bleyt_wallet_id');
+    Schema::table('card_users', function (Blueprint $table) {
+      $table->dropColumn('bleyt_customer_id');
     });
   }
 }

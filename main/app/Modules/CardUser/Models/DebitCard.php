@@ -102,7 +102,7 @@ class DebitCard extends Model
   protected $fillable = [
     'card_number', 'month', 'year', 'csc', 'sales_rep_id', 'card_user_id', 'debit_card_type_id'
   ];
-
+  protected $dates = ['activated_at'];
   protected $rememberFor = 10;
   protected $rememberCachePrefix = 'debit-cards';
 
