@@ -132,6 +132,7 @@ use App\Modules\CardUser\Http\Requests\CardUserUpdateProfileValidation;
  * @method static \Illuminate\Database\Eloquent\Builder|CardUser whereUserPassport($value)
  * @method static \Illuminate\Database\Eloquent\Builder|CardUser withoutBleytAccount()
  * @mixin \Eloquent
+ * @property-read string|null $plain_bvn
  */
 class CardUser extends User
 {
@@ -396,6 +397,11 @@ class CardUser extends User
   public function activeDays(): int
   {
     return rescue(fn () => intval($this->first_debit_card->activated_at->diffInDays(now())), 0);
+  }
+
+  public function hasAddress(): bool
+  {
+    return !($this->address == 'not supplied' || empty($this->address));
   }
 
   public function getAssignedCreditLimitAttribute(): float

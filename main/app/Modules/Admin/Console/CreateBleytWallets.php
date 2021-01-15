@@ -7,14 +7,14 @@ use Illuminate\Support\Facades\Http;
 use App\Modules\CardUser\Models\CardUser;
 use App\Modules\CardUser\Models\BleytResponse;
 
-class CreateBleytWallet extends Command
+class CreateBleytWallets extends Command
 {
   /**
    * The console command name.
    *
    * @var string
    */
-  protected $name = 'bleyt:create-wallet';
+  protected $name = 'bleyt:create-wallets';
 
   /**
    * The console command description.
@@ -43,14 +43,15 @@ class CreateBleytWallet extends Command
   {
     $endpoint = config('services.bleyt.create_wallet_endpoint');
 
+    /**
+      * @var CardUser $cardUser
+      */
     foreach (CardUser::withoutBleytAccount()->cursor() as $cardUser) {
 
       if (!$cardUser->first_debit_card) {
         continue;
       }
-      /**
-       * @var CardUser $cardUser
-       */
+
       $dataSupplied = [
         'firstName' => $cardUser->first_name,
         'lastName' => $cardUser->last_name,

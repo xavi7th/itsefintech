@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Modules\Admin\Models\ErrLog;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 use Watson\Rememberable\Rememberable;
@@ -28,6 +29,7 @@ use App\Modules\CardUser\Models\DebitCardRequestStatus;
 use App\Modules\CardUser\Models\DebitCardFundingRequest;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Modules\Admin\Transformers\AdminDebitCardTransformer;
+use App\Modules\CardUser\Http\Requests\CardFundingValidation;
 use App\Modules\CardUser\Http\Requests\CardRequestValidation;
 use App\Modules\Admin\Http\Requests\DebitCardCreationValidation;
 use App\Modules\CardUser\Http\Requests\CardActivationValidation;
@@ -94,6 +96,10 @@ use App\Modules\CardUser\Transformers\CardUserDebitCardTransformer;
  * @mixin \Eloquent
  * @property string|null $bleyt_wallet_id
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Modules\CardUser\Models\DebitCard whereBleytWalletId($value)
+ * @property int $is_bleyt_activated
+ * @property-read mixed $last6_digits
+ * @method static \Illuminate\Database\Eloquent\Builder|DebitCard bleytUnactivated()
+ * @method static \Illuminate\Database\Eloquent\Builder|DebitCard whereIsBleytActivated($value)
  */
 class DebitCard extends Model
 {
@@ -184,6 +190,12 @@ class DebitCard extends Model
     return substr(decrypt($value), -4);
   }
 
+  public function getLast6DigitsAttribute($value)
+  {
+    // return decrypt($value);
+    return substr(decrypt($this->attributes['card_number']), -6);
+  }
+
   public function setCardNumberAttribute($value)
   {
     $this->attributes['card_number'] = encrypt($value);
@@ -218,6 +230,8 @@ class DebitCard extends Model
         Route::delete('deactivate', 'DebitCard@deactivateCardUserDebitCard');
         Route::get('/status', 'DebitCard@trackCardUserDebitCard');
         Route::get('/{debit_card}', 'DebitCard@getCardUserCardDetails');
+        Route::get('/{debit_card}/balance', 'DebitCard@getCardUserCardBalance');
+        Route::post('/{debit_card}/fund', 'DebitCard@fundCardUserCard');
       });
     });
   }
@@ -269,6 +283,42 @@ class DebitCard extends Model
   public function getCardUserCardDetails(DebitCard $debit_card)
   {
     return response()->json((new CardUserDebitCardTransformer)->transformForCardDetails($debit_card), 200);
+  }
+
+  public function getCardUserCardBalance(DebitCard $debitCard)
+  {
+    $endpoint = config('services.bleyt.check_card_balance_endpoint');
+
+    $dataSupplied = [
+        'last6' => $debitCard->last6_digits,
+      ];
+      $response = Http::withToken(config('services.bleyt.secret_key'))->get($endpoint, $dataSupplied);
+
+      if ($response->ok()) {
+        $receivedDetails = $response->object();
+        return response()->json((new CardUserDebitCardTransformer)->transformForCardBalance($receivedDetails), 200);
+      }
+
+
+  }
+
+  public function fundCardUserCard(CardFundingValidation $request, DebitCard $debitCard)
+  {
+    $endpoint = config('services.bleyt.fund_card_endpoint');
+
+    $dataSupplied = [
+        'amount' => $request->amount,
+        'last6' => $debitCard->last6_digits,
+        'customerId' => $request->user()->bleyt_customer_id
+      ];
+      $response = Http::withToken(config('services.bleyt.secret_key'))->get($endpoint, $dataSupplied);
+
+      if ($response->ok()) {
+        $receivedDetails = $response->object();
+        return response()->json($receivedDetails, 200);
+      }
+
+
   }
 
   public function requestDebitCard(CardRequestValidation $request)
@@ -512,6 +562,16 @@ class DebitCard extends Model
     ActivityLog::notifyAdmins(auth()->user()->email . ' accessed the full PAN number of card ' . $debit_card->card_number);
 
     return response()->json(['full_pan' => $debit_card->full_pan_number], 200);
+  }
+
+  /**
+   *
+   * @param  \Illuminate\Database\Eloquent\Builder  $query
+   * @return \Illuminate\Database\Eloquent\Builder
+   */
+  public function scopeBleytUnactivated($query)
+  {
+    return $query->whereIsBleytActivated(false)->whereNotNull('bleyt_wallet_id');
   }
 
   protected static function boot()
