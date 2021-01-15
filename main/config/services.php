@@ -52,7 +52,6 @@ return [
 		'from' => env('TERMII_SENDER_ID'), // optional
 	],
   'bleyt' => [
-    'endpoint' => 'https://termii.com/api/sms/send',
     'create_wallet_endpoint' => env('CREATE_WALLET_ENDPOINT'),
     'credit_wallet_endpoint' => env('CREDIT_WALLET_ENDPOINT'),
     'debit_wallet_endpoint' => env('DEBIT_WALLET_ENDPOINT'),
