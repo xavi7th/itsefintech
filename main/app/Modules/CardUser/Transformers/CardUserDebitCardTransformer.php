@@ -46,6 +46,28 @@ class CardUserDebitCardTransformer
 		];
 	}
 
+	public function transformForCardBalance(object $debitCardBalance)
+	{
+		return [
+
+        "id" => $debitCardBalance->id,
+        "ledgerBalance" => $debitCardBalance->ledgerBalance,
+        "availableBalance" => $debitCardBalance->availableBalance,
+        "goodsLimit" => $debitCardBalance->goodsLimit,
+        "goodsNrTransLimit" => $debitCardBalance->goodsNrTransLimit,
+        "cashLimit" => $debitCardBalance->cashLimit,
+        "cashNrTransLimit" => $debitCardBalance->cashNrTransLimit,
+        "paymentLimit" => $debitCardBalance->paymentLimit,
+        "paymentNrTransLimit" => $debitCardBalance->paymentNrTransLimit,
+        "cardNotPresentLimit" => $debitCardBalance->cardNotPresentLimit,
+        "depositCreditLimit" => $debitCardBalance->depositCreditLimit,
+        "updatedAt" => $debitCardBalance->updatedAt,
+        "createdAt" => $debitCardBalance->createdAt,
+        "deletedAt" => $debitCardBalance->deletedAt,
+
+		];
+	}
+
 	public function transformForCardList(DebitCard $debit_card)
 	{
 		return [
