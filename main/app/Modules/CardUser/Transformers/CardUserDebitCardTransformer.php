@@ -57,7 +57,8 @@ class CardUserDebitCardTransformer
 			'year' => (int)$debit_card->year,
 			'month' => (int)substr($debit_card->month, -2),
 			'cardholder' => (string)auth()->user()->first_name,
-			'is_user_activated' => (boolean)$debit_card->is_user_activated
+			'is_user_activated' => (boolean)$debit_card->is_user_activated,
+      'is_bleyt_activated' => (bool)$debit_card->is_bleyt_activated
 		];
 	}
 }
