@@ -100,6 +100,7 @@ class LoginController extends Controller
 			'is_card_activated' => (boolean)!$user->has_unactivated_card(),
 			'is_card_requested' => (boolean)$user->debit_card_requests()->exists(),
 			'is_otp_verified' => (boolean)$user->is_otp_verified(),
+      'is_bleyt_account_activated' => (bool)$user->bleyt_customer_id,
 			'success' => (boolean)true
 		]);
 	}
