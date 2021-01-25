@@ -41,33 +41,47 @@ class CreateBleytWallets extends Command
    */
   public function handle()
   {
-    $endpoint = config('services.bleyt.create_wallet_endpoint');
+    // dd(CardUser::withBleytAccount()->count());
+      // ray()->clearScreen();
+
+    $endpoint = config('services.bleyt.check_card_balance_endpoint');
+    // $endpoint = config('services.bleyt.create_wallet_endpoint');
 
     /**
       * @var CardUser $cardUser
       */
-    foreach (CardUser::withoutBleytAccount()->cursor() as $cardUser) {
+    // foreach (CardUser::withoutBleytAccount()->cursor() as $cardUser) {
+    foreach (CardUser::withBleytAccount()->cursor() as $cardUser) {
 
       if (!$cardUser->first_debit_card) {
         continue;
       }
 
+      // $dataSupplied = [
+      //   'firstName' => $cardUser->first_name,
+      //   'lastName' => $cardUser->last_name,
+      //   'email' => $cardUser->email,
+      //   'phoneNumber' => $cardUser->phone,
+      //   'dateOfBirth' => $cardUser->date_of_birth ?? now()->subYears(20)->toDateString(),
+      //   'bvn' => $cardUser->plain_bvn ?? '',
+      // ];
       $dataSupplied = [
-        'firstName' => $cardUser->first_name,
-        'lastName' => $cardUser->last_name,
-        'email' => $cardUser->email,
-        'phoneNumber' => $cardUser->phone,
-        'dateOfBirth' => $cardUser->date_of_birth ?? now()->subYears(20)->toDateString(),
-        'bvn' => $cardUser->plain_bvn ?? '',
+        'customerId' => $cardUser->bleyt_customer_id
       ];
-      $response = Http::withToken(config('services.bleyt.secret_key'))->post($endpoint, $dataSupplied);
 
+      // $response = Http::withToken(config('services.bleyt.secret_key'))->post($endpoint, $dataSupplied);
+      $response = Http::withToken(config('services.bleyt.secret_key'))->get($endpoint, $dataSupplied);
+
+      // if ($response->ok()) {
+      //   $receivedDetails = $response->object();
+      //   $cardUser->bleyt_customer_id = $receivedDetails->customer->id;
+      //   $cardUser->first_debit_card->bleyt_wallet_id = $receivedDetails->wallet->id;
+      //   $cardUser->first_debit_card->save();
+      //   $cardUser->save();
+      // }
       if ($response->ok()) {
         $receivedDetails = $response->object();
-        $cardUser->bleyt_customer_id = $receivedDetails->customer->id;
-        $cardUser->first_debit_card->bleyt_wallet_id = $receivedDetails->wallet->id;
-        $cardUser->first_debit_card->save();
-        $cardUser->save();
+        dump($receivedDetails->wallet->bookedBalance, $receivedDetails->wallet->availableBalance);
       }
 
       BleytResponse::logToDB($endpoint, $dataSupplied, $response, $cardUser);

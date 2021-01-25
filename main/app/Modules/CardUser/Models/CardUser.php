@@ -682,4 +682,9 @@ class CardUser extends User
   {
     $query->whereBleytCustomerId(null);
   }
+
+  public function scopeWithBleytAccount($query)
+  {
+    $query->whereNotNull('bleyt_customer_id');
+  }
 }
