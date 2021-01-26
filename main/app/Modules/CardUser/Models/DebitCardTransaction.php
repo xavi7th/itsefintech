@@ -11,8 +11,11 @@ use App\Modules\CardUser\Models\CardUser;
 use App\Modules\CardUser\Models\DebitCard;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Modules\CardUser\Notifications\CardDebited;
+use App\Modules\CardUser\Http\Requests\MakeBankTransferValidation;
+use App\Modules\CardUser\Http\Requests\MakeCapitalXTransferValidation;
 use App\Modules\CardUser\Http\Requests\CreateCardTransactionValidation;
 use App\Modules\CardUser\Transformers\DebitCardTransactionsTransformer;
+use App\Modules\CardUser\Http\Requests\ResolveBankAccountNameValidation;
 
 /**
  * App\Modules\CardUser\Models\DebitCardTransaction
@@ -92,10 +95,15 @@ class DebitCardTransaction extends Model
 
 	static function cardUserRoutes()
 	{
-		Route::group(['namespace' => '\App\Modules\CardUser\Models', 'middleware' => ['verified_card_users']], function () {
-			// Route::get('debit-card-transactions', 'DebitCardTransaction@getCardUserCardTransactions')->middleware('auth:card_user');
-			Route::get('debit-card-transactions/{debit_card}/{type?}', 'DebitCardTransaction@getDebitCardTransactions')->middleware('auth:card_user');
-			Route::post('debit-card-transaction/create', 'DebitCardTransaction@createCardTransaction')->middleware('auth:card_user');
+		Route::group(['middleware' => ['verified_card_users']], function () {
+			// Route::get('debit-card-transactions', [self::class, 'getCardUserCardTransactions'])->middleware('auth:card_user');
+			Route::get('debit-card-transactions/{debit_card}/{type?}', [self::class, 'getDebitCardTransactions'])->middleware('auth:card_user');
+			Route::post('debit-card-transaction/create', [self::class, 'createCardTransaction'])->middleware('auth:card_user');
+
+			Route::get('debit-card-transactions/bank-list', [self::class, 'getListOfBanks'])->middleware('auth:card_user');
+			Route::get('debit-card-transactions/resolve-account-name', [self::class, 'resolveAccountName'])->middleware('auth:card_user');
+			Route::post('debit-card-transactions/make-bank-transfer', [self::class, 'transferToBankAccount'])->middleware('auth:card_user');
+			Route::post('debit-card-transactions/transfer-to-capitalx-account', [self::class, 'transferToCapitalXAccount'])->middleware('auth:card_user');
 		});
 	}
 
@@ -144,4 +152,108 @@ class DebitCardTransaction extends Model
 
 		return response()->json((new DebitCardTransactionsTransformer)->transform($card_trans), 201);
 	}
+
+  public function getListOfBanks()
+  {
+    $endpoint = config('services.bleyt.banks_list_endpoint');
+
+    $response = Http::withToken(config('services.bleyt.secret_key'))->get($endpoint);
+    $receivedDetails = $response->object();
+
+    if ($response->ok()) {
+      return response()->json(['list_of_banks' => $receivedDetails->banks], 200);
+    }
+    else{
+      return response()->json(['message' => $receivedDetails->message], 400);
+    }
+  }
+
+  public function resolveAccountName(ResolveBankAccountNameValidation $request)
+  {
+
+    $endpoint = config('services.bleyt.reslove_bank_account_name_endpoint');
+
+    $dataSupplied = [
+      'sortCode' => $request->sort_code,
+      'accountNumber' => $request->account_number,
+    ];
+
+    $response = Http::withToken(config('services.bleyt.secret_key'))->post($endpoint, $dataSupplied);
+    BleytResponse::logToDB($endpoint, $dataSupplied, $response, $request->user());
+
+    $receivedDetails = $response->object();
+
+    if ($response->ok()) {
+      return response()->json(['account_name' => $receivedDetails->accountName], 200);
+    }
+    else{
+      return response()->json(['message' => $receivedDetails->message], 400);
+    }
+
+  }
+
+  public function transferToBankAccount(MakeBankTransferValidation $request)
+  {
+    $endpoint = config('services.bleyt.wallet_to_bank_transfer_endpoint');
+
+    $dataSupplied = [
+      'sortCode' => $request->sort_code,
+      'accountNumber' => $request->account_number,
+      'accountName' => $request->account_name,
+      'narration' => $request->narration,
+      'amount' => $request->amount,
+      'customerId' => $request->user()->bleyt_customer_id,
+      'metadata' => [
+        "customer_name" => $request->user()->first_name . ' ' . $request->user()->last_name,
+        "capitalx_id" => $request->user()->id,
+        "customer_email" => $request->user()->email
+      ]
+    ];
+
+    $response = Http::withToken(config('services.bleyt.secret_key'))->post($endpoint, $dataSupplied);
+    BleytResponse::logToDB($endpoint, $dataSupplied, $response, $request->user());
+
+    $receivedDetails = $response->object();
+
+    if ($response->ok()) {
+      return response()->json([
+        'transfer_status' => (bool)$receivedDetails->transfer->success
+        ], 201);
+    }
+    else{
+      return response()->json(['message' => $receivedDetails->message], 400);
+    }
+  }
+
+  public function transferToCapitalXAccount(MakeCapitalXTransferValidation $request)
+  {
+    /**
+     * @var CardUser $receiver
+     */
+    $receiver = CardUser::whereEmail($request->email)->first();
+
+    $endpoint = config('services.bleyt.wallet_to_wallet_transfer_endpoint');
+
+    $dataSupplied = [
+      'fromCustomerId' => $request->user()->bleyt_customer_id,
+      'toCustomerId' => $receiver->bleyt_customer_id,
+      'amount' => $request->amount,
+
+    ];
+
+    $response = Http::withToken(config('services.bleyt.secret_key'))->post($endpoint, $dataSupplied);
+    BleytResponse::logToDB($endpoint, $dataSupplied, $response, $request->user());
+
+    $receivedDetails = $response->object();
+
+    if ($response->ok()) {
+      return response()->json([
+        'transfer_status' => (string)$receivedDetails->message
+        ], 201);
+    }
+    else{
+      return response()->json(['message' => $receivedDetails->message], 400);
+    }
+  }
+
 }

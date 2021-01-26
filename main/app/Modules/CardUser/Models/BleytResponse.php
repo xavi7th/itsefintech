@@ -59,4 +59,5 @@ class BleytResponse extends Model
       'is_successful' => $response->successful(),
     ]);
   }
+
 }
