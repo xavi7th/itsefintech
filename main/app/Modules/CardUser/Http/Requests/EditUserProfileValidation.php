@@ -4,9 +4,9 @@ namespace App\Modules\CardUser\Http\Requests;
 
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Auth;
-use \Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
-use App\Modules\BasicSite\Exceptions\AxiosValidationExceptionBuilder;
+use \Illuminate\Contracts\Validation\Validator;
+use App\Modules\CardUser\Exceptions\AxiosValidationExceptionBuilder;
 
 class EditUserProfileValidation extends FormRequest
 {

@@ -23,6 +23,7 @@ class CardActivationValidation extends FormRequest
     return [
       'card_id' => 'required|integer|exists:debit_cards,id',
       'csc' => 'required|numeric',
+      'bvn' => 'required|numeric|digits_between:11,16',
     ];
   }
 

@@ -8,6 +8,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Modules\CardUser\Models\OTP;
+use Illuminate\Support\Facades\Http;
 use App\Modules\Admin\Models\Voucher;
 use Illuminate\Support\Facades\Route;
 use App\Modules\Admin\Models\ActivityLog;
@@ -404,6 +405,115 @@ class CardUser extends User
     return !($this->address == 'not supplied' || empty($this->address));
   }
 
+  public function createBleytWallet(DebitCard $debitCard, string $bvn): object
+  {
+
+    if (!is_null($this->bleyt_customer_id)) {
+      return (object)[
+        'status' => false,
+        'message' => 'VThis user already has a bleyt wallet'
+      ];
+    }
+
+    $endpoint = config('services.bleyt.create_wallet_endpoint');
+
+    if (!$debitCard) {
+      return (object)[
+        'status' => false,
+        'message' => 'Valid capital X card not provided'
+      ];
+    }
+
+    $dataSupplied = [
+      'firstName' => $this->first_name,
+      'lastName' => $this->last_name,
+      'email' => $this->email,
+      'phoneNumber' => $this->phone,
+      'dateOfBirth' => $this->date_of_birth ?? now()->subYears(20)->toDateString(),
+      'bvn' => $bvn,
+    ];
+
+    $response = Http::withToken(config('services.bleyt.secret_key'))->post($endpoint, $dataSupplied);
+    $receivedDetails = $response->object();
+
+    if ($response->ok()) {
+      $this->bleyt_customer_id = $receivedDetails->customer->id;
+      $debitCard->bleyt_wallet_id = $receivedDetails->wallet->id;
+      $debitCard->save();
+      $this->save();
+
+      return (object)[
+        'status' => true,
+        'message' => 'Bleyt wallet created'
+      ];
+    }
+    else{
+      return (object)[
+        'status' => false,
+        'message' => $receivedDetails->message
+      ];
+    }
+
+    BleytResponse::logToDB($endpoint, $dataSupplied, $response, $this);
+  }
+
+  public function linkCardToBleytWallet(DebitCard $debitCard, string $bvn)
+  {
+    $endpoint1 = config('services.bleyt.issue_card_endpoint');
+    $endpoint2 = config('services.bleyt.activate_card_endpoint');
+
+    //Check if this card is already linked to bleyt
+    if ($debitCard->is_bleyt_activated) {
+      return (object)[
+        'status' => false,
+        'message' => 'This debit card is already linked to a Bleyt wallet'
+      ];
+    }
+
+    if (!$this->hasAddress() || !$bvn) {
+      return (object)[
+        'status' => false,
+        'message' => 'The user has no address or no bvn supplied '
+      ];
+    }
+
+    if(!$this->bleyt_customer_id) {
+      return (object)[
+        'status' => false,
+        'message' => 'This user has no Bleyt Wallet to bind this card to'
+      ];
+    }
+
+    $dataSupplied1 = [
+      'customerId' => $this->bleyt_customer_id,
+      'address1' => $this->address . ' ' . $this->city,
+      'address2' => $this->address . ' ' . $this->city,
+      'bvn' => $bvn
+    ];
+
+    $dataSupplied2 = [
+      'customerId' => $this->bleyt_customer_id,
+      'bvn' => $bvn,
+      'last6' => $debitCard->last6_digits,
+    ];
+
+    $response = Http::withToken(config('services.bleyt.secret_key'))->post($endpoint1, $dataSupplied1);
+    BleytResponse::logToDB($endpoint1, $dataSupplied1, $response, $this);
+
+    if ($response->ok()) {
+      $response = Http::withToken(config('services.bleyt.secret_key'))->post($endpoint2, $dataSupplied2);
+      BleytResponse::logToDB($endpoint2, $dataSupplied2, $response, $this);
+
+      $debitCard->is_bleyt_activated = true;
+      $debitCard->save();
+
+      return (object)[
+        'status' => true,
+        'message' => 'Card linked to bleyt wallet'
+      ];
+    }
+  }
+
   public function getAssignedCreditLimitAttribute(): float
   {
     return $this->credit_limit ?? 0; //?? $this->card_user_category()->first(['credit_limit'])['credit_limit'];
@@ -429,12 +539,12 @@ class CardUser extends User
     return $this->first_name . ' ' . $this->last_name;
   }
 
-  public function setBvnAttribute($value)
+  public function setBvnAttribute($value): void
   {
     $this->attributes['bvn'] = encrypt($value);
   }
 
-  public function setPasswordAttribute($value)
+  public function setPasswordAttribute($value): void
   {
     $this->attributes['password'] = bcrypt($value);
   }

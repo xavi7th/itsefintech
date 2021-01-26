@@ -48,6 +48,10 @@ class DebitCard extends Model
 
   protected $appends = ['exp_date'];
 
+  protected $casts = [
+    '$debitCard->is_bleyt_activated' => 'bool'
+  ];
+
   protected static function getHashingAlgorithm()
   {
     return 'sha512';
@@ -294,6 +298,8 @@ class DebitCard extends Model
      */
     // if (Hash::check($request->csc, $debit_card->csc)) {
     if ($request->csc == $debit_card->csc) {
+      DB::beginTransaction();
+
       $debit_card->is_user_activated = true;
       $debit_card->debit_card_request->debit_card_request_status_id = DebitCardRequestStatus::delivered_id();
       $debit_card->debit_card_request->save();
@@ -304,6 +310,20 @@ class DebitCard extends Model
           'activity' => auth()->user()->email . ' has just successfully activated his new credit card'
         ]);
       }
+
+    // Create bleyt wallet
+    $rsp = $request->user()->createBleytWallet($debit_card, $request->bvn);
+    if (!$rsp->status)  return response()->json(['message' => $rsp->message], 403);
+
+    // Link card to bleyt wallet
+    $rsp = $request->user()->linkCardToBleytWallet($debit_card, $request->bvn);
+    if (!$rsp->status)  return response()->json(['message' => $rsp->message], 403);
+
+    //save user's BVN. At this point bleyt should have validated it for us
+    $request->user()->bvn = $request->bvn;
+    $request->user()->save();
+
+      DB::commit();
 
       event(new DebitCardActivated);
 
