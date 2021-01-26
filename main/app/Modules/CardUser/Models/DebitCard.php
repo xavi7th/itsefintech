@@ -17,6 +17,7 @@ use App\Modules\Admin\Models\ActivityLog;
 use App\Modules\CardUser\Models\CardUser;
 use App\Modules\SalesRep\Models\SalesRep;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Modules\CardUser\Models\BleytResponse;
 use App\Modules\CardUser\Models\DebitCardType;
 use App\Modules\CardUser\Emails\CardBlockRequest;
 use App\Modules\CardUser\Models\DebitCardRequest;
@@ -218,21 +219,21 @@ class DebitCard extends Model
     return response()->json((new CardUserDebitCardTransformer)->transformForCardDetails($debit_card), 200);
   }
 
-  public function getCardUserCardBalance(DebitCard $debitCard)
+  public function getCardUserCardBalance(Request $request, DebitCard $debitCard)
   {
     $endpoint = config('services.bleyt.check_card_balance_endpoint');
 
     $dataSupplied = [
-        'last6' => $debitCard->last6_digits,
+        'customerId' => $request->user()->bleyt_customer_id
       ];
       $response = Http::withToken(config('services.bleyt.secret_key'))->get($endpoint, $dataSupplied);
+
+      BleytResponse::logToDB($endpoint, $dataSupplied, $response, $request->user());
 
       if ($response->ok()) {
         $receivedDetails = $response->object();
         return response()->json((new CardUserDebitCardTransformer)->transformForCardBalance($receivedDetails), 200);
       }
-
-
   }
 
   public function fundCardUserCard(CardFundingValidation $request, DebitCard $debitCard)

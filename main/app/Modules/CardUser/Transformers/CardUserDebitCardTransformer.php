@@ -49,22 +49,13 @@ class CardUserDebitCardTransformer
 	public function transformForCardBalance(object $debitCardBalance)
 	{
 		return [
-
         "id" => $debitCardBalance->id,
-        "ledgerBalance" => $debitCardBalance->ledgerBalance,
-        "availableBalance" => $debitCardBalance->availableBalance,
-        "goodsLimit" => $debitCardBalance->goodsLimit,
-        "goodsNrTransLimit" => $debitCardBalance->goodsNrTransLimit,
-        "cashLimit" => $debitCardBalance->cashLimit,
-        "cashNrTransLimit" => $debitCardBalance->cashNrTransLimit,
-        "paymentLimit" => $debitCardBalance->paymentLimit,
-        "paymentNrTransLimit" => $debitCardBalance->paymentNrTransLimit,
-        "cardNotPresentLimit" => $debitCardBalance->cardNotPresentLimit,
-        "depositCreditLimit" => $debitCardBalance->depositCreditLimit,
-        "updatedAt" => $debitCardBalance->updatedAt,
-        "createdAt" => $debitCardBalance->createdAt,
-        "deletedAt" => $debitCardBalance->deletedAt,
-
+        "bookBalance" => $debitCardBalance->wallet->bookedBalance,
+        "availableBalance" => $debitCardBalance->wallet->availableBalance,
+        "card_status" => $debitCardBalance->wallet->status,
+        "bank_name" => $debitCardBalance->wallet->bankName,
+        "account_name" => $debitCardBalance->wallet->accountName,
+        "account_number" => $debitCardBalance->wallet->accountNumber,
 		];
 	}
 
