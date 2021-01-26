@@ -3,12 +3,16 @@
 namespace App\Modules\CardUser\Http\Requests;
 
 use Illuminate\Http\Request;
+use App\Modules\CardUser\Models\CardUser;
 use App\Traits\AuthorizesAfterValidation;
 use App\Modules\CardUser\Models\DebitCard;
 use Illuminate\Foundation\Http\FormRequest;
 use \Illuminate\Contracts\Validation\Validator;
 use App\Modules\CardUser\Exceptions\AxiosValidationExceptionBuilder;
 
+/**
+ * @method static \Illuminate\Database\Eloquent\Builder|CardUser user()
+ */
 class CardActivationValidation extends FormRequest
 {
   use AuthorizesAfterValidation;

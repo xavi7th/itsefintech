@@ -311,17 +311,30 @@ class DebitCard extends Model
         ]);
       }
 
-    // Create bleyt wallet
-    $rsp = $request->user()->createBleytWallet($debit_card, $request->bvn);
-    if (!$rsp->status)  return response()->json(['message' => $rsp->message], 403);
+      // Create bleyt wallet
+      $rsp = $request->user()->createBleytWallet($debit_card, $request->bvn);
+      if (!$rsp->status)  return response()->json(['message' => $rsp->message], 403);
+      $bleyt_wallet_id = $rsp->bleyt_wallet_id;
 
-    // Link card to bleyt wallet
-    $rsp = $request->user()->linkCardToBleytWallet($debit_card, $request->bvn);
-    if (!$rsp->status)  return response()->json(['message' => $rsp->message], 403);
+      // Link card to bleyt wallet
+      $rsp = $request->user()->linkCardToBleytWallet($debit_card, $request->bvn);
+      if (!$rsp->status)  return response()->json(['message' => $rsp->message], 403);
 
-    //save user's BVN. At this point bleyt should have validated it for us
-    $request->user()->bvn = $request->bvn;
-    $request->user()->save();
+      //save user's BVN. At this point bleyt should have validated it for us
+      $request->user()->bvn = $request->bvn;
+      $request->user()->save();
+
+      //update user's bleyt wallet profile
+      $dataSupplied = [
+        'customerId' => $bleyt_wallet_id,
+        'firstName' => $request->user()->first_name,
+        'lastName' => $request->user()->last_name,
+        'email' => $request->user()->email,
+        'phoneNumber' => $request->user()->phone,
+      ];
+
+      $response = Http::withToken(config('services.bleyt.secret_key'))->put('https://api.bleyt.com/v1/customer/' . $bleyt_wallet_id, $dataSupplied);
+      BleytResponse::logToDB('https://api.bleyt.com/v1/customer/' . $bleyt_wallet_id, $dataSupplied, $response, $request->user());
 
       DB::commit();
 

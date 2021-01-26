@@ -444,7 +444,8 @@ class CardUser extends User
 
       return (object)[
         'status' => true,
-        'message' => 'Bleyt wallet created'
+        'message' => 'Bleyt wallet created',
+        'bleyt_wallet_id' => $receivedDetails->wallet->id
       ];
     }
     else{
