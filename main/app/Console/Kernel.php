@@ -25,22 +25,22 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-    $schedule->command('bleyt:create-wallets')
-    ->everyMinute()
-    ->sendOutputTo(Module::getModulePath('Admin/Console') . '/1create-bleyt-wallet-log-' . now()->toDateString() . '.cson')
-    ->onFailure(function () {
-      // ActivityLog::notifyAdmins('Compounding due interests of target savings failed to complete successfully');
-    });
+    // $schedule->command('bleyt:create-wallets')
+    // ->everyMinute()
+    // ->sendOutputTo(Module::getModulePath('Admin/Console') . '/1create-bleyt-wallet-log-' . now()->toDateString() . '.cson')
+    // ->onFailure(function () {
+    //   // ActivityLog::notifyAdmins('Compounding due interests of target savings failed to complete successfully');
+    // });
 
-    $schedule->command('bleyt:activate-debit-cards')
-    ->everyMinute()
-    ->sendOutputTo(Module::getModulePath('Admin/Console') . '/1activate-bleyt-wallet-log-' . now()->toDateString() . '.cson')
-    ->onFailure(function () {
-      // ActivityLog::notifyAdmins('Compounding due interests of target savings failed to complete successfully');
-    });
+    // $schedule->command('bleyt:activate-debit-cards')
+    // ->everyMinute()
+    // ->sendOutputTo(Module::getModulePath('Admin/Console') . '/1activate-bleyt-wallet-log-' . now()->toDateString() . '.cson')
+    // ->onFailure(function () {
+    //   // ActivityLog::notifyAdmins('Compounding due interests of target savings failed to complete successfully');
+    // });
 
-    $schedule->command('queue:restart')->hourly();
-    $schedule->command('queue:work --sleep=3 --timeout=900 --queue=high,default,low')->runInBackground()->withoutOVerlapping()->everyMinute();
+    // $schedule->command('queue:restart')->hourly();
+    // $schedule->command('queue:work --sleep=3 --timeout=900 --queue=high,default,low')->runInBackground()->withoutOVerlapping()->everyMinute();
 
     }
 
