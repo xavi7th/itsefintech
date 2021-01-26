@@ -3,6 +3,7 @@
 namespace App\Modules\CardUser\Transformers;
 
 use App\Modules\CardUser\Models\DebitCardTransaction;
+use Carbon\Carbon;
 
 class DebitCardTransactionsTransformer
 {
@@ -15,17 +16,19 @@ class DebitCardTransactionsTransformer
 		];
 	}
 
-	public function transform(DebitCardTransaction $card_transaction)
+	public function transform(object $cardTransaction)
 	{
 		return [
-			'id' => (int)$card_transaction->id,
-			'card' => (int)$card_transaction->debit_card->card_number,
-			'amount' => (double)$card_transaction->amount,
-			'trans_description' => (string)$card_transaction->trans_description,
-			'trans_category' => (string)$card_transaction->trans_category,
-			'trans_type' => (string)$card_transaction->trans_type,
-			'trans_date' => (string)$card_transaction->created_at->toFormattedDateString(),
-			// 'trans_date' => (string)$card_transaction->created_at->format('l jS \\of F Y h:i:s A')  // Thursday 25th of December 1975 02:15:16 PM,
+			'id' => (string)$cardTransaction->id,
+			'amount' => (double)$cardTransaction->amount,
+      'balance_after' => (float)$cardTransaction->balance_after,
+      'balance_before' => (float)$cardTransaction->balance_before,
+      'trans_ref' => (string)$cardTransaction->reference,
+			'trans_category' => (string)$cardTransaction->category,
+			'trans_description' => (string)$cardTransaction->description,
+			'trans_type' => (string)$cardTransaction->type,
+			'trans_date' => (string)Carbon::parse($cardTransaction->createdAt)->toFormattedDateString(),
+			'trans_date_long' => (string)Carbon::parse($cardTransaction->created_at)->format('l jS \\of F Y h:i:s A')  // Thursday 25th of December 1975 02:15:16 PM,
 
 		];
 	}

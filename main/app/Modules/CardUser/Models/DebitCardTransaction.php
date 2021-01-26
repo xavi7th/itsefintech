@@ -2,15 +2,17 @@
 
 namespace App\Modules\CardUser\Models;
 
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Request;
 use App\Modules\Admin\Models\ActivityLog;
 use App\Modules\CardUser\Models\CardUser;
 use App\Modules\CardUser\Models\DebitCard;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Modules\CardUser\Notifications\CardDebited;
 use App\Modules\CardUser\Http\Requests\CreateCardTransactionValidation;
 use App\Modules\CardUser\Transformers\DebitCardTransactionsTransformer;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * App\Modules\CardUser\Models\DebitCardTransaction
@@ -91,8 +93,8 @@ class DebitCardTransaction extends Model
 	static function cardUserRoutes()
 	{
 		Route::group(['namespace' => '\App\Modules\CardUser\Models', 'middleware' => ['verified_card_users']], function () {
-			Route::get('debit-card-transactions', 'DebitCardTransaction@getCardUserCardTransactions')->middleware('auth:card_user');
-			Route::get('debit-card-transactions/{debit_card}', 'DebitCardTransaction@getDebitCardTransactions')->middleware('auth:card_user');
+			// Route::get('debit-card-transactions', 'DebitCardTransaction@getCardUserCardTransactions')->middleware('auth:card_user');
+			Route::get('debit-card-transactions/{debit_card}/{type?}', 'DebitCardTransaction@getDebitCardTransactions')->middleware('auth:card_user');
 			Route::post('debit-card-transaction/create', 'DebitCardTransaction@createCardTransaction')->middleware('auth:card_user');
 		});
 	}
@@ -106,21 +108,39 @@ class DebitCardTransaction extends Model
 		return (new DebitCardTransactionsTransformer)->collectionTransformer(auth()->user()->debit_card_transactions, 'transform');
 	}
 
-	public function getDebitCardTransactions(DebitCard $debit_card)
+	public function getDebitCardTransactions(Request $request, DebitCard $debit_card, $type = 'all')
 	{
-		return (new DebitCardTransactionsTransformer)->collectionTransformer($debit_card->debit_card_transactions->take(30), 'transform');
+
+    $endpoint = config('services.bleyt.view_transactions_endpoint');
+
+    $dataSupplied = [
+      'customerId' => $request->user()->bleyt_wallet_id,
+      'type' => $type,
+      'page' => $request->page
+    ];
+
+    $response = Http::withToken(config('services.bleyt.secret_key'))->post($endpoint, $dataSupplied);
+    BleytResponse::logToDB($endpoint, $dataSupplied, $response, $request->user());
+
+    if ($response->ok()) {
+      $receivedDetails = $response->json()['transactions'];
+      return (new DebitCardTransactionsTransformer)->collectionTransformer(collect($receivedDetails), 'transform');
+    }
+    else{
+      return response()->json(['message' => $response->message], 400);
+    }
 	}
 
 	public function createCardTransaction(CreateCardTransactionValidation $request)
 	{
-		$card_trans = auth()->user()->debit_card_transactions()->create($request->all());
+		$card_trans = $request->user()->debit_card_transactions()->create($request->all());
 
 		ActivityLog::logUserActivity(auth()->user()->email . ' carried out a transaction on his card');
 		ActivityLog::notifyCardAdmins(auth()->user()->email . ' carried out a transaction on his card');
 		ActivityLog::notifyAdmins(auth()->user()->email . ' carried out a transaction on his card');
 		ActivityLog::notifyAccountOfficers(auth()->user()->email . ' carried out a transaction on his card');
 
-		auth()->user()->notify(new CardDebited($request->all()));
+		$request->user()->notify(new CardDebited($request->all()));
 
 		return response()->json((new DebitCardTransactionsTransformer)->transform($card_trans), 201);
 	}

@@ -4,6 +4,7 @@ namespace App\Modules\CardUser\Http\Requests;
 
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Auth;
+use App\Modules\CardUser\Models\CardUser;
 use App\Modules\CardUser\Models\DebitCard;
 use Illuminate\Foundation\Http\FormRequest;
 use App\Modules\CardUser\Models\LoanRequest;
@@ -11,7 +12,9 @@ use \Illuminate\Contracts\Validation\Validator;
 use Illuminate\Auth\Access\AuthorizationException;
 use App\Modules\CardUser\Exceptions\AxiosValidationExceptionBuilder;
 
-
+/**
+ * @method static \Illuminate\Database\Eloquent\Builder|CardUser user()
+ */
 class CreateCardTransactionValidation extends FormRequest
 {
 	/**
