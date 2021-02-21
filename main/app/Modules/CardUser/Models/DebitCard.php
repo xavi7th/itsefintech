@@ -35,6 +35,71 @@ use App\Modules\CardUser\Http\Requests\CardActivationValidation;
 use App\Modules\CardUser\Http\Requests\CardDeactivationValidation;
 use App\Modules\CardUser\Transformers\CardUserDebitCardTransformer;
 
+/**
+ * App\Modules\CardUser\Models\DebitCard
+ *
+ * @property int $id
+ * @property int|null $sales_rep_id
+ * @property int|null $card_user_id
+ * @property int $debit_card_type_id
+ * @property string $card_number
+ * @property string $card_hash
+ * @property string $csc
+ * @property int $month
+ * @property int $year
+ * @property string|null $bleyt_wallet_id
+ * @property int $is_bleyt_activated
+ * @property int $is_user_activated
+ * @property int $is_admin_activated
+ * @property \Illuminate\Support\Carbon|null $activated_at
+ * @property int $is_suspended
+ * @property int|null $assigned_by
+ * @property int|null $created_by
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property-read CardUser|null $card_user
+ * @property-read \Illuminate\Database\Eloquent\Collection|DebitCardFundingRequest[] $debit_card_funding_request
+ * @property-read int|null $debit_card_funding_request_count
+ * @property-read DebitCardRequest|null $debit_card_request
+ * @property-read \Illuminate\Database\Eloquent\Collection|DebitCardTransaction[] $debit_card_transactions
+ * @property-read int|null $debit_card_transactions_count
+ * @property-read DebitCardType $debit_card_type
+ * @property-read mixed $exp_date
+ * @property-read string $full_pan_number
+ * @property-read mixed $last6_digits
+ * @property-read DebitCardFundingRequest|null $new_debit_card_funding_request
+ * @property-read SalesRep|null $sales_rep
+ * @method static \Illuminate\Database\Eloquent\Builder|DebitCard bleytUnactivated()
+ * @method static \Illuminate\Database\Eloquent\Builder|DebitCard newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|DebitCard newQuery()
+ * @method static \Illuminate\Database\Query\Builder|DebitCard onlyTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder|DebitCard pendingAdminActivation()
+ * @method static \Illuminate\Database\Eloquent\Builder|DebitCard query()
+ * @method static \Illuminate\Database\Eloquent\Builder|DebitCard whereActivatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|DebitCard whereAssignedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|DebitCard whereBleytWalletId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|DebitCard whereCardHash($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|DebitCard whereCardNumber($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|DebitCard whereCardUserId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|DebitCard whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|DebitCard whereCreatedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|DebitCard whereCsc($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|DebitCard whereDebitCardTypeId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|DebitCard whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|DebitCard whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|DebitCard whereIsAdminActivated($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|DebitCard whereIsBleytActivated($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|DebitCard whereIsSuspended($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|DebitCard whereIsUserActivated($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|DebitCard whereMonth($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|DebitCard whereSalesRepId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|DebitCard whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|DebitCard whereYear($value)
+ * @method static \Illuminate\Database\Query\Builder|DebitCard withTrashed()
+ * @method static \Illuminate\Database\Query\Builder|DebitCard withoutTrashed()
+ * @mixin \Eloquent
+ */
 class DebitCard extends Model
 {
   use SoftDeletes, Rememberable;
@@ -168,7 +233,7 @@ class DebitCard extends Model
         Route::delete('deactivate', 'DebitCard@deactivateCardUserDebitCard');
         Route::get('/status', 'DebitCard@trackCardUserDebitCard');
         Route::get('/{debit_card}', 'DebitCard@getCardUserCardDetails');
-        Route::get('/{debit_card}/balance', 'DebitCard@getCardUserCardBalance');
+        Route::get('/{debit_card}/balance', 'DebitCard@getCardUserCardBalance')->name('appuser.card.balance');
         Route::post('/{debit_card}/fund', 'DebitCard@fundCardUserCard');
       });
     });
@@ -237,7 +302,9 @@ class DebitCard extends Model
       if ($response->ok()) {
         $receivedDetails = $response->object();
         return response()->json((new CardUserDebitCardTransformer)->transformForCardBalance($receivedDetails), 200);
-      }
+    } else {
+      return response()->json($response->object(), $response->status());
+    }
   }
 
   public function fundCardUserCard(CardFundingValidation $request, DebitCard $debitCard)
@@ -249,8 +316,8 @@ class DebitCard extends Model
         'customerId' => $request->user()->bleyt_customer_id
       ];
 
-      $response = Http::withToken(config('services.bleyt.secret_key'))->get($endpoint, $dataSupplied);
-      BleytResponse::logToDB($endpoint,$dataSupplied,$response,$response->user());
+    $response = Http::withToken(config('services.bleyt.secret_key'))->post($endpoint, $dataSupplied);
+    BleytResponse::logToDB($endpoint, $dataSupplied, $response, $request->user());
 
       if ($response->ok()) {
         $receivedDetails = $response->object();
@@ -543,6 +610,11 @@ class DebitCard extends Model
   public function scopeBleytUnactivated($query)
   {
     return $query->whereIsBleytActivated(false)->whereNotNull('bleyt_wallet_id');
+  }
+
+  public function scopeTitaniumBlack($query)
+  {
+    return $query->whereDebitCardTypeId(1);
   }
 
   protected static function boot()
