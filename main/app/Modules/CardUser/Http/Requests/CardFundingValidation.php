@@ -2,9 +2,7 @@
 
 namespace App\Modules\CardUser\Http\Requests;
 
-use Illuminate\Http\Request;
 use App\Traits\AuthorizesAfterValidation;
-use App\Modules\CardUser\Models\DebitCard;
 use Illuminate\Foundation\Http\FormRequest;
 use \Illuminate\Contracts\Validation\Validator;
 use App\Modules\CardUser\Exceptions\AxiosValidationExceptionBuilder;
@@ -32,7 +30,7 @@ class CardFundingValidation extends FormRequest
    */
   public function authorizeValidated()
   {
-    return DebitCard::find($this->card_id)->belongs_to_user($this->user());
+    return $this->debit_card->belongs_to_user($this->user());
   }
 
 
