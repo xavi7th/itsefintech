@@ -21,7 +21,8 @@
 		"orangehill/iseed": "^2.6",
 		"spatie/laravel-ray": "^1.5",
 		"tymon/jwt-auth": "^1.0.0",
-		"watson/rememberable": "^4.0"
+		"watson/rememberable": "^4.0",
+		"webparking/laravel-queue-ensurer": "^1.3"
 	},
 	"require-dev": {
 		"barryvdh/laravel-debugbar": "^3.2",
@@ -91,6 +92,10 @@
             "@php artisan migrate:fresh",
             "@php artisan module:seed"
         ],
+    "tf": "clear && vendor/bin/phpunit --filter",
+    "ts": "vendor/bin/phpunit --testsuite",
+    "all-tests": "@php artisan test && vendor/bin/phpunit app/Modules",
+    "run-artisan-test": "@php artisan test",
 		"post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
             "@php artisan package:discover --ansi",
