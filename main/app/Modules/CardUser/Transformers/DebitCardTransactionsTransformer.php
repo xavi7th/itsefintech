@@ -11,7 +11,7 @@ class DebitCardTransactionsTransformer
 	{
 		return [
 			'card_transactions' => $collection->map(function ($v) use ($transformerMethod) {
-				return $this->$transformerMethod($v);
+				return $this->$transformerMethod((object)$v);
 			})
 		];
 	}
@@ -28,7 +28,7 @@ class DebitCardTransactionsTransformer
 			'trans_description' => (string)$cardTransaction->description,
 			'trans_type' => (string)$cardTransaction->type,
 			'trans_date' => (string)Carbon::parse($cardTransaction->createdAt)->toFormattedDateString(),
-			'trans_date_long' => (string)Carbon::parse($cardTransaction->created_at)->format('l jS \\of F Y h:i:s A')  // Thursday 25th of December 1975 02:15:16 PM,
+			'trans_date_long' => (string)Carbon::parse($cardTransaction->createdAt)->format('l jS \\of F Y h:i:s A')  // Thursday 25th of December 1975 02:15:16 PM,
 
 		];
 	}

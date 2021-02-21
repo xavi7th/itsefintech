@@ -2,10 +2,10 @@
 
 namespace App\Modules\CardUser\Models;
 
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Request;
 use App\Modules\Admin\Models\ActivityLog;
 use App\Modules\CardUser\Models\CardUser;
 use App\Modules\CardUser\Models\DebitCard;
@@ -96,14 +96,15 @@ class DebitCardTransaction extends Model
 	static function cardUserRoutes()
 	{
 		Route::group(['middleware' => ['verified_card_users']], function () {
-			// Route::get('debit-card-transactions', [self::class, 'getCardUserCardTransactions'])->middleware('auth:card_user');
-			Route::get('debit-card-transactions/{debit_card}/{type?}', [self::class, 'getDebitCardTransactions'])->middleware('auth:card_user');
-			Route::post('debit-card-transaction/create', [self::class, 'createCardTransaction'])->middleware('auth:card_user');
+      // Route::get('debit-card-transactions', [self::class, 'getCardUserCardTransactions'])->middleware('auth:card_user');
 
-			Route::get('debit-card-transactions/bank-list', [self::class, 'getListOfBanks'])->middleware('auth:card_user');
-			Route::get('debit-card-transactions/resolve-account-name', [self::class, 'resolveAccountName'])->middleware('auth:card_user');
+      Route::get('debit-card-transactions/bank-list', [self::class, 'getListOfBanks'])->name('user.get-banks')->middleware('auth:card_user');
+      Route::get('debit-card-transactions/resolve-account-name', [self::class, 'resolveAccountName'])->name('user.resolve_acc_num')->middleware('auth:card_user');
 			Route::post('debit-card-transactions/make-bank-transfer', [self::class, 'transferToBankAccount'])->middleware('auth:card_user');
 			Route::post('debit-card-transactions/transfer-to-capitalx-account', [self::class, 'transferToCapitalXAccount'])->middleware('auth:card_user');
+
+      Route::get('debit-card-transactions/{debit_card}/{type?}', [self::class, 'getDebitCardTransactions'])->middleware('auth:card_user');
+      Route::post('debit-card-transaction/create', [self::class, 'createCardTransaction'])->middleware('auth:card_user');
 		});
 	}
 
@@ -116,18 +117,19 @@ class DebitCardTransaction extends Model
 		return (new DebitCardTransactionsTransformer)->collectionTransformer(auth()->user()->debit_card_transactions, 'transform');
 	}
 
-	public function getDebitCardTransactions(Request $request, DebitCard $debit_card, $type = 'all')
+  public function getDebitCardTransactions(Request $request, DebitCard $debit_card, $type = 'ALL')
 	{
 
     $endpoint = config('services.bleyt.view_transactions_endpoint');
 
     $dataSupplied = [
-      'customerId' => $request->user()->bleyt_wallet_id,
+      'customerId' => $request->user()->bleyt_customer_id,
       'type' => $type,
       'page' => $request->page
     ];
 
-    $response = Http::withToken(config('services.bleyt.secret_key'))->post($endpoint, $dataSupplied);
+
+    $response = Http::withToken(config('services.bleyt.secret_key'))->get($endpoint, $dataSupplied);
     BleytResponse::logToDB($endpoint, $dataSupplied, $response, $request->user());
 
     if ($response->ok()) {
@@ -135,7 +137,7 @@ class DebitCardTransaction extends Model
       return (new DebitCardTransactionsTransformer)->collectionTransformer(collect($receivedDetails), 'transform');
     }
     else{
-      return response()->json(['message' => $response->message], 400);
+      return response()->json(['message' => $response->body()], 400);
     }
 	}
 
@@ -178,13 +180,13 @@ class DebitCardTransaction extends Model
       'accountNumber' => $request->account_number,
     ];
 
-    $response = Http::withToken(config('services.bleyt.secret_key'))->post($endpoint, $dataSupplied);
+    $response = Http::withToken(config('services.bleyt.secret_key'))->get($endpoint, $dataSupplied);
     BleytResponse::logToDB($endpoint, $dataSupplied, $response, $request->user());
 
     $receivedDetails = $response->object();
 
     if ($response->ok()) {
-      return response()->json(['account_name' => $receivedDetails->accountName], 200);
+      return response()->json(['account_name' => $receivedDetails->account->accountName], 200);
     }
     else{
       return response()->json(['message' => $receivedDetails->message], 400);
