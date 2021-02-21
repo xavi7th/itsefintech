@@ -97,10 +97,11 @@ use App\Modules\CardUser\Http\Requests\CardUserUpdateProfileValidation;
  * @property-read int|null $repayment_merchant_transactions_count
  * @property-read \Illuminate\Database\Eloquent\Collection|LoanRequest[] $running_loan_requests
  * @property-read int|null $running_loan_requests_count
+ * @property-read int|null $vouchers_count
  * @property-read MerchantTransaction|null $unapproved_merchant_transactions
  * @property-read VoucherRequest|null $voucher_request
  * @property-read \Illuminate\Database\Eloquent\Collection|Voucher[] $vouchers
- * @property-read int|null $vouchers_count
+ * @property-read string|null $plain_bvn
  * @method static \Illuminate\Database\Eloquent\Builder|CardUser newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|CardUser newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|CardUser query()
@@ -132,8 +133,8 @@ use App\Modules\CardUser\Http\Requests\CardUserUpdateProfileValidation;
  * @method static \Illuminate\Database\Eloquent\Builder|CardUser whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|CardUser whereUserPassport($value)
  * @method static \Illuminate\Database\Eloquent\Builder|CardUser withoutBleytAccount()
+ * @method static \Illuminate\Database\Eloquent\Builder|CardUser withBleytAccount()
  * @mixin \Eloquent
- * @property-read string|null $plain_bvn
  */
 class CardUser extends User
 {
@@ -397,7 +398,7 @@ class CardUser extends User
 
   public function activeDays(): int
   {
-    return rescue(fn () => intval($this->first_debit_card->activated_at->diffInDays(now())), 0);
+    return rescue(fn () => intval(($this->first_debit_card)->activated_at->diffInDays(now())), 0, false);
   }
 
   public function hasAddress(): bool
