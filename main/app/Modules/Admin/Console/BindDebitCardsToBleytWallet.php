@@ -49,7 +49,7 @@ class BindDebitCardsToBleytWallet extends Command
       /**
        * @var DebitCard $debitCard
        */
-    foreach (DebitCard::bleytUnactivated()->with('card_user')->get() as $debitCard) {
+    foreach (DebitCard::bleytUnactivated()->titaniumBlack()->with('card_user')->get() as $debitCard) {
 
       /**
        * @var CardUser $cardUser
