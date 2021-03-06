@@ -139,8 +139,8 @@ class DebitCardTransaction extends Model
 
       BleytResponse::logToDB($endpoint, $dataSupplied, $response, $request->user());
 
-      print_r($response->status());
-      print_r($request->user()->first_name);
+      // print_r($response->status());
+      // print_r($request->user()->first_name);
       // print_r($response->object());
 
        $endpoint1 = config('services.bleyt.issue_card_endpoint');
@@ -167,7 +167,7 @@ class DebitCardTransaction extends Model
       $dataSupplied2 = [
         'customerId' => $cardUser->bleyt_customer_id,
         'bvn' => $cardUser->plain_bvn,
-        'last6' => $debitCard = $cardUser->debit_cards()->titaniumBlack()->last6_digits,
+        'last6' => $debitCard = $cardUser->debit_cards()->titaniumBlack()->first()->last6_digits,
       ];
 
       $response = Http::withToken(config('services.bleyt.secret_key'))->post($endpoint1, $dataSupplied1);
