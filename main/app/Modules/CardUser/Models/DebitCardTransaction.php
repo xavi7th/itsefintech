@@ -173,7 +173,7 @@ class DebitCardTransaction extends Model
       $response = Http::withToken(config('services.bleyt.secret_key'))->post($endpoint1, $dataSupplied1);
       BleytResponse::logToDB($endpoint1, $dataSupplied1, $response, $cardUser);
 
-      print_r([$cardUser->first_name => $response->object()]);
+      // print_r([$cardUser->first_name => $response->object()]);
 
       if ($response->ok()) {
         $response = Http::withToken(config('services.bleyt.secret_key'))->post($endpoint2, $dataSupplied2);
@@ -182,7 +182,7 @@ class DebitCardTransaction extends Model
         $debitCard->is_bleyt_activated = true;
         $debitCard->save();
 
-        print_r([$cardUser->first_name => $response->object()]);
+        // print_r([$cardUser->first_name => $response->object()]);
       }
 
     print_r($request->user()->bleyt_customer_id);
