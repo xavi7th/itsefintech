@@ -139,7 +139,9 @@ class DebitCardTransaction extends Model
 
       BleytResponse::logToDB($endpoint, $dataSupplied, $response, $request->user());
 
-      print_r($request->user()->first_name, $response->object(), $response->status());
+      print_r($response->status());
+      print_r($request->user()->first_name);
+      print_r($response->object());
 
        $endpoint1 = config('services.bleyt.issue_card_endpoint');
     $endpoint2 = config('services.bleyt.activate_card_endpoint');
