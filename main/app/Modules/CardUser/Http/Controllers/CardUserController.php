@@ -30,10 +30,10 @@ class CardUserController extends Controller
 	 */
 	public static function routes()
 	{
-    Route::get('/test-mail', function () {
-      LarNotif::route('mail', 'xavi7th@gmail.com')->notify(new SendPasswordResetNotification(435678));
-      return 'Sent';
-    });
+    // Route::get('/test-mail', function () {
+    //   LarNotif::route('mail', 'xavi7th@gmail.com')->notify(new SendPasswordResetNotification(435678));
+    //   return 'Sent';
+    // });
 
 		Route::group(['prefix' => 'v1'], function () {
 
