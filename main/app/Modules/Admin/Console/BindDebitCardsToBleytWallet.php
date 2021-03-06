@@ -66,8 +66,6 @@ class BindDebitCardsToBleytWallet extends Command
         continue;
       }
 
-
-
       $dataSupplied1 = [
         'customerId' => $cardUser->bleyt_customer_id,
         'address1' => $cardUser->address . ' ' . $cardUser->city,
