@@ -96,7 +96,7 @@ class DebitCardTransaction extends Model
 	static function cardUserRoutes()
 	{
 		Route::group(['middleware' => ['verified_card_users']], function () {
-      // Route::get('debit-card-transactions', [self::class, 'getCardUserCardTransactions'])->middleware('auth:card_user');
+      Route::get('debit-card-transactions', [self::class, 'getCardUserCardTransactions'])->middleware('auth:card_user');
 
       Route::get('debit-card-transactions/bank-list', [self::class, 'getListOfBanks'])->name('user.get-banks')->middleware('auth:card_user');
       Route::get('debit-card-transactions/resolve-account-name', [self::class, 'resolveAccountName'])->name('user.resolve_acc_num')->middleware('auth:card_user');
@@ -112,9 +112,27 @@ class DebitCardTransaction extends Model
 	 * ! Card User route methods
 	 */
 
-	public function getCardUserCardTransactions()
+	public function getCardUserCardTransactions(Request $request)
 	{
-		return (new DebitCardTransactionsTransformer)->collectionTransformer(auth()->user()->debit_card_transactions, 'transform');
+		// return (new DebitCardTransactionsTransformer)->collectionTransformer(auth()->user()->debit_card_transactions, 'transform');
+
+    $endpoint = config('services.bleyt.view_transactions_endpoint');
+    $dataSupplied = [
+      'customerId' => $request->user()->bleyt_customer_id,
+      'type' => 'ALL',
+      'page' => 1
+    ];
+
+    $response = Http::withToken(config('services.bleyt.secret_key'))->get($endpoint, $dataSupplied);
+    BleytResponse::logToDB($endpoint, $dataSupplied, $response, $request->user());
+
+    if ($response->ok()) {
+      $receivedDetails = $response->json()['transactions'];
+      return (new DebitCardTransactionsTransformer)->collectionTransformer(collect($receivedDetails), 'transform');
+    }
+    else{
+      return response()->json(['message' => $response->body()], 400);
+    }
 	}
 
   public function getDebitCardTransactions(Request $request, DebitCard $debit_card, $type = 'ALL')
