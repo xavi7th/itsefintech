@@ -79,9 +79,23 @@
             "@php artisan event:cache",
             "@php artisan config:cache",
             "@php artisan optimize",
-            "composer dumpautoload",
-            "npm run prod"
+            "composer dumpautoload"
         ],
+    "recompile": [
+        "@php artisan config:clear",
+        "@php artisan debugbar:clear",
+        "@php artisan route:clear",
+        "@php artisan cache:clear",
+        "@php artisan view:clear",
+        "@php artisan event:clear",
+        "@php artisan storage:link",
+        "@php artisan auth:clear-resets",
+        "@php artisan route:cache",
+        "@php artisan event:cache",
+        "@php artisan config:cache",
+        "@php artisan optimize",
+        "composer dumpautoload"
+    ],
 		"reseed": [
             "@php artisan config:clear",
             "@php artisan debugbar:clear",
