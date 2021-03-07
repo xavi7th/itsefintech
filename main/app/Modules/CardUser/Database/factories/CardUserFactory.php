@@ -18,9 +18,9 @@ use App\Modules\CardUser\Models\CardUser;
 */
 
 $factory->define(CardUser::class, function (Faker $faker) {
-  if (!File::isDirectory(public_path('storage/card_users/'))) {
-    File::makeDirectory(public_path('storage/card_users/'), 0755);
-  }
+  // if (!File::isDirectory(public_path('storage/card_users/'))) {
+  //   File::makeDirectory(public_path('storage/card_users/'), 0755);
+  // }
 
   return [
     'first_name' => $faker->firstName,
@@ -30,7 +30,7 @@ $factory->define(CardUser::class, function (Faker $faker) {
     'otp_verified_at' => now(),
     'password' => 'password@1',
     'phone' => $faker->phoneNumber,
-    'user_passport' => '/storage/id_cards/' . $faker->file(public_path('img/'), public_path('storage/card_users/'), false),
+    // 'user_passport' => '/storage/id_cards/' . $faker->file(public_path('img/'), public_path('storage/card_users/'), false),
     'remember_token' => Str::random(10),
   ];
 });

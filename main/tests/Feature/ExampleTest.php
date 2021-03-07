@@ -44,4 +44,22 @@ class ExampleTest extends TestCase
 
     $this->assertCount(1, BleytResponse::all());
   }
+
+  public function testUserCanViewTransactionHistory()
+  {
+    $user = factory(CardUser::class)->create();
+
+
+    $response = $this->actingAs($user, 'card_user')->call('GET', route('user.transactions.recent'))->dumpSession();
+
+    // dd($response->getOriginalContent());
+
+    // dd($response->);
+
+    $response->assertOk();
+    $response->assertSessionHasNoErrors();
+    $response->assertJsonStructure(['account_name']);
+
+    $this->assertCount(1, BleytResponse::all());
+  }
 }

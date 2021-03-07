@@ -96,7 +96,7 @@ class DebitCardTransaction extends Model
 	static function cardUserRoutes()
 	{
 		Route::group(['middleware' => ['verified_card_users']], function () {
-      Route::get('debit-card-transactions', [self::class, 'getCardUserCardTransactions'])->middleware('auth:card_user');
+      Route::get('debit-card-transactions', [self::class, 'getCardUserCardTransactions'])->name('user.transactions.recent')->middleware('auth:card_user');
 
       Route::get('debit-card-transactions/bank-list', [self::class, 'getListOfBanks'])->name('user.get-banks')->middleware('auth:card_user');
       Route::get('debit-card-transactions/resolve-account-name', [self::class, 'resolveAccountName'])->name('user.resolve_acc_num')->middleware('auth:card_user');
@@ -113,81 +113,7 @@ class DebitCardTransaction extends Model
 	 */
 
 	public function getCardUserCardTransactions(Request $request)
-	{
-		// return (new DebitCardTransactionsTransformer)->collectionTransformer(auth()->user()->debit_card_transactions, 'transform');
-
-    $endpoint = config('services.bleyt.create_wallet_endpoint');
-
-     $dataSupplied = [
-        'firstName' => $request->user()->first_name,
-        'lastName' => $request->user()->last_name,
-        'email' => $request->user()->email,
-        'phoneNumber' => $request->user()->phone,
-        'dateOfBirth' => $request->user()->date_of_birth ?? now()->subYears(20)->toDateString(),
-        'bvn' => $request->user()->plain_bvn ?? '',
-      ];
-
-      $response = Http::withToken(config('services.bleyt.secret_key'))->post($endpoint, $dataSupplied);
-
-      if ($response->ok()) {
-        $receivedDetails = $response->object();
-        $request->user()->bleyt_customer_id = $receivedDetails->customer->id;
-        $request->user()->first_debit_card->bleyt_wallet_id = $receivedDetails->wallet->id;
-        $request->user()->first_debit_card->save();
-        $request->user()->save();
-      }
-
-      BleytResponse::logToDB($endpoint, $dataSupplied, $response, $request->user());
-
-      // print_r($response->status());
-      // print_r($request->user()->first_name);
-      // print_r($response->object());
-
-       $endpoint1 = config('services.bleyt.issue_card_endpoint');
-    $endpoint2 = config('services.bleyt.activate_card_endpoint');
-
-    /** @var CardUser */
-    $cardUser = $request->user();
-
-      /**
-       * First supply card customer address
-       */
-
-      if (!$cardUser->hasAddress() || !$cardUser->plain_bvn) {
-        print('Failed to activate card');
-      }
-
-      $dataSupplied1 = [
-        'customerId' => $cardUser->bleyt_customer_id,
-        'address1' => $cardUser->address . ' ' . $cardUser->city,
-        'address2' => $cardUser->address . ' ' . $cardUser->city,
-        'bvn' => $cardUser->plain_bvn
-      ];
-
-      $dataSupplied2 = [
-        'customerId' => $cardUser->bleyt_customer_id,
-        'bvn' => $cardUser->plain_bvn,
-        'last6' => $debitCard = $cardUser->debit_cards()->titaniumBlack()->first()->last6_digits,
-      ];
-
-      $response = Http::withToken(config('services.bleyt.secret_key'))->post($endpoint1, $dataSupplied1);
-      BleytResponse::logToDB($endpoint1, $dataSupplied1, $response, $cardUser);
-
-      // print_r([$cardUser->first_name => $response->object()]);
-
-      if ($response->ok()) {
-        $response = Http::withToken(config('services.bleyt.secret_key'))->post($endpoint2, $dataSupplied2);
-        BleytResponse::logToDB($endpoint2, $dataSupplied2, $response, $cardUser);
-
-        $debitCard->is_bleyt_activated = true;
-        $debitCard->save();
-
-        // print_r([$cardUser->first_name => $response->object()]);
-      }
-
-    print_r($request->user()->bleyt_customer_id);
-    exit;
-
+  {
     $endpoint = config('services.bleyt.view_transactions_endpoint');
     $dataSupplied = [
       'customerId' => $request->user()->bleyt_customer_id,
