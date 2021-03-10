@@ -49,7 +49,7 @@ class CardUserDebitCardTransformer
 	public function transformForCardBalance(object $debitCardBalance)
 	{
 		return [
-        "id" => $debitCardBalance->id,
+        // "id" => $debitCardBalance->id,
         "bookBalance" => $debitCardBalance->wallet->bookedBalance,
         "availableBalance" => $debitCardBalance->wallet->availableBalance,
         "card_status" => $debitCardBalance->wallet->status,
