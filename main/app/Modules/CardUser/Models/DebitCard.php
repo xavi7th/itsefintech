@@ -411,7 +411,7 @@ class DebitCard extends Model
 
       return response()->json(['message' => 'Card Activated'], 204);
     } else {
-      return response()->json(['message' => 'Invalid CSC'], 403);
+      return response()->json('Invalid CSC', 422);
     }
   }
 
