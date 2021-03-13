@@ -387,7 +387,7 @@ class DebitCard extends Model
 
       // Link card to bleyt wallet
       $rsp = $request->user()->linkCardToBleytWallet($debit_card, $request->bvn);
-      if (!$rsp->status)  return response()->json(['message' => $rsp->message], 403);
+      if (!$rsp->status)  return response()->json(['message' => $rsp->message], 400);
 
       //save user's BVN. At this point bleyt should have validated it for us
       $request->user()->bvn = $request->bvn;
