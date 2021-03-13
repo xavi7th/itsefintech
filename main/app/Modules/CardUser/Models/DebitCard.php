@@ -6,6 +6,7 @@ use Cache;
 use Carbon\Carbon;
 use Illuminate\Support\Arr;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use App\Modules\Admin\Models\ErrLog;
 use Illuminate\Support\Facades\Http;
@@ -19,6 +20,7 @@ use App\Modules\SalesRep\Models\SalesRep;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Modules\CardUser\Models\BleytResponse;
 use App\Modules\CardUser\Models\DebitCardType;
+use Illuminate\Validation\ValidationException;
 use App\Modules\CardUser\Emails\CardBlockRequest;
 use App\Modules\CardUser\Models\DebitCardRequest;
 use App\Modules\Accountant\Events\DebitCardActivated;
@@ -358,7 +360,7 @@ class DebitCard extends Model
   {
     $debit_card = DebitCard::find($request->card_id);
     if ($debit_card->activated_at) {
-      return generate_422_error(['card_activation' => 'Card already activated']);
+      throw ValidationException::withMessages(['auth_code' => "Card already activated"])->status(Response::HTTP_UNPROCESSABLE_ENTITY);
     }
     /**
      * Test csc
