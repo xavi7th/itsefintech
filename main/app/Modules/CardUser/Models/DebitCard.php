@@ -380,7 +380,7 @@ class DebitCard extends Model
 
       // Create bleyt wallet
       $rsp = $request->user()->createBleytWallet($debit_card, $request->bvn);
-      if (!$rsp->status)  return response()->json(['message' => $rsp->message], 403);
+      if (!$rsp->status)  return response()->json(['message' => $rsp->message], 400);
       $bleyt_wallet_id = $rsp->bleyt_wallet_id;
 
       // Link card to bleyt wallet
