@@ -405,13 +405,13 @@ class DebitCard extends Model
       $response = Http::withToken(config('services.bleyt.secret_key'))->put('https://api.bleyt.com/v1/customer/' . $bleyt_wallet_id, $dataSupplied);
       BleytResponse::logToDB('https://api.bleyt.com/v1/customer/' . $bleyt_wallet_id, $dataSupplied, $response, $request->user());
 
-      // DB::commit();
+      DB::commit();
 
       event(new DebitCardActivated);
 
       return response()->json(['message' => 'Card Activated'], 204);
     } else {
-      return response()->json('Invalid CSC', 422);
+      return response()->json('CVV Invalid', 422);
     }
   }
 
