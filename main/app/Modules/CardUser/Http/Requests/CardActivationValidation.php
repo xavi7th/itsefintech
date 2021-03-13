@@ -38,8 +38,6 @@ class CardActivationValidation extends FormRequest
    */
   public function authorizeValidated()
   {
-    print_r(DebitCard::find($this->card_id)->toArray());
-    exit;
     return true;
     return DebitCard::find($this->card_id)->belongs_to_user($this->user());
   }

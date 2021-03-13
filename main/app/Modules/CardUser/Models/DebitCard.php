@@ -357,7 +357,7 @@ class DebitCard extends Model
   public function activateCardUserDebitCard(CardActivationValidation $request)
   {
     $debit_card = DebitCard::find($request->card_id);
-    if ($debit_card->is_card_activated) {
+    if ($debit_card->activated_at) {
       return generate_422_error(['card_activation' => 'Card already activated']);
     }
     /**
