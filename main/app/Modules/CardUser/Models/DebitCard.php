@@ -360,7 +360,7 @@ class DebitCard extends Model
   {
     $debit_card = DebitCard::find($request->card_id);
     if ($debit_card->activated_at) {
-      return response()->json(['auth_code' => "Card already activated"], 422);
+      return response()->json("Card already activated", 422);
     }
     /**
      * Test csc
