@@ -337,7 +337,7 @@ class DebitCard extends Model
     $card_request = $request->user()->pending_debit_card_requests()->updateOrCreate(
       [
         'payment_method' => request('payment_method'),
-        'address' => request('address'),
+        'address' => $request->user()->address,
       ],
       Arr::collapse(
         [

@@ -18,7 +18,7 @@ class CardRequestValidation extends FormRequest
   public function rules()
   {
     return [
-      'address' => 'required|string',
+      // 'address' => 'required|string',
       'phone' => 'required|string',
       'state' => 'nullable|string',
       'zip' => 'required|string',
