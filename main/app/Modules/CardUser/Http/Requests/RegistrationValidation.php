@@ -21,6 +21,8 @@ class RegistrationValidation extends FormRequest
 		return [
 			'first_name' => 'required|string|max:50',
 			'last_name' => 'required|string|max:50',
+      'address' => 'required|string|max:150',
+      'city' => 'nullable|string|max:20',
 			'email' => 'required|string|email|max:100|unique:card_users,email',
 			'password' => 'required|string|min:6',
 			'phone' => 'required|regex:/^[\+]?[0-9\Q()\E\s-]+$/i|unique:card_users,phone',
