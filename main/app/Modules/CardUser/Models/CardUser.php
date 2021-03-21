@@ -572,6 +572,8 @@ class CardUser extends User
 
       Route::put('card-user/{id}/restore', 'CardUser@unsuspendCardUser')->middleware('auth:account_officer');
 
+      Route::put('card-user/{card_user}/update-kyc', 'CardUser@updateCardUserAccount')->middleware('auth:admin');
+
       Route::delete('card-user/{card_user}/delete', 'CardUser@deleteCardUserAccount')->middleware('auth:admin');
     });
   }
@@ -741,6 +743,14 @@ class CardUser extends User
     $card_user->restore();
 
     ActivityLog::logAdminActivity('Card User account restored. Card user details: ' . $card_user->email);
+
+    return response()->json(['rsp' => true], 204);
+  }
+
+  public function updateCardUserAccount(Request $request, self $cardUser)
+  {
+    $cardUser->email = $request->email ?? $cardUser->email;
+    $cardUser->phone = $request->phone ?? $cardUser->email;
 
     return response()->json(['rsp' => true], 204);
   }

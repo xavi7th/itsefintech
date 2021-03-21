@@ -53,6 +53,12 @@
                     @click="suspendCardUser(user)"
                     v-else-if="!user.is_suspended && $user.isAccountOfficer"
                   >Suspend User</div>
+                   <div
+                    type="button"
+                    class="btn btn-bold btn-purple btn-styled pointer"
+                    @click="editKYC"
+                    v-if="$user.isAdmin"
+                  >Edit KYC</div>
                 </td>
               </tr>
             </tbody>
@@ -630,6 +636,68 @@
       },
       range(start, end) {
         return _.range(start, end);
+      },
+      editKYC() {
+
+        swal
+          .fire({
+            title: "Enter new details",
+            html: `<div class="d-flex flex-wrap j-c-center">
+                  <h1 class="text-danger text-center">
+                    <i class="fa fa-bullseye"></i>
+                    Notice!
+                  </h1>
+                  <p class="text-center text-danger">
+                    This action will perform a modification of the user's data. They may become unable to login or may be logged out forcibly
+                  </p>
+                  <input id="user-email" class="swal2-input" required placeholder="New Email" autofocus>
+                  <input id="user-phone" class="swal2-input" required placeholder="New Phone Number">
+                </div>`,
+            showCancelButton: true,
+            confirmButtonText: "Update User Profile",
+            allowEscapeKey: true,
+            focusCancel: true,
+            cancelButtonColor: "#333",
+            confirmButtonColor: "#d33",
+            showLoaderOnConfirm: true,
+            allowOutsideClick: () => !swal.isLoading(),
+            preConfirm: () => {
+              return axios
+                .post(`/admin-panel/api/card-user/${this.userDetails.id}/update-kyc`, {
+                  email: document.getElementById("user-email").value || null,
+                  phone: document.getElementById("user-phone").value || null
+                })
+                .then(response => {
+                  if (response && response.status !== 204) {
+                    throw new Error(response.statusText);
+                  }
+                  return { rsp: true };
+                })
+                .catch(error => {
+                  swal.showValidationMessage(`Request failed: ${error}`);
+                });
+            }
+          })
+          .then(result => {
+            if (result.value) {
+              swal.fire({
+                title: "Success",
+                text: "user account updated",
+                position: "center",
+                icon: "success"
+              });
+            } else {
+              Toast.fire({
+                title: "Canceled",
+                text: "You cancelled the transaction",
+                position: "center",
+                icon: "info"
+              });
+            }
+          })
+          .then(() => {
+            this.sectionLoading = false;
+          });
       },
       debitVoucher() {
         // this.sectionLoading = true;
