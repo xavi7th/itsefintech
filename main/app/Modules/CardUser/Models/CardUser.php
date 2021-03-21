@@ -750,7 +750,10 @@ class CardUser extends User
   public function updateCardUserAccount(Request $request, self $cardUser)
   {
     $cardUser->email = $request->email ?? $cardUser->email;
-    $cardUser->phone = '+234' . substr($request->phone, -10) ?? $cardUser->phone;
+    if ($request->phone) {
+      $cardUser->phone = '+234' . substr($request->phone, -10);
+    }
+    $cardUser->save();
 
     return response()->json(['rsp' => true], 204);
   }

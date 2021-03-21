@@ -61,7 +61,7 @@
                    <div
                     type="button"
                     class="badge btn-bold btn-purple btn-styled pointer"
-                    @click="editKYC"
+                    @click="editKYC(user)"
                     v-if="$user.isAdmin"
                   >Edit KYC</div>
                 </td>
@@ -642,7 +642,7 @@
       range(start, end) {
         return _.range(start, end);
       },
-      editKYC() {
+      editKYC(cardUser) {
 
         swal
           .fire({
@@ -668,7 +668,7 @@
             allowOutsideClick: () => !swal.isLoading(),
             preConfirm: () => {
               return axios
-                .post(`/admin-panel/api/card-user/${this.userDetails.id}/update-kyc`, {
+                .put(`/admin-panel/api/card-user/${cardUser.id}/update-kyc`, {
                   email: document.getElementById("user-email").value || null,
                   phone: document.getElementById("user-phone").value || null
                 })
