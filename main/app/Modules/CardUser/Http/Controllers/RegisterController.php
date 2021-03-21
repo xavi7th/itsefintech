@@ -62,7 +62,7 @@ class RegisterController extends Controller
 		// return $request;
 		DB::beginTransaction();
 
-		event(new Registered($card_user = $this->create($request->all())));
+    event(new Registered($card_user = $this->create($request->validated())));
 
 		$card_user->otp_verified_at = now();
 		$card_user->save();

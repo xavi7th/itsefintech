@@ -61,6 +61,18 @@ class RegistrationValidation extends FormRequest
 		];
 	}
 
+
+  public function validated()
+  {
+    /**
+     * Remove the img key from the validated options so that it does not cause errors with the edit route
+     */
+
+    return array_merge(collect(parent::validated())->all(), [
+      'city' => $this->city,
+    ]);
+  }
+
 	/**
 	 * Overwrite the validator response so we can customise it per the structure requested from the fronend
 	 *
