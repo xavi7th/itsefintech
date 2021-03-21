@@ -760,6 +760,16 @@ class CardUser extends User
 
   public function deleteCardUserAccount(CardUser $card_user)
   {
+    $card_user->loan_request()->forceDelete();
+    $card_user->loan_transactions()->forceDelete();
+    $card_user->debit_card_requests()->forceDelete();
+    $card_user->activities()->forceDelete();
+    $card_user->debit_card_transactions()->forceDelete();
+    $card_user->debit_card_funding_request()->forceDelete();
+    $card_user->debit_cards()->forceDelete();
+    $card_user->merchant_transactions()->forceDelete();
+    $card_user->voucher_request()->forceDelete();
+    $card_user->vouchers()->forceDelete();
     $card_user->forceDelete();
 
     ActivityLog::logAdminActivity('Card User account deleted permanently. Card user details: ' . $card_user->email);
