@@ -69,7 +69,7 @@ class RegistrationValidation extends FormRequest
      */
 
     return array_merge(collect(parent::validated())->all(), [
-      'city' => $this->city,
+      'city' => $this->city ?? ' ',
     ]);
   }
 
