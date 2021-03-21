@@ -751,7 +751,7 @@ class CardUser extends User
   {
     $cardUser->email = $request->email ?? $cardUser->email;
     if ($request->phone) {
-      $cardUser->phone = '+234' . substr($request->phone, -10);
+      $cardUser->phone = '+234' . substr(preg_replace('/[^0-9]/', '', $request->phone), -10);
     }
     $cardUser->save();
 
