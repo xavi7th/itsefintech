@@ -60,7 +60,7 @@
                   >Delete User</div>
                    <div
                     type="button"
-                    class="btn btn-bold btn-purple btn-styled pointer"
+                    class="badge btn-bold btn-purple btn-styled pointer"
                     @click="editKYC"
                     v-if="$user.isAdmin"
                   >Edit KYC</div>

@@ -100,6 +100,7 @@ use App\Modules\CardUser\Transformers\CardUserDebitCardTransformer;
  * @method static \Illuminate\Database\Eloquent\Builder|DebitCard whereYear($value)
  * @method static \Illuminate\Database\Query\Builder|DebitCard withTrashed()
  * @method static \Illuminate\Database\Query\Builder|DebitCard withoutTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder|DebitCard titaniumBlack()
  * @mixin \Eloquent
  */
 class DebitCard extends Model
