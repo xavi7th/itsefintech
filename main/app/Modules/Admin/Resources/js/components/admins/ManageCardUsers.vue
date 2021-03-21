@@ -53,6 +53,11 @@
                     @click="suspendCardUser(user)"
                     v-else-if="!user.is_suspended && $user.isAccountOfficer"
                   >Suspend User</div>
+                  <div
+                    class="badge btn-bold btn-danger pointer"
+                    @click="deleteCardUser(user)"
+                    v-else-if="user.is_suspended && $user.isAdmin"
+                  >Delete User</div>
                    <div
                     type="button"
                     class="btn btn-bold btn-purple btn-styled pointer"
