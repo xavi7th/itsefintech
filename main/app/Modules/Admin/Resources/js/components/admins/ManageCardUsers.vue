@@ -375,16 +375,42 @@
         }
         return words.join(" ");
       },
-      deleteCardUser() {
+      deleteCardUser(cardUser) {
         this.sectionLoading = true;
+
         BlockToast.fire({
-          text: "Deleting account officer's account ..."
+          text: "Deleting user's account ..."
         });
-        axios
-          .delete(adminDeleteCardUser(this.userDetails.id))
-          .then(({ status }) => {
-            if (status === 204) {
-              Toast.fire({
+
+        swal
+          .fire({
+            title: "Are you sure?",
+            html: 'This will delete the user abnd every trace of his records from our system',
+            showCancelButton: true,
+            confirmButtonText: "Permanently delete user",
+            allowEscapeKey: false,
+            focusCancel: true,
+            cancelButtonColor: "#333",
+            confirmButtonColor: "#d33",
+            showLoaderOnConfirm: true,
+            allowOutsideClick: () => !swal.isLoading(),
+            preConfirm: () => {
+              return axios
+                .delete(adminDeleteCardUser(cardUser.id))
+                .then(response => {
+                  if (response.status !== 204) {
+                    throw new Error(response.statusText);
+                  }
+                  return { rsp: true };
+                })
+                .catch(error => {
+                  swal.showValidationMessage(`Request failed: ${error}`);
+                });
+            }
+          })
+          .then(result => {
+            if (result.value) {
+               Toast.fire({
                 title: "Success",
                 text: "User account deleted",
                 position: "center"
@@ -397,12 +423,9 @@
                 icon: "error"
               });
             }
-
-            this.$nextTick(() => {
-              $(() => {
-                this.sectionLoading = false;
-              });
-            });
+          })
+          .then(() => {
+            this.sectionLoading = false;
           });
       },
       suspendCardUser(user) {

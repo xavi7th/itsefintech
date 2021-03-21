@@ -15,6 +15,7 @@ use App\Modules\Admin\Models\ActivityLog;
 use App\Modules\Admin\Models\VoucherRequest;
 use App\Modules\CardUser\Models\LoanRequest;
 use App\Modules\Admin\Models\CardUserCategory;
+use App\Modules\CardUser\Models\BleytResponse;
 use App\Modules\CardUser\Events\UserBVNUpdated;
 use App\Modules\CardUser\Notifications\SendOTP;
 use App\Modules\Admin\Events\UserCreditLimitSet;
@@ -214,6 +215,11 @@ class CardUser extends User
   public function vouchers()
   {
     return $this->hasMany(Voucher::class);
+  }
+
+  public function bleyt_responses()
+  {
+    return $this->hasMany(BleytResponse::class);
   }
 
   public function active_voucher()
@@ -758,8 +764,12 @@ class CardUser extends User
     return response()->json(['rsp' => true], 204);
   }
 
-  public function deleteCardUserAccount(CardUser $card_user)
+  public function deleteCardUserAccount($card_user)
   {
+    $card_user = CardUser::onlyTrashed()->find($card_user);
+
+    DB::beginTransaction();
+
     $card_user->loan_request()->forceDelete();
     $card_user->loan_transactions()->forceDelete();
     $card_user->debit_card_requests()->forceDelete();
@@ -770,7 +780,10 @@ class CardUser extends User
     $card_user->merchant_transactions()->forceDelete();
     $card_user->voucher_request()->forceDelete();
     $card_user->vouchers()->forceDelete();
+    $card_user->bleyt_responses()->forceDelete();
     $card_user->forceDelete();
+
+    DB::commit();
 
     ActivityLog::logAdminActivity('Card User account deleted permanently. Card user details: ' . $card_user->email);
 
