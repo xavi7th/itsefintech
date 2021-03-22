@@ -21,8 +21,8 @@
             <tbody>
               <tr v-for="debit_card_request in debit_card_requests" :key="debit_card_request.id">
                 <td>{{ debit_card_request.id }}</td>
-                <td>{{ debit_card_request.requester.email }}</td>
-                <td>{{ debit_card_request.requester.phone }}</td>
+                <td>{{ debit_card_request.requester && debit_card_request.requester.email }}</td>
+                <td>{{ debit_card_request.requester && debit_card_request.requester.phone }}</td>
                 <td>{{ debit_card_request.requested_card_type }}</td>
                 <td>{{ debit_card_request.status }}</td>
                 <td>{{ debit_card_request.is_payment_confirmed ? 'Payment Confirmed' : debit_card_request.is_paid ? 'Payment made' : 'Not Paid' }}</td>
