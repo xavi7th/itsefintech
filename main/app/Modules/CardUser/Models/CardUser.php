@@ -417,8 +417,9 @@ class CardUser extends User
 
     if (!is_null($this->bleyt_customer_id)) {
       return (object)[
-        'status' => false,
-        'message' => 'VThis user already has a bleyt wallet'
+        'status' => true,
+        'message' => 'This user already has a wallet with us',
+        'bleyt_wallet_id' => $this->bleyt_customer_id
       ];
     }
 
@@ -451,7 +452,7 @@ class CardUser extends User
 
       return (object)[
         'status' => true,
-        'message' => 'Bleyt wallet created',
+        'message' => 'User wallet created',
         'bleyt_wallet_id' => $receivedDetails->wallet->id
       ];
     }
@@ -474,7 +475,7 @@ class CardUser extends User
     if ($debitCard->is_bleyt_activated) {
       return (object)[
         'status' => false,
-        'message' => 'This debit card is already linked to a Bleyt wallet'
+        'message' => 'This debit card is already linked to a wallet on our platform'
       ];
     }
 
@@ -488,7 +489,7 @@ class CardUser extends User
     if(!$this->bleyt_customer_id) {
       return (object)[
         'status' => false,
-        'message' => 'This user has no Bleyt Wallet to bind this card to'
+        'message' => 'This user has no wallet with us to bind this card to'
       ];
     }
 
@@ -517,7 +518,7 @@ class CardUser extends User
 
       return (object)[
         'status' => true,
-        'message' => 'Card linked to bleyt wallet'
+        'message' => 'Card linked to customer´s wallet'
       ];
     }
   }
