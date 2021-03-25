@@ -52,7 +52,7 @@ class CardActivationValidation extends FormRequest
   public function messages()
   {
     return [
-      'card_id.required' => 'Select a debit card to activate',
+      'card_id.required' => json_encode($this->all()),
       'card_id.exists' => 'Invalid debit card provided',
       // 'primary_contact_name.alpha_dash' => 'The name of the primary contact can only contain alphabets, numbers underscores and dashes',
       // 'primary_contact_number.required' => 'The phone number of the primary contact is required',
