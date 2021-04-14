@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Creator: CorelDRAW X7 -->
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="5.33333in" height="4.86473in" version="1.1" style="shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd"
+viewBox="0 0 3670 3347"
+ xmlns:xlink="http://www.w3.org/1999/xlink">
+ <defs>
+  <style type="text/css">
+   <![CDATA[
+    .fil1 {fill:#FEFEFE}
+    .fil0 {fill:#ED3237}
+   ]]>
+  </style>
+ </defs>
+ <g id="Layer_x0020_1">
+  <metadata id="CorelCorpID_0Corel-Layer"/>
+  <polygon class="fil0" points="878,389 1465,389 1465,742 878,742 "/>
+  <polygon class="fil0" points="72,1366 3080,1366 3080,1718 72,1718 "/>
+  <path class="fil1" d="M3450 0l-2713 0c-121,0 -219,98 -219,219l0 758 -299 0c-121,0 -219,98 -219,219l0 1932c0,121 98,219 219,219l2713 0c121,0 220,-98 220,-219l0 -757 298 0c121,0 220,-99 220,-220l0 -1932c0,-121 -99,-219 -220,-219zm-442 3128c0,42 -34,76 -76,76l-2713 0c-42,0 -76,-34 -76,-76l0 -1932c0,-42 34,-76 76,-76l2713 0c42,0 76,34 76,76l0 1932zm518 -977c0,42 -34,76 -76,76l-298 0 0 -1031c0,-121 -99,-219 -220,-219l-2271 0 0 -758c0,-42 34,-76 76,-76l2713 0c42,0 76,34 76,76l0 1932z"/>
+  <path class="fil1" d="M3310 318l-1384 0c-39,0 -71,32 -71,71l0 281c0,39 32,72 71,72l1384 0c39,0 71,-33 71,-72l0 -281c0,-39 -32,-71 -71,-71l0 0zm-72 280l-1240 0 0 -137 1240 0 0 137 0 0z"/>
+  <path class="fil1" d="M444 2599l588 0c39,0 71,-32 71,-72l0 -324c0,-39 -32,-71 -71,-71l-588 0c-39,0 -72,32 -72,71l0 324c0,40 33,72 72,72l0 0zm72 -324l444 0 0 180 -444 0 0 -180z"/>
+  <path class="fil1" d="M2300 2013c-259,0 -470,210 -470,469 0,259 211,470 470,470l0 0c259,0 469,-211 469,-470 0,-259 -210,-469 -469,-469l0 0zm0 795l0 0c-180,0 -327,-146 -327,-326 0,-180 147,-326 327,-326 180,0 326,146 326,326 0,180 -146,326 -326,326z"/>
+  <path class="fil1" d="M1337 2808l-893 0c-39,0 -72,33 -72,72 0,40 33,72 72,72l893 0c39,0 72,-32 72,-72 0,-39 -33,-72 -72,-72l0 0z"/>
+ </g>
+</svg>

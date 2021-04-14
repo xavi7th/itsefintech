@@ -37,7 +37,12 @@ class CardUserController extends Controller
 
 		Route::group(['prefix' => 'v1'], function () {
 
-			Route::get('/', 'CardUserController@index');
+			Route::get('/', 'CardUserController@index')->name('app.home');
+			Route::get('cards', 'CardUserController@cards')->name('app.cards');
+			Route::get('savings', 'CardUserController@savings')->name('app.savings');
+			Route::get('credit-policy', 'CardUserController@creditPolicy')->name('app.credit_policy');
+			Route::get('work-with-us', 'CardUserController@career')->name('app.career');
+			Route::get('our-terms-and-conditions', 'CardUserController@terms')->name('app.terms');
 
 			LoginController::routes();
 
@@ -74,8 +79,37 @@ class CardUserController extends Controller
 
 	public function index()
 	{
-
 		return view('index');
+	}
+
+
+	public function cards()
+	{
+		return view('cards');
+	}
+
+
+	public function savings()
+	{
+		return view('savings');
+	}
+
+
+	public function creditPolicy()
+	{
+		return view('credit-policy');
+	}
+
+
+	public function career()
+	{
+		return view('career');
+	}
+
+
+	public function terms()
+	{
+		return view('terms');
 	}
 
 	public function contactUs()
